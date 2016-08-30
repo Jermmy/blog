@@ -98,8 +98,11 @@ tags: Shell adb
    exit
    # 离开手机shell，注意之后有空行，否则shell没读到回车键就会一直停在这里
    exit
-
    ```
+
+6. ##### 其他小问题
+
+   我发现有些手机的命令行被阉割得很严重，甚至连`cp`这样的命令都没有，简单的解决办法是找到能用的命令代替，比如可以用`cat`代替`cp`，这样，5中`cp`的命令就要改成`cat /sdcard/libname.so > libname.so`。如果实在替换不了，可以试试busybox工具，文末提供了相关链接，因为本人没有尝试就不多说了。
 
 ### 缺陷
 
@@ -114,3 +117,10 @@ tags: Shell adb
 [Why do I get access denied to data folder when using adb?](http://stackoverflow.com/questions/1043322/why-do-i-get-access-denied-to-data-folder-when-using-adb)
 
 [BAT脚本如何自动执行 adb shell 以后的命令 ](http://mzywqwq.blog.163.com/blog/static/958701220134842449172/)
+
+[android shell 内，sh:cp not found 解决方法](http://blog.csdn.net/yxz329130952/article/details/8725050)
+
+[在android中安装busybox时"cp: not found"的解决办法](http://blog.csdn.net/w540982016044/article/details/7519114)
+
+[为Android安装BusyBox —— 完整的bash shell](http://www.cnblogs.com/xiaowenji/archive/2011/03/12/1982309.html)
+
