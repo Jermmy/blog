@@ -298,3 +298,292 @@ e()
 ```
 
 可以清楚地看到，虽然`f()`和`g()`都有同步代码块，但由于二者的同步对象不同（`f()`是this对象，而`g()`是syncObject），所以二者依然可以“同时”执行。但`e()`需要的对象先被`f()`占有了，所以必须等`f()`执行完释放同步对象后，`e()`才能执行。
+
+#### 被互斥所阻塞
+
+如果尝试着在一个对象上调用其`synchronized`方法，而这个对象的锁已经被其他任务获得，那么调用任务将被挂起（阻塞）。但如果是同一个任务访问这个`synchronized`方法，那么它可以继续获得这个锁。
+
+```java
+public class MultiLock {
+	public synchronized void f1(int count) {
+		if (count-- > 0) {
+			System.out.println("f1() calling f2() with count " + count);
+			f2(count);
+		}
+	}
+	public synchronized void f2(int count) {
+		if (count-- > 0) {
+			System.out.println("f2() calling f1() with count " + count);
+			f1(count);
+		}
+	}
+	public static void main(String[] args) {
+		final MultiLock multiLock = new MultiLock();
+		new Thread() {
+			public void run() {
+				multiLock.f1(10);
+			}
+		}.start();
+	}
+}
+```
+
+输出：
+
+```shell
+f1() calling f2() with count 9
+f2() calling f1() with count 8
+f1() calling f2() with count 7
+f2() calling f1() with count 6
+f1() calling f2() with count 5
+f2() calling f1() with count 4
+f1() calling f2() with count 3
+f2() calling f1() with count 2
+f1() calling f2() with count 1
+f2() calling f1() with count 0
+```
+
+可以看到，尽管`f1()`和`f2()`都hold住同一个锁，但由于是同一个任务，因此不会出现死锁现象。
+
+<br\>
+
+### 线程状态
+
+Bruce将线程的状态分为四种：新建(New)、就绪(Runnable)、阻塞(Blocked)、死亡(Dead)。我觉得分为五种更加合适：新建(New)、就绪(Runnable)、运行(Running)、阻塞(Blocked)、死亡(Dead)。从这篇博文http://www.runoob.com/java/thread-status.html中可以如下状态转换图：
+
+ ![new](/Users/xyz/GitCode/jermmy.github.io/source/images/2016-9-10/new.jpg)
+
+<br\>
+
+### 中断（interrupt）
+
+`Thread`提供了`interrupt()`方法，该方法提供了一种在`Runnable.run()`中间中断线程的可能。注意，只是可能。
+
+如果使用`Executor`来执行线程，可以直接使用`shutdownNow()`方法，它将发送一个`interrupt()`调用给它启动的所有线程。然而，如果只希望中断某个单一任务，可以使用`submit()`而不是`execute()`来启动任务。正如之前所提到的，`submit()`将返回一个`Future<?>`对象，后者代表线程的上下文（或者简单理解为该线程的引用）。我们可以通过`Future.cancle(true)`方法来中断线程。
+
+下面这个例子比较长，主要是为了演示`interrupt()`能够作用的情况。
+
+```java
+import java.util.concurrent.*;
+import java.io.*;
+
+class SleepBlocked implements Runnable {
+	public void run() {
+		try {
+			TimeUnit.SECONDS.sleep(100);
+		} catch(InterruptedException e) {
+			System.out.println("InterruptedException");
+		}
+		System.out.println("Exiting SleepBlocked.run()");
+	}
+}
+
+class IOBlocked implements Runnable {
+	private InputStream in;
+	public IOBlocked(InputStream is) {
+		this.in = is;
+	}
+	public void run() {
+		try {
+			System.out.println("Waiting for read()");
+			in.read();
+		} catch(IOException e) {
+			if (Thread.currentThread().isInterrupted()) {
+				System.out.println("Interrupted from blocked I/O");
+			} else {
+				throw new RuntimeException(e);
+			}
+		}
+		System.out.println("Exiting IOBlocked.run()");
+	}
+}
+
+class SynchronizedBlocked implements Runnable {
+	public synchronized void f() {
+		while (true) {        // Never release lock
+			Thread.yield();
+		}
+	}
+	public SynchronizedBlocked() {
+		new Thread() {
+			public void run() {
+				f();     // Lock acquired by this thread
+			}
+		}.start();
+	}
+	public void run() {
+		System.out.println("Trying to call f()");
+		f();
+		System.out.println("Exiting SynchronizedBlocked.run()");
+	}
+}
+
+public class Interrupting {
+	private static ExecutorService exec = Executors.newCachedThreadPool();
+	static void test(Runnable r) throws InterruptedException {
+		Future<?> f = exec.submit(r);
+		TimeUnit.MILLISECONDS.sleep(100);
+		System.out.println("Interrupting " + r.getClass().getName());
+		f.cancel(true);
+		System.out.println("Interrupt sent to " + r.getClass().getName());
+	}
+	public static void main(String[] args) throws Exception {
+		test(new SleepBlocked());
+		test(new IOBlocked(System.in));
+		test(new SynchronizedBlocked());
+		TimeUnit.SECONDS.sleep(3);
+		System.out.println("Aborting with System.exit(0)");
+		System.exit(0);
+	}
+}
+```
+
+输出：
+
+```shell
+Interrupting SleepBlocked
+Interrupt sent to SleepBlocked            <--外部中断SleepBlocked线程
+InterruptedException                      <--SleepBlocked触发InterruptedException
+Exiting SleepBlocked.run()                <--SleepBlocked线程结束
+Waiting for read()
+Interrupting IOBlocked
+Interrupt sent to IOBlocked               <--外部中断IOBlocked线程，但该线程仍在执行
+Trying to call f()
+Interrupting SynchronizedBlocked
+Interrupt sent to SynchronizedBlocked     <--外部中断SynchronizedBlocked线程，但该线程仍在执行
+Aborting with System.exit(0)
+```
+
+从输出结果至少可以得出以下结论：
+
+`interrupt()`可以中断对`sleep()`的调用，但对`I/O操作`和`获取synchronized锁`这两种阻塞，`interrupt()`无法中断线程。
+
+<br\>
+
+### wait()
+
+#### wait()的目的
+
+`wait()`主要是为了防止忙等待现象的出现。有时候线程执行到某一步的时候，需要等待一段时间让其他线程先跑，等后者做完某些事情的时候再“通知”前者让它继续执行。这种方式可以通过回调接口来实现，但如果要保持不同线程之间的独立性，就要提供一种机制来达到“通知”的效果。
+
+最简单的方法是用一个无限循环和布尔变量：
+
+```java
+while (!isNotified) {
+  
+}
+doThing();
+```
+
+线程`A`通过一个循环来实现“挂起”的效果（也就是什么事也不做），等线程`B`做完某些事情后，修改`isNotified`变量，使线程`A`跳出循环，来实现“通知”效果。这种实现方式称为“忙等待”，因为线程`A`其实仍然在执行循环代码，但却什么事也没做。
+
+更有效率的实现方式是让线程`A`挂起（放弃CPU时间），这一点通常需要操作系统提供支持。而JVM就有这样的底层支持，暴露给开发者的接口就是`wait()`方法。
+
+#### wait()与sleep(), yield()的区别
+
+调用`sleep(), yield()`的时候，虽然线程会让出cpu，但锁并没有释放（如果事先拥有的话）。但`wait()`不仅会将线程挂起，还会释放之前抢到的锁。
+
+#### wait()的使用
+
+`wait()`通常与`notify()`, `notifyAll()`同时出现。
+
+`wait()`有两种调用形式，一种不带参数`wait()`，另一种带一个参数`wait(time)`，前者会无限等待，直到通过`notify()`或`notifyAll()`唤醒，后者可以通过`notify()`等唤醒，或者等到达了参数`time`指定的时间，由系统自动唤醒。
+
+要记住的一点是，`wait()`, `notify()`这些看似和线程相关的操作，其实是基类`Object`提供的方法。因为这些方法操作的锁是对象的一部分，而不仅仅是线程的一部分。
+
+`wait()`, `notify()`等方法必须在同步代码块中执行，究其根本，在于它们必须“拥有”锁，才能被唤醒或唤醒其他线程。（锁将被唤醒的对象与唤醒它的对象联系在了一起）。
+
+下面这个例子其实模仿了生产者与消费者模型：
+
+```java
+import java.util.concurrent.*;
+
+class Car {
+	private boolean waxOn = false;
+	public synchronized void waxed() {
+		waxOn = true;
+		notifyAll();
+	}
+	public synchronized void buffed() {
+		waxOn = false;
+		notifyAll();
+	}
+	public synchronized void waitForWaxing() throws InterruptedException {
+		while (waxOn == false) {
+			wait();
+		}
+	}
+	public synchronized void waitForBuffing() throws InterruptedException {
+		while (waxOn == true) {
+			wait();
+		}
+	}
+}
+
+class WaxOn implements Runnable {
+	private Car car;
+	public WaxOn(Car car) {
+		this.car = car;
+	}
+	public void run() {
+		try {
+			while (!Thread.interrupted()) {
+				System.out.print("Wax On!");
+				TimeUnit.MILLISECONDS.sleep(400);
+				car.waxed();
+				car.waitForBuffing();
+			}
+		} catch(InterruptedException e) {
+			System.out.println("Exiting via interrupt");
+		}
+		System.out.println("Ending Wax On task");
+	}
+}
+
+class WaxOff implements Runnable {
+	private Car car;
+	public WaxOff(Car c) {
+		this.car = c;
+	}
+	public void run() {
+		try {
+			while (!Thread.interrupted()) {
+				car.waitForWaxing();
+				System.out.print("Wax Off!");
+				TimeUnit.MILLISECONDS.sleep(400);
+				car.buffed();
+			}
+		} catch (InterruptedException e) {
+			System.out.println("Exiting via interrupt");
+		}
+		System.out.println("Ending Wax Off task");
+	}
+}
+
+public class WaxOMatic {
+	public static void main(String[] args) throws Exception {
+		Car car = new Car();
+		ExecutorService exec = Executors.newCachedThreadPool();
+		exec.execute(new WaxOff(car));
+		exec.execute(new WaxOn(car));
+		TimeUnit.SECONDS.sleep(5);
+		exec.shutdownNow();
+	}
+}
+```
+
+输出：
+
+```shell
+Wax On!Wax Off!Wax On!Wax Off!Wax On!Wax Off!Wax On!Wax Off!Wax On!Wax Off!Wax On!Wax Off!Wax On!Exiting via interrupt
+Ending Wax On task
+Exiting via interrupt
+Ending Wax Off task
+```
+
+可以看到，cpu在两条线程之间交替执行。
+
+
+
+
+
