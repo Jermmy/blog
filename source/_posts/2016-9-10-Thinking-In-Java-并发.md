@@ -351,7 +351,7 @@ f2() calling f1() with count 0
 
 Bruce将线程的状态分为四种：新建(New)、就绪(Runnable)、阻塞(Blocked)、死亡(Dead)。我觉得分为五种更加合适：新建(New)、就绪(Runnable)、运行(Running)、阻塞(Blocked)、死亡(Dead)。从这篇博文http://www.runoob.com/java/thread-status.html中可以如下状态转换图：
 
- ![new](/Users/xyz/GitCode/jermmy.github.io/source/images/2016-9-10/new.jpg)
+ ![new](/images/2016-9-10/new.jpg)
 
 <br\>
 
