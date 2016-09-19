@@ -13,7 +13,7 @@ avatar: https://avatars2.githubusercontent.com/u/7380327?v=3&u=00ca25dac0efb33af
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://jermmy.github.io/
+url: https://jermmy.github.io/
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:

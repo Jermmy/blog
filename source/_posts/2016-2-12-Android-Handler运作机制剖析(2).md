@@ -3,7 +3,6 @@ title: Android—Handler运作机制剖析（二）
 tags: Android
 ---
 
-（话说博主看了之前那篇文章[Android--Handler运作机制剖析（一）](http://jermmy.github.io/Android-Handler%E8%BF%90%E4%BD%9C%E6%9C%BA%E5%88%B6%E5%89%96%E6%9E%90(1)/)，发现github上语法高亮引擎真心丑矣，欺负前端小白吗）
 
 书接上文，我们忽悠完了Handler与Looper之间的关系以及Looper的由来，今天该讲讲Looper是怎么帮助Handler工作，以及如何支撑整个app运转的。对，你没听错，Looper就是这么强大。
 
@@ -240,7 +239,7 @@ com.xxx.myapplication I/MyHandler: main thread
 
 ## UI线程的Looper轮询
 
-文章最开始还有一个悬而未解的问题，为什么子线程Handler发送的消息没有被处理，而UI线程的消息却能被接收处理呢？要知道问题的答案，我们又得看回ActivityThread.java中的main函数（不清楚地请看回上一篇文章[Android--Handler运作机制剖析（一）](http://jermmy.github.io/Android-Handler%E8%BF%90%E4%BD%9C%E6%9C%BA%E5%88%B6%E5%89%96%E6%9E%90(1)/)），这里照搬一下代码
+文章最开始还有一个悬而未解的问题，为什么子线程Handler发送的消息没有被处理，而UI线程的消息却能被接收处理呢？要知道问题的答案，我们又得看回ActivityThread.java中的main函数（不清楚地请看回上一篇文章[Android--Handler运作机制剖析（一）](https://jermmy.github.io/2016/02/12/2016-2-11-Android-Handler%E8%BF%90%E4%BD%9C%E6%9C%BA%E5%88%B6%E5%89%96%E6%9E%90(1)/)），这里照搬一下代码
 
 ``` java
     public static void main(String[] args) {
