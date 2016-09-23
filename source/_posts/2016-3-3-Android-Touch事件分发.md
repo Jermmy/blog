@@ -1,9 +1,12 @@
 ---
 title: Android Touch事件分发过程
 tags: Android
+categories: Android
 ---
 
 最近在系统学习Android一些底层的实现。今天花了一天时间，查阅各种文章源码，决定对Touch事件的分发过程做一次梳理。
+
+<!--more-->
 
 网上有大把的文章介绍这类主题，但能够从源头说起的不多，博主搜到了一篇 [Android 事件分发机制详解](http://stackvoid.com/details-dispatch-onTouch-Event-in-Android/) ，感觉讲得比较全面，而且分析过程也比较适合对底层理解不多的新手（比如我）。
 

@@ -2,6 +2,7 @@
 title: Thinking in Java — 并发
 date: 2016-09-10 10:50:00
 tags: Java
+categories: Java
 ---
 
 今天温习一下Java多线程的知识（文中代码除非特别说明，否则均摘自《Thinking in Java》(第四版)）。
@@ -9,6 +10,8 @@ tags: Java
 `Runnable`，`Thread`的简单使用表过不谈，只总结一下不熟悉的知识点。
 
 <br\>
+
+<!--more-->
 
 ### 使用`Executor`
 

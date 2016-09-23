@@ -1,10 +1,13 @@
 ---
 title: Android NDK-异常总结
 date: 2016-09-06 19:37:41
-tags: NDK
+tags: [NDK, Android]
+categories: Android
 ---
 
 开发NDK时，由于大量用到指针等，在失去Java虚拟机保护（异常抛出）的情况下，常常面临崩溃闪退却不知道哪里出错的问题。更有甚者，这种情况还具有随机性，非常麻烦！本文记录一下我开发NDK时遇到的各种蛋疼问题，方便以后查找使用。
+
+<!--more-->
 
 ### 1.  A/libc(3347): Fatal signal 11 (SIGSEGV) at 0xdeadbaad (code=1)
 

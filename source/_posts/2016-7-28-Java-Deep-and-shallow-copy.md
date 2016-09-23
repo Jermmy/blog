@@ -2,10 +2,13 @@
 layout: post
 title: Java-Deep and shallow copy
 tags: Java
+categories: Java
 date: 2016-7-28
 ---
 
 最近将一段C++算法代码改成java版本迁移到android平台的时候，发现我的java底子有点薄。比方说，连java深拷贝和浅拷贝都没搞清。
+
+<!--more-->
 
 ### 深拷贝和浅拷贝
 

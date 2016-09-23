@@ -2,6 +2,7 @@
 layout: post
 title: Android-GridView设置选中状态
 tags: Android
+categories: Android
 ---
 
 ### Mark一个今天被坑了很久的小问题
@@ -9,6 +10,8 @@ tags: Android
 #### 需求
 
 实现脸萌的创作界面（如下）
+
+<!--more-->
 
  ![Screenshot_2016-06-28-09-37-07](/images/2016-6-29/Screenshot_2016-06-28-09-37-07.jpeg)
 

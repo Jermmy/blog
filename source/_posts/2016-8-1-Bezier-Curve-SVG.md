@@ -2,7 +2,8 @@
 layout: post
 title: 从贝塞尔曲线反推控制点
 date: 2016-08-01 23:17:19
-tags: SVG Bezier-Curve
+tags: SVG
+categories: SVG
 mathjax: true
 ---
 
@@ -11,6 +12,8 @@ mathjax: true
 ### 需求
 
 在得到并对贝塞尔曲线做完处理后，为了让浏览器重新渲染贝塞尔曲线，必须通过贝塞尔曲线重新取得控制点坐标。
+
+<!--more-->
 
 ### 准备条件
 

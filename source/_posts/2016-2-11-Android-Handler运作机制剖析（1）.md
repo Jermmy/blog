@@ -1,9 +1,12 @@
 ---
 title: Android--Handler运作机制剖析（一）
 tags: Android
+categories: Android
 ---
 
 博主第一次使用Handler是为了在子线程中修改控件内容，因为Android不允许非UI线程修改控件，因此要用Handler通知UI线程去修改。今天抽空看了些文章和源码，理解一下背后的运行机制。
+
+<!--more-->
 
 ## Handler, Looper, MessageQueue的关系
 

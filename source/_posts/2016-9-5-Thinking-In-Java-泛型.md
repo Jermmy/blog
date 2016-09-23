@@ -2,11 +2,14 @@
 title: Thinking in Java — 泛型
 date: 2016-09-05 23:24:10
 tags: Java
+categories: Java
 ---
 
 刚开始学JavaSE的时候，买了一本业界经典的《Thinking in Java》，后来证明对于初学者来说完全是错误的决定。现在趁着大四有点时间，准备从头将一些重要的知识学一遍。
 
 今天要学的是泛型（文中代码除非特别说明，否则均摘自《Thinking in Java》(第四版)）。
+
+<!--more-->
 
 ### 什么是泛型
 

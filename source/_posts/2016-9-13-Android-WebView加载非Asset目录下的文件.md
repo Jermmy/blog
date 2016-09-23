@@ -2,11 +2,14 @@
 title: Android-WebView加载非Assets目录下的文件
 date: 2016-09-13 20:38:21
 tags: Android
+categories: Android
 ---
 
 ### 背景
 
 最近遇到这样一个需求：WebView里的文件需要定期更新，而且是在java层获取后台的json数据后，更新到原来的js文件中。由于之前app的html、js等文件都是放在Assets目录下的，所以最开始的想法当然是看能不能对Assets目录进行读写。google一番后，SO上有人给出了答复：**You cannot write data's to asset/Raw folder, since it is packed(.apk) and not expandable in size.**  然后我出于好奇想知道apk安装后，这两个文件夹的资源会被存储在哪。于是便进入到**data/data/packageName**目录下，结果发现这两个目录相关的资源并不存在，不仅如此，res目录下的资源也不在这里。于是又google了一番，发现apk安装后，除了**data/data/packageName**目录下会有东西，在**data/app**目录下会有一个与该apk相关的文件，暂时不知道是什么，但十有八九就是跟res等资源有关的东西。
+
+<!--more-->
 
 ### 解决方法
 

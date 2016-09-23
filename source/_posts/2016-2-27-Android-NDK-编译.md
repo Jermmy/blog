@@ -1,9 +1,12 @@
 ---
 title: Android NDK编译
 tags: Android
+categories: Android
 ---
 
 （在使用NDK之前，应该先确定一定以及肯定C/C++能更好地提升程序性能，如果Java也能做得很好的事，讲道理的话是不应该用。当然，隐藏代码细节的除外。）
+
+<!--more-->
 
 关于NDK编译的文章已经烂大街了。这里只是简单总结一下在AS中怎么做，方便博主日后查看。有必要提供这篇文章作为参考[Android NDK and OpenCV development with Android Studio](http://hujiaweibujidao.github.io/blog/2014/10/22/android-ndk-and-opencv-development-with-android-studio/)，作者不仅认真负责，与时俱进，还富有情调，为广大程序员所不及也。这篇文章主要讲了怎么用AS来更快捷地使用`javah`, `ndk-build`等命令，如何在gradle里面配置task，当然也说了一下怎么来编译opencv。
 

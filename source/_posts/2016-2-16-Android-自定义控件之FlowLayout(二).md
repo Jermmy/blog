@@ -1,9 +1,12 @@
 ---
 title: Android-自定义控件之FlowLayout(二)
 tags: Android
+categories: Android
 ---
 
 （首先声明，这篇文章是博主在mooc上学习了hyman的视频[打造Android流式布局和热门标签](http://mooc.guokr.com/career/3170/%E6%89%93%E9%80%A0Android%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80%E5%92%8C%E7%83%AD%E9%97%A8%E6%A0%87%E7%AD%BE/)后总结的小知识）
+
+<!--more-->
 
 ### onMeasure实现过程
 

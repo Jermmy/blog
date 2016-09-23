@@ -1,12 +1,15 @@
 ---
 layout: post
 title: Shell脚本跑adb，快速替换.so
-tags: Shell adb
+tags: [Shell, adb]
+categories: 工具
 ---
 
 ### NDK开发遇到的麻烦
 
 最近使用Android Studio开发jni程序时，遇到一个极其蛋疼的问题：AS编译运行的速度实在是太慢了！！！而且jni开发的时候一定要先clean一遍，再重新build工程，整个过程总耗时＝上个厕所＋喝一杯咖啡，这在调试时尤为不便。于是我上网兜了一遍，终于找到一种更快捷的方法。
+
+<!--more-->
 
 参考链接：[使用QtCreator加速Android NDK开发调试](http://wrox.cn/article/100066906/)
 
@@ -103,6 +106,10 @@ tags: Shell adb
 6. ##### 其他小问题
 
    我发现有些手机的命令行被阉割得很严重，甚至连`cp`这样的命令都没有，简单的解决办法是找到能用的命令代替，比如可以用`cat`代替`cp`，这样，5中`cp`的命令就要改成`cat /sdcard/libname.so > libname.so`。如果实在替换不了，可以试试busybox工具，文末提供了相关链接，因为本人没有尝试就不多说了。
+
+   ​
+
+<br\>
 
 ### 缺陷
 

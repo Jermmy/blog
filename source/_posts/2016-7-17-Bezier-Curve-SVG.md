@@ -1,7 +1,8 @@
 ---
 layout: post 
 title: 利用SVG中的控制点绘制贝塞尔曲线
-tags: SVG Bezier-Curve
+tags: SVG
+categories: SVG
 mathjax: true
 date: 2016-7-17
 ---
@@ -9,6 +10,8 @@ date: 2016-7-17
 ### 需求
 
 SVG标准指令中的C/c可以用于构造三次贝塞尔曲线(cube bezier curve)，具体用法是：`X0, Y0 C X1 Y1, X2 Y2, X3 Y3`，这里面的X、Y用的是绝对坐标，它们代表三次贝塞尔曲线的控制点（X0， Y0和X3、Y3恰好是曲线前后端点，所以实际上只有两个控制点）。但我的目的是想对贝塞尔曲线做一次wrap，而这些控制点并不一定就在曲线上，所以必须先把曲线求出来，再对曲线做wrap形变。
+
+<!--more-->
 
 ### 准备条件
 
