@@ -484,7 +484,7 @@ doThing();
 
 #### wait()与sleep(), yield()的区别
 
-调用`sleep(), yield()`的时候，虽然线程会让出cpu，但锁并没有释放（如果事先拥有的话）。但`wait()`不仅会将线程挂起，还会释放之前抢到的锁。
+调用`sleep()`, `yield()`的时候，虽然线程会让出cpu，但锁并没有释放（如果事先拥有的话）。但`wait()`不仅会将线程挂起，还会释放之前抢到的锁。
 
 #### wait()的使用
 
@@ -492,9 +492,24 @@ doThing();
 
 `wait()`有两种调用形式，一种不带参数`wait()`，另一种带一个参数`wait(time)`，前者会无限等待，直到通过`notify()`或`notifyAll()`唤醒，后者可以通过`notify()`等唤醒，或者等到达了参数`time`指定的时间，由系统自动唤醒。
 
-要记住的一点是，`wait()`, `notify()`这些看似和线程相关的操作，其实是基类`Object`提供的方法。因为这些方法操作的锁是对象的一部分，而不仅仅是线程的一部分。
+要记住的一点是，`wait()`, `notify()`这些看似和线程相关的操作，其实是基类`Object`提供的方法。因为这些方法操作的锁是对象的一部分，而不仅仅是线程的一部分。`notify()`和`notifyAll()`的区别是：前者只唤醒一条线程，后者唤醒所有线程。
 
 `wait()`, `notify()`等方法必须在同步代码块中执行，究其根本，在于它们必须“拥有”锁，才能被唤醒或唤醒其他线程。（锁将被唤醒的对象与唤醒它的对象联系在了一起）。
+
+通常，获得锁的方法分为两种：
+
+```java
+// 指定锁对象
+synchronized(x) {
+  //x.notifyAll();
+  //wait();
+}
+// 使用同步方法，等价于锁住类本身
+public synchronized void f() {
+  // wait();
+  // notifyAll();
+}
+```
 
 下面这个例子其实模仿了生产者与消费者模型：
 
@@ -585,6 +600,262 @@ Ending Wax Off task
 ```
 
 可以看到，cpu在两条线程之间交替执行。
+
+<br\>
+
+### 使用显示的`Lock`和`Condition`对象
+
+`Condition`提供了`await()`和`signalAll()`方法来将线程挂起或唤醒，书上的说法是：与使用`notifyAll()`相比，`signalAll()`是更安全的方式。
+
+基本使用：
+
+```java
+import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
+
+class Car {
+	private Lock lock = new ReentrantLock();
+	private Condition condition = lock.newCondition();
+	private boolean waxOn = false;
+	public void waxed() {
+		lock.lock();
+		try {
+			waxOn = true;
+			condition.signalAll();
+		} finally {
+			lock.unlock();
+		}
+	}
+	public void buffed() {
+		lock.lock();
+		try {
+			waxOn = false;
+			condition.signalAll();
+		} finally {
+			lock.unlock();
+		}
+	}
+	public void waitForWaxing() throws InterruptedException {
+		lock.lock();
+		try {
+			while (waxOn == false) {
+				condition.await();
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+	public void waitForBuffing() throws InterruptedException {
+		lock.lock();
+		try {
+			while (waxOn == true) {
+				condition.await();
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+}
+
+class WaxOn implements Runnable {
+	private Car car;
+	public WaxOn(Car c) {
+		car = c;
+	}
+	public void run() {
+		try {
+			while (!Thread.interrupted()) {
+				System.out.println("Wax On!");
+				TimeUnit.MILLISECONDS.sleep(200);
+				car.waxed();
+				car.waitForBuffing();
+			}
+		} catch (InterruptedException e) {
+			System.out.println("Exiting via interrupt");
+		}
+		System.out.println("Ending Wax On task");
+	}
+}
+
+class WaxOff implements Runnable {
+	private Car car;
+	public WaxOff(Car c) {
+		car = c;
+	}
+	public void run() {
+		try {
+			while (!Thread.interrupted()) {
+				car.waitForWaxing();
+				System.out.println("Wax Off!");
+				TimeUnit.MILLISECONDS.sleep(200);
+				car.buffed();
+			}
+		} catch (InterruptedException e) {
+			System.out.println("Exiting via interrupt");
+		}
+		System.out.println("Ending Wax Off task");
+	}
+}
+
+public class WaxOMatic2 {
+	public static void main(String[] args) throws Exception {
+		Car car = new Car();
+		ExecutorService exec = Executors.newCachedThreadPool();
+		exec.execute(new WaxOff(car));
+		exec.execute(new WaxOn(car));
+		TimeUnit.SECONDS.sleep(5);
+		exec.shutdownNow();
+	}
+}
+```
+
+（输出与上一个例子一致）
+
+上面的例子显得有些冗长，重点放在`Car`这个类的实现就可以。对于`Car`内部的四个方法，都是先用`lock.lock()`锁起来，然后调用`condition.await()`或者`condition.signalAll()`来等待或唤醒线程，注意这个`Condition`对象和`Lock`对象是绑定的。虽然看起来复杂了一些，但可以将`lock.lock()`看作是`synchronized(object)`，将`condition.await`看作是`object.wait()`，这样它们的用法和之前`wait()`, `notify()`的使用就差不多了。
+
+这个解决方案代码上明显更加复杂，作者也强调，`Lock`和`Condition`对象只有在更加困难的多线程问题中才是需要的。
+
+<br\>
+
+### 新类库中的构件
+
+Java SE5的java.util.concurrent引入了大量用来解决并发问题的类库。（下面只摘录几个我遇到的，之后会继续补充＝。＝）
+
+#### PriorityBlockingQueue
+
+这是一个很基础的优先级队列，它具有可阻塞的读取操作。
+
+例子：
+
+```java
+import java.util.*;
+import java.util.concurrent.*;
+
+class PrioritizedTask implements Runnable, Comparable<PrioritizedTask> {
+	private Random rand = new Random(47);
+	private static int counter = 0;
+	private final int id = counter++;
+	private final int priority;
+	protected static List<PrioritizedTask> sequence = new ArrayList<PrioritizedTask>();
+	public PrioritizedTask(int priority) {
+		this.priority = priority;
+		sequence.add(this);
+	}
+	public int compareTo(PrioritizedTask arg) {
+		return priority < arg.priority ? 1 : (priority > arg.priority ? -1 : 0); 
+	}
+	public void run() {
+		try {
+			TimeUnit.MILLISECONDS.sleep(rand.nextInt(250));
+		} catch (InterruptedException e) {}
+		System.out.println(this);
+	}
+	public String toString() {
+		return String.format("[%1$-3d]", priority) + " Task " + id;
+	}
+	public String summary() {
+		return "(" + id + ":" + priority + ")";
+	}
+
+	public static class EndSentinel extends PrioritizedTask {
+		private ExecutorService exec;
+		public EndSentinel(ExecutorService e) {
+			super(-1);
+			exec = e;
+		}
+		public void run() {
+			int count = 0;
+			for (PrioritizedTask pt : sequence) {
+				System.out.println(pt.summary());
+				if (++count % 5 == 0) {
+					System.out.println("");
+				}
+			}
+			System.out.println("");
+			System.out.println(this + " Calling shutdownNow()");
+			exec.shutdownNow();
+		}
+	}
+}
+
+class PrioritizedTaskProducer implements Runnable {
+	private Random rand = new Random(47);
+	private Queue<Runnable> queue;
+	private ExecutorService exec;
+	public PrioritizedTaskProducer(Queue<Runnable> q, ExecutorService e) {
+		queue = q;
+		exec = e;
+	}
+	public void run() {
+		for (int i = 0; i < 20; i++) {
+			queue.add(new PrioritizedTask(rand.nextInt(10)));
+			Thread.yield();
+		}
+		try {
+			for (int i = 0; i < 10; i++) {
+				TimeUnit.MILLISECONDS.sleep(250);
+				queue.add(new PrioritizedTask(10));
+			}
+			for (int i = 0; i < 10; i++) {
+				queue.add(new PrioritizedTask(i));
+			}
+			queue.add(new PrioritizedTask.EndSentinel(exec));
+		} catch (InterruptedException e) {
+
+		}
+		System.out.println("Finished PrioritizedTaskProducer");
+	}
+}
+
+class PrioritizedTaskConsumer implements Runnable {
+	private PriorityBlockingQueue<Runnable> q;
+	public PrioritizedTaskConsumer(PriorityBlockingQueue<Runnable> q) {
+		this.q = q;
+	}
+	public void run() {
+		try {
+			while(!Thread.interrupted()) {
+				q.take().run();
+			}
+		} catch (InterruptedException e) {}
+		System.out.println("Finished PrioritizedTaskConsumer");
+	}
+}
+
+public class PriorityBlockingQueueDemo {
+	public static void main(String[] args) throws Exception {
+		Random rand = new Random(47);
+		ExecutorService exec = Executors.newCachedThreadPool();
+		PriorityBlockingQueue<Runnable> queue = new PriorityBlockingQueue<Runnable>();
+		exec.execute(new PrioritizedTaskProducer(queue, exec));
+		exec.execute(new PrioritizedTaskConsumer(queue));
+	}
+}
+```
+
+这个例子长到不想看，简单来讲，`PriorityBlockingQueue`提供两种操作：`add()`, `take()`。当队列为空时，调用`take()`的线程会阻塞，只有`add()`操作可以将其唤醒。
+
+题外话：Android的`Volley`就是用`PriorityBlockingQueue`实现的。
+
+<br\>
+
+### 性能调优
+
+Java早期的容器类（`Vector`和`Hashtable`等）为了支持并发操作，提供了许多`synchronized`方法，这种实现在单线程环境下效率很低。
+
+Java SE5中提供了新的容器，通过灵巧的技术消除加锁。这些免锁容器背后的通用策略是：对容器的修改可以与读取操作同时发生，只要读取者只能看到完成修改的结果即可。修改是在容器数据结构的某个部分的一个单独的副本上执行的，并且这个副本在修改过程中不可视。（有点类似数据库的隔离性，可以认为这些操作都是以原子单位进行的）。
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
