@@ -1,7 +1,7 @@
 ---
 title: Thinking in Java — 并发
 date: 2016-09-10 10:50:00
-tags: Java
+tags: [Java, 并行]
 categories: Java
 ---
 
@@ -833,7 +833,7 @@ public class PriorityBlockingQueueDemo {
 }
 ```
 
-这个例子长到不想看，简单来讲，`PriorityBlockingQueue`提供两种操作：`add()`, `take()`。当队列为空时，调用`take()`的线程会阻塞，只有`add()`操作可以将其唤醒。
+这个例子长到不想看，简单来讲，`PriorityBlockingQueue`提供两种操作：`add()`, `take()`。当队列为空时，调用`take()`的线程会阻塞，只有`add()`操作可以将其唤醒。需要注意的是，因为`PriorityBlockingQueue`是优先队列，所以类型参数需要实现`Comparable`接口。
 
 题外话：Android的`Volley`就是用`PriorityBlockingQueue`实现的。
 
