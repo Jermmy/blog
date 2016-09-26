@@ -292,6 +292,196 @@ C4: Empty trash
 2. hashCode不能依赖于具有唯一性的对象信息，尤其是this，这样逻辑上相同的两个实例对象会产生不同的hashCode
 
 
+对于如何设计一个好的hashCode，作者引用了Joshua Bloch的指导：
+
+1. 给int变量result赋予某个非零值常量，例如17；
+
+2. 为对象内每个有意义的域f（即每个可以做equals()操作的域）计算出一个int散列码c：
+
+   | 域类型                              | 计算                                       |
+   | -------------------------------- | ---------------------------------------- |
+   | boolean                          | c = ( f ? 0 : 1)                         |
+   | byte、char、short或int              | c = (int)f                               |
+   | long                             | c = (int)(f ^ (f >>> 32))                |
+   | float                            | c = Float.floatToIntBits(f);             |
+   | double                           | long I = Double.doubleToLongBits(f);   c = (int)(I ^ (I >>> 32)) |
+   | Object，其equals()  调用这个域的equals() | c = f.hashCode()                         |
+   | 数组                               | 对每个元素应用上述规则                              |
+
+3. 合并计算得到的散列码：
+
+   result = 37*result + c;
+
+4. 返回result
+
+5. 检查hashCode()最后生成的结果，确保相同的对象有相同的散列码
+
+下面是一个应用上述规则的例子
+
+```java
+import java.util.*;
+
+public class CountedString {
+	private static List<String> created = new ArrayList<String>();
+	private String s;
+	private int id = 0;
+	public CountedString(String str) {
+		s = str;
+		created.add(s);
+		for (String s2 : created) {
+			if (s2.equals(str)) {
+				++id;
+			}
+		}
+	}
+	public String toString() {
+		return "String: " + s + "  id: " + id + " hashCode(): " + hashCode();
+	}
+	public int hashCode() {
+		// Using Joshua Bloch's recipe
+		int result = 17;
+		result = 37 * result + s.hashCode();
+		result = 37 * result + id;
+		return result;
+	}
+	public boolean equals(Object o) {
+		return o instanceof CountedString && s.equals(((CountedString)o).s) && id == ((CountedString)o).id;
+	}
+	public static void main(String[] args) {
+		Map<CountedString, Integer> map = new HashMap<CountedString, Integer>();
+		CountedString cs[] = new CountedString[5];
+		for (int i = 0; i < cs.length; i++) {
+			cs[i] = new CountedString("hi");
+			map.put(cs[i], i);
+		}
+		System.out.println(map);
+		for (CountedString cstring : cs) {
+			System.out.println("Looking up " + cstring);
+			System.out.println(map.get(cstring));
+		}
+	}
+}
+```
+
+输出：
+
+```shell
+{String: hi  id: 4 hashCode(): 146450=3, String: hi  id: 5 hashCode(): 146451=4, String: hi  id: 2 hashCode(): 146448=1, String: hi  id: 3 hashCode(): 146449=2, String: hi  id: 1 hashCode(): 146447=0}
+Looking up String: hi  id: 1 hashCode(): 146447
+0
+Looking up String: hi  id: 2 hashCode(): 146448
+1
+Looking up String: hi  id: 3 hashCode(): 146449
+2
+Looking up String: hi  id: 4 hashCode(): 146450
+3
+Looking up String: hi  id: 5 hashCode(): 146451
+4
+```
+
+例子中的`CountedString`有两个成员变量：`String s`和`int id`。根据Joshua Bloch规则，int类型直接取这个值本身，而Object则取该对象hashCode()函数的值。从输出例子也可以看到，这种算法的hashCode计算结果受（有意义的）成员变量影响较大，可以产生较均匀的分配。（后面的结论是我杜撰的）。
+
+<br\>
+
+### 性能测试
+
+Java提供的容器类型实在太多，具体该选用哪个实现呢？这一节探讨不同容器之间的异同。（书中测试代码较多，本人认为要想真正认识这些容器还是应该从源代码入手，所以准备改天再花时间对这些容器的源码做一层剖析）
+
+由于`List`比较熟悉了，所以以下只关注`Set`、`Map`这些稍微复杂的容器。
+
+#### 对`Set`的选择
+
+`Set`的类型无非是`TreeSet`、`HashSet`、`LinkedHashSet`。`TreeSet`的优点是可以维持元素的顺序，所以只有当需要一个排好序的`Set`时，才应该使用`TreeSet`。`HashSet`是首选目标，因为相比排序操作，添加和查找元素往往更为常见，所以`HashSet`的性能总体上优于`TreeSet`。对于插入操作，`LinkedHashSet`比`HashSet`代价更高，这是由维护链表所带来的额外开销造成的（这一点出人意料）。
+
+#### 对`Map`的选择
+
+`Map`的实现有`TreeMap`，`HashMap`，`LinkedHashMap`，`IdentifyHashMap`，`WeakHashMap`，`Hashtable`这几种。除了`IdentifyHashMap`，所有`Map`的插入操作都会随着`Map`尺寸的变大而明显变慢，但是查找的代价通常比插入小得多。
+
+`TreeMap`通常比`HashMap`慢（想想数据库里的动态哈希跟B+树，前者在定位某个特定位置时，在溢出链不长的情况下几乎是一步得到，而`TreeMap`的效率应该还没有B+树高，所以`HashMap`的查找和插入操作比`TreeMap`快很多）。
+
+`LinkedHashMap`的性能特点与`LinkedHashSet`一样，可类比。
+
+#### `HashMap`的性能因子
+
+我们可以手工调整`HashMap`的性能，这主要通过调整性能参数实现（下面是几个术语的意思，有些是可以手工设置的）：
+
++ 容量：表中桶的位数
++ 初始容量：表在创建时所拥有的桶位数。可以在构造函数指定
++ 尺寸：表中当前存储的项数
++ 负载因子：尺寸/容量。空表的负载因子是0，而半满表是0.5。负载轻的表产生冲突的可能性小，因此对于插入和查找效果较理想（但用迭代器遍历元素时速度会偏慢，因为空元素太多）。`HashMap`在负载情况达到负载因子时会自动增加容量，并重新散列（很像数据库的动态散列存储技术）。`HashMap`的默认负载因子是0.75。
+
+<br\>
+
+### 使用方法
+
+#### `Collection`或`Map`的同步控制
+
+容器中的线程同步是一个很重要的问题，Java在`Collections`中提供了一种工具方法来解决不同步的问题。
+
+使用方法的例子：
+
+```java
+import java.util.*;
+
+public class Synchronization {
+	public static void main(String[] args) {
+		Collection<String> c = Collections.synchronizedCollection(new ArrayList<String>());
+		List<String> list = Collections.synchronizedList(new ArrayList<String>());
+		Set<String> s = Collections.synchronizedSet(new HashSet<String>());
+		Set<String> ss = Collections.synchronizedSortedSet(new TreeSet<String>());
+		Map<String, String> m = Collections.synchronizedMap(new HashMap<String, String>());
+		Map<String, String> sm = Collections.synchronizedSortedMap(new TreeMap<String, String>());
+	}
+}
+```
+
+另外，java提供了一种快速报错的机制防止多线程修改造成的“灾难”:
+
+例子：
+
+```java
+import java.util.*;
+
+public class FailTest {
+	public static void main(String[] args) {
+		Collection<String> c = new ArrayList<String>();
+		Iterator<String> it = c.iterator();
+		c.add("An object");
+		try {
+			String s = it.next();
+		} catch (ConcurrentModificationException e) {
+			System.out.println(e);
+		}
+	}
+}
+```
+
+这段代码会抛出`java.util.ConcurrentModificationException`，因为在得到迭代器`Iterator`后，又往集合中加入新的对象，导致`Iterator`失效了。
+
+Java SE5中新增的`ConcurrentHashMap`、`CopyOnWriteArrayList`和`CopyOnWriteArraySet`提供了避免`java.util.ConcurrentModificationException`的机制。
+
+<br\>
+
+### 持有引用
+
+java.lang.ref类库中包含了一组类用于垃圾回收机制。有三个继承自`Reference`的类：`SoftReference`，`WeakReference`，`PhantomReference`，它们为垃圾回收提供了不同级别的指示。
+
+`SoftReference`，`WeakReference`，`PhantomReference`由强到弱排列。
+
+在`WeakHashMap`的实现中，将插入的键和值用`WeakReference`封装了一遍，我的理解是，这样可以防止`Map`长期hold住对象的引用而不被回收，因为`WeakHashMap`中的引用跟普通对象的引用相比，回收的级别更高。
+
+<br\>
+
+### Java 1.0/1.1 的容器
+
+回顾历史，不要踩坑！
+
+Java最开始的版本中内置了`Vector`、`Enumeration`、`Hashtable`、`Stack`，这些容器只在历史版本中工作了，它们中不乏失败的地方，因此不应该再被使用。
+
+
+
+
+
 
 
 
