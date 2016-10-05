@@ -8,7 +8,7 @@ categories: Android
 
 <!--more-->
 
-关于NDK编译的文章已经烂大街了。这里只是简单总结一下在AS中怎么做，方便博主日后查看。有必要提供这篇文章作为参考[Android NDK and OpenCV development with Android Studio](http://hujiaweibujidao.github.io/blog/2014/10/22/android-ndk-and-opencv-development-with-android-studio/)，作者不仅认真负责，与时俱进，还富有情调，为广大程序员所不及也。这篇文章主要讲了怎么用AS来更快捷地使用`javah`, `ndk-build`等命令，如何在gradle里面配置task，当然也说了一下怎么来编译opencv。
+关于NDK编译的文章已经烂大街了。这里只是简单总结一下在AS中怎么做，方便博主日后查看。有必要提供这篇文章作为参考[Android NDK and OpenCV development with Android Studio](https://hujiaweibujidao.github.io/blog/2014/10/22/android-ndk-and-opencv-development-with-android-studio/)，作者不仅认真负责，与时俱进，还富有情调，为广大程序员所不及也。这篇文章主要讲了怎么用AS来更快捷地使用`javah`, `ndk-build`等命令，如何在gradle里面配置task，当然也说了一下怎么来编译opencv。
 
 我觉得这里面比较复杂的是编译ndk这个过程，所以就只是简单描述一下这个流程^_^
 
