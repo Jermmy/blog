@@ -11,7 +11,7 @@ categories: Java
 
 下面这张图摘自《Thinking in Java》，是Java中容器类很好的概览图
 
-![full_container_taxonomy_thinking_in_java](images/2016-9-25/full_container_taxonomy_thinking_in_java.png)
+![full_container_taxonomy_thinking_in_java](/images/2016-9-25/full_container_taxonomy_thinking_in_java.png)
 
 <!--more-->
 
