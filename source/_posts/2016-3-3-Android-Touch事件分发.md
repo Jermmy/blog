@@ -586,7 +586,7 @@ public boolean dispatchTouchEvent(MotionEvent event) {
 
 ## 实际运用
 
-码了这么多，先休息一下，之后继续补充。。。。。
+未完待续。。。
 
 
 
