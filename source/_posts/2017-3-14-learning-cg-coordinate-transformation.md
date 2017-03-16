@@ -49,8 +49,8 @@ $\mathbf M= \begin{bmatrix}
 \gamma\_{21} & \gamma\_{22} & \gamma\_{23} & 0 \\\\
 \gamma\_{31} & \gamma\_{32} & \gamma\_{33} & 0 \\\\
 \gamma\_{41} & \gamma\_{42} & \gamma\_{43} & 1 \\\\
-\end{bmatrix}$，$\mathbf u = \mathbf M * \mathbf v$。
-出了多出一维外，齐次坐标与上面使用的三维坐标本质上没有区别，计算方法也基本一致，在对应到三维坐标系时，只需要舍弃第四个维度即可。
+\end{bmatrix}$，$\mathbf u = \mathbf M^T * \mathbf v$。
+除了多出一维外，齐次坐标与上面使用的三维坐标本质上没有区别，计算方法也基本一致，在对应到三维坐标系时，只需要舍弃第四个维度即可。
 
 
 ### OpenGL中的坐标系统
