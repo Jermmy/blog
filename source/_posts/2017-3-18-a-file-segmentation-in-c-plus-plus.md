@@ -304,29 +304,10 @@ int main(int argc, char const *argv[]) {
 
 `./main -m config.json`
 
+完整工程代码，请看：https://github.com/Jermmy/file_segmentation
+
 ### 测试结果
 
 在我的 mac (双核，2.7 GHz Intel Core i5) 上，将一个 7.35 G 的 zip 文件分割为 10 片，所用时间为 37.7 s。
 
 同样的机器，将上面的 10 片文件合成原来的大文件，所用时间为 31.8 s。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
