@@ -4,15 +4,15 @@ tags: Android
 categories: Android
 ---
 
-（首先声明，这篇文章是博主在mooc上学习了hyman的视频[打造Android流式布局和热门标签](http://mooc.guokr.com/career/3170/%E6%89%93%E9%80%A0Android%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80%E5%92%8C%E7%83%AD%E9%97%A8%E6%A0%87%E7%AD%BE/)后总结的小知识）
+（首先声明，这篇文章是博主在 mooc 上学习了 hyman 的视频[打造Android流式布局和热门标签](http://mooc.guokr.com/career/3170/%E6%89%93%E9%80%A0Android%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80%E5%92%8C%E7%83%AD%E9%97%A8%E6%A0%87%E7%AD%BE/)后总结的小知识）
 
 <!--more-->
 
 ### onMeasure实现过程
 
-这篇文章总结一下onMeasure函数该如何完成测量过程。
+这篇文章总结一下 onMeasure 函数该如何完成测量过程。
 
-再次看看官网对onMeasure函数的说明
+再次看看官网对 onMeasure 函数的说明
 
 ``` java
     /**
@@ -23,9 +23,9 @@ categories: Android
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 ```
 
-前面讲过，我们通过该函数两个参数来确定ViewGroup的宽高及其测量模式。但同时，这个函数需要让子View去测量它们自己的宽高，这样，我们才能在ViewGroup中得到子View的宽高。让子View去测量自己的方法是调用ViewGroup提供的`measureChild`方法。调用该方法后，可以通过子View的`getMeasuredWidth`或`getMeasuredHeight`方法分别获得子View的宽高。之后通过我们自己的策略确定ViewGroup的宽高。前面讲过，如果是EXACTLY模式，那么宽高的值直接就是`onMeasure`传进来的参数值，如果是AT_MOST模式，则需要根据子View的宽高自行测量，最后通过`setMeasureDimension`方法将宽高作为参数传给ViewGroup。
+前面讲过，我们通过该函数两个参数来确定 ViewGroup 的宽高及其测量模式。但同时，这个函数需要让子 View 去测量它们自己的宽高，这样，我们才能在 ViewGroup 中得到子 View 的宽高。让子 View 去测量自己的方法是调用 ViewGroup 提供的 `measureChild` 方法。调用该方法后，可以通过子 View 的 `getMeasuredWidth` 或 `getMeasuredHeight` 方法分别获得子 View 的宽高。之后通过我们自己的策略确定 ViewGroup 的宽高。前面讲过，如果是「EXACTLY」模式，那么宽高的值直接就是 `onMeasure` 传进来的参数值，如果是「AT_MOST」模式，则需要根据子 View 的宽高自行测量，最后通过 `setMeasureDimension` 方法将宽高作为参数传给 ViewGroup。
 
-下面的代码是FlowLayout的onMeasure函数的实现方法：
+下面的代码是 FlowLayout 的 onMeasure 函数的实现方法：
 
 ``` java
     @Override
