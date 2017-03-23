@@ -4,21 +4,21 @@ tags: Android
 categories: Android
 ---
 
-最近在系统学习Android一些底层的实现。今天花了一天时间，查阅各种文章源码，决定对Touch事件的分发过程做一次梳理。
+最近在系统学习 Android 一些底层的实现。今天花了一天时间，查阅各种文章源码，决定对 Touch 事件的分发过程做一次梳理。
 
 <!--more-->
 
 网上有大把的文章介绍这类主题，但能够从源头说起的不多，博主搜到了一篇 [Android 事件分发机制详解](http://stackvoid.com/details-dispatch-onTouch-Event-in-Android/) ，感觉讲得比较全面，而且分析过程也比较适合对底层理解不多的新手（比如我）。
 
-说起Touch事件的分发，当然还是得从手指touch到屏幕说起啦（大部分文章直入主题说是 `Activity` 的dispatchTouchEvent()方法开启分发过程，可博主比较喜欢刨根问底）。很自然地我们会想到是屏幕把touch这个信号传到了，这么底层的东西自然而然也要由Linux来提供支持。如果你有点进去上面那篇文章的话，你会知道这个信号经由Linux处理封装后，会通过内核中的 `InputManager` 模块将事件传给Android的 `WindowManagerService` ，后者可以认为是Android系统提供的服务了，博主是把它当作Android系统的常驻服务进程对待的。`WindowManagerService`得到这个事件后，中间又经历多方曲折，最终会把它传递到 `PhotoWindow` 的内部类 `DecorView` 的dispatchTouchEvent()函数这里（其实这里博主不是很确定是不是这样，因为上面那篇文章分析的代码比较旧，和博主看的5.0的代码有很大的不同，`WindowManagerService` 的代码博主实在没有能力看懂，但我想虽然细节变了很多，但总体的框架还是要保持兼容的，所以这种猜测应该是正确的）。
+说起 Touch 事件的分发，当然还是得从手指 touch 到屏幕说起啦（大部分文章直入主题说是 `Activity` 的 `dispatchTouchEvent()` 方法开启分发过程，可博主比较喜欢刨根问底）。很自然地我们会想到是屏幕把 touch 这个信号传到了，这么底层的东西自然而然也要由 Linux 来提供支持。如果你有点进去上面那篇文章的话，你会知道这个信号经由 Linux 处理封装后，会通过内核中的 `InputManager` 模块将事件传给 Android 的 `WindowManagerService` ，后者可以认为是 Android 系统提供的服务了，博主是把它当作 Android 系统的常驻服务进程对待的。`WindowManagerService `得到这个事件后，中间又经历多方曲折，最终会把它传递到 `PhotoWindow` 的内部类 `DecorView` 的 `dispatchTouchEvent()` 函数这里（其实这里博主不是很确定是不是这样，因为上面那篇文章分析的代码比较旧，和博主看的 5.0 的代码有很大的不同，`WindowManagerService` 的代码博主实在没有能力看懂，但我想虽然细节变了很多，但总体的框架还是要保持兼容的，所以这种猜测应该是正确的）。
 
 ## PhotoWindow和DecorView
 
-好吧，既然锁定了位置，就该看看这个 `PhotoWindow`和 `DecorView`是何方神圣。为了搞清楚这个问题，我们不得不从后往前推。
+好吧，既然锁定了位置，就该看看这个 `PhotoWindow` 和 `DecorView `是何方神圣。为了搞清楚这个问题，我们不得不从后往前推。
 
-突破点是Activity!
+突破点是 Activity !
 
-相信如果你也研究过该主题并阅读过一些文章的话，你一定对 `Activity`的dispatchTouchEvent() 方法不陌生。
+相信如果你也研究过该主题并阅读过一些文章的话，你一定对 `Activity` 的`dispatchTouchEvent()` 方法不陌生。
 
 ```java
     /**
@@ -43,7 +43,7 @@ categories: Android
     }
 ```
 
-这里就是函数源码，我们逐句看下。首先第一个判断语句，当我们发出down这个动作时，会执行onUserInteraction()，这个方法是空的，是让开发者自己去覆写实现一些功能。那么重点就放在中间那一块了，getWindow()得到的是什么？博主一路跟踪进去，得到下面这些重要信息：
+这里就是函数源码，我们逐句看下。首先第一个判断语句，当我们发出 down 这个动作时，会执行 `onUserInteraction()`，这个方法是空的，是让开发者自己去覆写实现一些功能。那么重点就放在中间那一块了，getWindow() 得到的是什么？博主一路跟踪进去，得到下面这些重要信息：
 
 ```java
     private Window mWindow;
@@ -70,7 +70,7 @@ categories: Android
     }
 ```
 
-原来 `mWindow`是Window类型的引用， 重点是在attach函数里，我们发现mWindow被实例化为`PhotoWindow` 。前面说Touch事件的分发也跟这个window有关，那么这个 `PhotoWindow` 到底是什么呢？博主搜了一圈，发现这篇文章 [Android ViewTree and DecorView](http://www.cnblogs.com/jinsdu/archive/2013/01/03/2840565.html) 对它的阐述还是很不错的。我们常说，`Activity` 是应用程序的窗口，严格来讲，`PhotoWindow`才是。在Window这个类文件里，你可以找这样一段说明：
+原来 `mWindow `是 Window 类型的引用， 重点是在 attach 函数里，我们发现 mWindow 被实例化为 `PhotoWindow` 。前面说 Touch 事件的分发也跟这个 window 有关，那么这个 `PhotoWindow` 到底是什么呢？博主搜了一圈，发现这篇文章 [Android ViewTree and DecorView](http://www.cnblogs.com/jinsdu/archive/2013/01/03/2840565.html) 对它的阐述还是很不错的。我们常说，`Activity` 是应用程序的窗口，严格来讲，`PhotoWindow` 才是。在 Window 这个类文件里，你可以找这样一段说明：
 
 ```java
 /**
@@ -89,9 +89,9 @@ public abstract class Window {
   .......
 ```
 
-第二段里说道，抽象类`Window`的唯一实现类是`PhotoWindow`。我们可以认为，每个Activity其实都绑定着一个 `PhotoWindow`，并由它来控制整个视图的显示。
+第二段里说道，抽象类 `Window` 的唯一实现类是 `PhotoWindow`。我们可以认为，每个 Activity 其实都绑定着一个 `PhotoWindow`，并由它来控制整个视图的显示。
 
-回到 dispatchTouchEvent 函数，我们已经找到了getWindow的返回值，那就去 `PhotoWindow` 的superDispatchTouchEvent方法里瞧瞧：
+回到 dispatchTouchEvent 函数，我们已经找到了 getWindow 的返回值，那就去 `PhotoWindow` 的 superDispatchTouchEvent 方法里瞧瞧：
 
 ```java
     @Override
@@ -101,7 +101,7 @@ public abstract class Window {
 
 ```
 
-我们貌似看到一点 `DecorView` 的影子，继续跟踪这个mDecor：
+我们貌似看到一点 `DecorView` 的影子，继续跟踪这个 mDecor：
 
 ```java
     // This is the top-level view of the window, containing the window decor.
@@ -132,9 +132,9 @@ public abstract class Window {
     }
 ```
 
-没得说，`mDecor` 就是 `DecorView`。它是 `PhotoWindow `的内部类，前面说 `PhotoWindow` 才代表手机窗口，但窗口内那些的具体元素，其实是 `DecorView` 负责管理的，简单点说，每次我们创建完 `Activity`后，不管我们有没有定义 layout 布局，Activity 所在的窗口的最外层都会被套上一层布局（你可以新建一个Activity，但不要调用setContentView方法，看跑起来是怎样的），这层布局就是这里的 `DecorView` ，也就是说它才是整个ViewTree的根节点，而我们的布局只是内容布局，所以叫ContentView。
+没得说，`mDecor` 就是 `DecorView`。它是 `PhotoWindow ` 的内部类，前面说 `PhotoWindow` 才代表手机窗口，但窗口内那些的具体元素，其实是 `DecorView` 负责管理的，简单点说，每次我们创建完 `Activity `后，不管我们有没有定义 layout 布局，Activity 所在的窗口的最外层都会被套上一层布局（你可以新建一个 Activity，但不要调用 setContentView 方法，看跑起来是怎样的），这层布局就是这里的 `DecorView` ，也就是说它才是整个 ViewTree 的根节点，而我们的布局只是内容布局，所以叫 ContentView。
 
-好了，现在我们知道 `PhotoView` 和 `DecorView`都代表什么之后，暂时把Activity放下，回到文章开头。我们前面说 `WindowManagerService`会将touch事件传递到 `DecorView`的dispatchTouchEvent函数，这个函数代码不多：
+好了，现在我们知道 `PhotoView` 和 `DecorView `都代表什么之后，暂时把 Activity 放下，回到文章开头。我们前面说 `WindowManagerService `会将 touch 事件传递到 `DecorView `的 dispatchTouchEvent 函数，这个函数代码不多：
 
 ```java
         @Override
@@ -145,7 +145,7 @@ public abstract class Window {
         }
 ```
 
-这里又出现一个 `Callback`的类，这个getCallback其实是 `Window` 类中定义的方法，而 `Callback`
+这里又出现一个 `Callback `的类，这个 getCallback 其实是 `Window` 类中定义的方法，而 `Callback`
 
 也是其内部声明的接口：
 
@@ -174,7 +174,7 @@ public abstract class Window {
     }
 ```
 
-这个接口内部声明了包括dispatchTouchEvent()在内的众多函数接口，我们比较关心这个Callback的赋值，
+这个接口内部声明了包括 `dispatchTouchEvent()` 在内的众多函数接口，我们比较关心这个 Callback 的赋值，
 
 ```java
     /**
@@ -188,7 +188,7 @@ public abstract class Window {
     }
 ```
 
-其实，这个方法在我们前面分析的时候已经出现过了，还记得Activity绑定PhotoWindow的attach方法吗？
+其实，这个方法在我们前面分析的时候已经出现过了，还记得 Activity 绑定 PhotoWindow 的 attach 方法吗？
 
 ```java
     final void attach(Context context, ActivityThread aThread,
@@ -207,7 +207,7 @@ public abstract class Window {
     }
 ```
 
-Callback就是在这里实现了赋值，而传进去的参数就是当前窗口的Activity类（Activity实现了Callback接口）。重新回到 `DecorView` 的dispatchTouchEvent函数：
+Callback 就是在这里实现了赋值，而传进去的参数就是当前窗口的 Activity 类（ Activity 实现了 Callback 接口）。重新回到 `DecorView` 的 dispatchTouchEvent 函数：
 
 ```java
         @Override
@@ -218,13 +218,13 @@ Callback就是在这里实现了赋值，而传进去的参数就是当前窗口
         }
 ```
 
-这里拿到Callback（也就是Activity）之后，return语句中判断这个Activity是否为空，有没有被destroy，然后根据 mFeatureId 的值来决定调用哪个dispatchTouchEvent函数。mFeatureId在DecorView的构造函数中被赋值为－1，所以一般都会调用 cb.dispatchTouchEvent(ev)，也就是 Activity 的dispatchTouchEvent 函数。终于，我们又绕了回去。
+这里拿到 Callback（也就是 Activity ）之后，return 语句中判断这个 Activity 是否为空，有没有被 destroy，然后根据 mFeatureId 的值来决定调用哪个 dispatchTouchEvent 函数。mFeatureId 在 DecorView 的构造函数中被赋值为 －1，所以一般都会调用 cb.dispatchTouchEvent(ev)，也就是 Activity 的 dispatchTouchEvent 函数。终于，我们又绕了回去。
 
-总结一下其实很简单，`WindowManagerService`将事件分发给 `DecorView` 的dispatchTouchEvent函数，接着再分发给 `Activity` 的dispatchTouchEvent函数。从这里开始，我们就可以跟大多数文章那样分析 `Activity` 的dispatchTouchEvent函数了。
+总结一下其实很简单，`WindowManagerService `将事件分发给 `DecorView` 的 dispatchTouchEvent 函数，接着再分发给 `Activity` 的 dispatchTouchEvent 函数。从这里开始，我们就可以跟大多数文章那样分析 `Activity` 的 dispatchTouchEvent 函数了。
 
 ## ViewGroup.dispatchTouchEvent
 
-前面我们在肢解 `Activity` 的dispatchTouchEvent函数分析PhotoWindow的同时，已经逐渐把事件分发的流程也理了一下
+前面我们在肢解 `Activity` 的 dispatchTouchEvent 函数分析 PhotoWindow 的同时，已经逐渐把事件分发的流程也理了一下
 
 ```java
    // Activity类 
@@ -248,7 +248,7 @@ Callback就是在这里实现了赋值，而传进去的参数就是当前窗口
     }
 ```
 
-仔细跟踪梳理的话，我们会发现，第二个if语句最后会执行 `DecorView` 的superDispatchTouchEvent函数
+仔细跟踪梳理的话，我们会发现，第二个 if 语句最后会执行 `DecorView` 的 superDispatchTouchEvent 函数
 
 ```java
         public boolean superDispatchTouchEvent(MotionEvent event) {
@@ -256,7 +256,7 @@ Callback就是在这里实现了赋值，而传进去的参数就是当前窗口
         }
 ```
 
-这个函数简单粗暴地将任务扔给父类 `FrameLayout`，而后者最终会调用 `ViewGroup` 的dispatchTouchEvent函数。关于这个函数的讲解，网上已经有很多文章了，所以这里也不细讲（好吧，我承认我也不是很懂）。下面还是保留大段源码，希望有朝一日看懂后继续写注释：
+这个函数简单粗暴地将任务扔给父类 `FrameLayout`，而后者最终会调用 `ViewGroup` 的 dispatchTouchEvent 函数。关于这个函数的讲解，网上已经有很多文章了，所以这里也不细讲（好吧，我承认我也不是很懂）。下面还是保留大段源码，希望有朝一日看懂后继续写注释：
 
 ```java
 @Override
@@ -516,7 +516,7 @@ private boolean dispatchTransformedTouchEvent(MotionEvent event, boolean cancel,
 }
 ```
 
-从前面`ViewGroup`的dispatchTouchEvent 函数我们已经发现：`ViewGroup`会将事件分发给TouchTarget链上的各个子 View，然后通过 dispatchTransformedTouchEvent 函数来调用子View自己的 dispatchTransformedTouchEvent 函数。如果子View是一个 `ViewGroup` ，那么它会跟我们前面分析的一样，继续走ViewGroup的分发流程，如果子View是一个普通的View，比如说是一个Button，那么会调用Button的dispatchTouchEvent函数，因为大部分控件都没有覆写View的这个方法，所以我们继续将目光转向这个函数：
+从前面 `ViewGroup` 的 dispatchTouchEvent 函数我们已经发现：`ViewGroup` 会将事件分发给 TouchTarget 链上的各个子 View，然后通过 dispatchTransformedTouchEvent 函数来调用子View自己的 dispatchTransformedTouchEvent 函数。如果子 View 是一个 `ViewGroup` ，那么它会跟我们前面分析的一样，继续走 ViewGroup 的分发流程，如果子 View 是一个普通的 View，比如说是一个 Button，那么会调用 Button 的 dispatchTouchEvent 函数，因为大部分控件都没有覆写 View 的这个方法，所以我们继续将目光转向这个函数：
 
 ```java
 /**
@@ -578,11 +578,11 @@ public boolean dispatchTouchEvent(MotionEvent event) {
 }
 ```
 
-相比前面 ViewGroup ，这个方法好看多了。这里面主要的焦点都落在中间两句if语句那里。我们平时传入的`OnTouchListener` 就是在这里执行的，而 onTouchEvent 函数会继续调用 `OnClickListener` 回调（当然OnTouchListener不能消费掉事件，否则系统认为你这个View后续不需要再处理事件）。可以说，View收到触摸事件后的逻辑操作都集中在onTouchEvent 函数里面。具体我也不深入分析了，主要是在动作是ACTION_UP的时候执行 performClick 方法，这个方法里面回调我们的`OnClickListener` 接口。
+相比前面 ViewGroup ，这个方法好看多了。这里面主要的焦点都落在中间两句 if 语句那里。我们平时传入的 `OnTouchListener` 就是在这里执行的，而 onTouchEvent 函数会继续调用 `OnClickListener` 回调（当然 OnTouchListener 不能消费掉事件，否则系统认为你这个 View 后续不需要再处理事件）。可以说，View 收到触摸事件后的逻辑操作都集中在 onTouchEvent 函数里面。具体我也不深入分析了，主要是在动作是 ACTION_UP 的时候执行 performClick 方法，这个方法里面回调我们的 `OnClickListener`  接口。
 
-最后我们回顾一下整个流程，Activity的dispatchTouchEvent方法会调用整个窗口根节点`DecorView`的superDispatchTouchEvent，而后者其实直接调用了ViewGroup的事件分发函数。在ViewGroup分发的过程中，会判断是否要进行拦截，这个过程系统留了接口让开发者自己去决定（也就是onInterceptTouchEvent函数）。如果没有拦截，会将事件逐个分发给TouchTarget链上的子View，不管这个子View是ViewGroup还是一般的View，只要其中一个消费了事件（返回true），最顶层的`ViewGroup ` 就返回true，回到Activity里，就是在第二条判断语句返回true，那后面的Activity自身的onTouchEvent函数也就不会执行了。
+最后我们回顾一下整个流程，Activity 的 dispatchTouchEvent 方法会调用整个窗口根节点 `DecorView` 的 superDispatchTouchEvent，而后者其实直接调用了 ViewGroup 的事件分发函数。在 ViewGroup 分发的过程中，会判断是否要进行拦截，这个过程系统留了接口让开发者自己去决定（也就是 onInterceptTouchEvent 函数）。如果没有拦截，会将事件逐个分发给 TouchTarget 链上的子 View，不管这个子 View 是 ViewGroup 还是一般的 View，只要其中一个消费了事件（返回 true ），最顶层的 `ViewGroup ` 就返回 true，回到 Activity 里，就是在第二条判断语句返回 true，那后面的 Activity 自身的 onTouchEvent 函数也就不会执行了。
 
-另外，在View的分发过程中，如果onTouch消费了事件，onClick也不会再执行。
+另外，在 View 的分发过程中，如果 onTouch 消费了事件，onClick 也不会再执行。
 
 ## 实际运用
 

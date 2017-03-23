@@ -10,7 +10,7 @@ categories: Android
 
 ### onMeasure()的两个参数
 
-Android 大大们自定义容器控件时，通常都会继承 ViewGroup 。继承后主要的工作便是覆写 onMeasure 和 onLayout 方法，重新制定布局文件测量以及显示子控件位置的策略。下面的 onMesure 函数摘自官网教程[http://developer.android.com/intl/zh-cn/reference/android/view/ViewGroup.html](http://developer.android.com/intl/zh-cn/reference/android/view/ViewGroup.html)
+Android 自定义容器控件时，通常都会继承 ViewGroup 。继承后主要的工作便是覆写 onMeasure 和 onLayout 方法，重新制定布局文件测量以及显示子控件位置的策略。下面的 onMesure 函数摘自官网教程[http://developer.android.com/intl/zh-cn/reference/android/view/ViewGroup.html](http://developer.android.com/intl/zh-cn/reference/android/view/ViewGroup.html)
 
 ``` java
     /**
