@@ -1,7 +1,7 @@
 ---
 title: Thinking in Java — 容器类深入研究
 date: 2016-09-25 10:22:52
-tags: [Java, 容器]
+tags: [Java]
 categories: Java
 ---
 

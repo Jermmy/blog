@@ -1,7 +1,7 @@
 ---
 title: Thinking in Java — 类型信息
 date: 2016-11-01 21:33:26
-tags: [Java, 类型信息]
+tags: [Java]
 categories: Java
 ---
 
