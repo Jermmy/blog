@@ -119,7 +119,7 @@ eg. GitHub、iOS、iPhone 6S、MacBook Pro。
 
 
 
-转载自：[每个人都需要的中文排版指南](http://mp.weixin.qq.com/s/k5DAmYtMrdSlK1jHsW-hrg)
+**转载自：[每个人都需要的中文排版指南](http://mp.weixin.qq.com/s/k5DAmYtMrdSlK1jHsW-hrg)**
 
 
 
