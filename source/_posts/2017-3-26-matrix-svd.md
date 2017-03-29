@@ -1,5 +1,7 @@
 ---
-title: 2017-3-26-matrix-svd
+title: 矩阵SVD分解
 date: 2017-03-26 10:17:52
-tags:
+tags: [Linear Algebra]
+categories: Linear Algebra
+mathjax: true
 ---
