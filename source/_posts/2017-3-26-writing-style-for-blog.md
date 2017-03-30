@@ -5,7 +5,7 @@ tags: 写作
 categories: 杂谈
 ---
 
-本文转载自「stormzhang」在微信公众号「AndroidDeveloper」发表的关于写作排版的文章。看完后，再对比「Google黑板报」以及其他一些大V的文章排版后，发现原来好排版的套路都是一样的，在此记录一波。
+（本文转载自「stormzhang」在微信公众号「AndroidDeveloper」发表的关于写作排版的文章。看完后，再对比「Google黑板报」以及其他一些大V的文章排版后，发现原来好排版的套路都是一样的，在此记录一波。）
 
 <!--more-->
 
