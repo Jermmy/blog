@@ -17,7 +17,7 @@ categories: [杂谈]
 
 就在另一天，我正和我的一个学生在 Google Hangout 上谈论这个相同的话题。
 
-在谈话的最后，这是他跟我说的：
+在谈话的最后，他跟我说：
 
 > “Ken，这是我收到过的最单一无聊的编程建议。但我还是很开心你告诉了我。”
 
@@ -37,4 +37,22 @@ categories: [杂谈]
 
 技术会不断革新。新的编程语言和框架将会一直出现。你不应该将你的时间花费在追逐流行趋势上。
 
-相反地，你应该将你的时间花在成长为一个自给自足的开发者，也就是那些在新事物出现时能够学习新事物的人。
+相反地，你应该将你的时间花在成长为一个自给自足的开发者上，也就是那些在新事物出现时能够有能力学习新事物的人。
+
+为什么？
+
+市场变了。没人能够确切地知道下一个编程大事件是什么。
+
+不变的是，市场永远需要能够做到这些的人：
+
++ 有效地使用 Google 搜索
++ 解决他们遇到的问题
++ 快速地将事物搞清楚
+
+将自己变成善于将事物搞清楚的人，那么你将永远被别人所需要。
+
+如果你想在今年变成一个被人所需要的开发者，但不确定从哪开始，请查看 [The Coder's Compass](http://stories.thefirehoseproject.com/coders-compass/learn-to-code?utm_source=quora&utm_medium=quora_ken_answer&utm_campaign=quora_answers)，这是一个我帮助构建的工具，以帮助有抱负的开发者找到他们的道路。
+
+
+
+**原文：[What is the most valuable programming skill at the moment?](https://www.quora.com/What-is-the-most-valuable-programming-skill-at-the-moment)**
