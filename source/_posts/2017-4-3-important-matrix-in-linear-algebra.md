@@ -6,7 +6,7 @@ categories: Linear Algebra
 mathjax: true
 ---
 
-老实说，我觉得线性代数可能是大学里最重要的数学，没有之一。无论是机器学习、计算机视觉，抑或是计算机图形学等等，都需要靠线性代数这门工具作支撑。这篇文章主要总结以下线性代数中那些很重要的矩阵们。
+老实说，我觉得线性代数可能是大学里最重要的数学，没有之一。无论是机器学习、计算机视觉，抑或是计算机图形学等等，都需要靠线性代数这门工具作支撑。这篇文章主要总结一下线性代数中那些很重要的矩阵们。
 
 ### 单位正交矩阵(orthonormal matrix)
 单位正交矩阵，顾名思义，就是矩阵的列由两两相互正交的单位向量组成。用数学语言表达为（以 3 * 3 得矩阵为例）：
@@ -19,6 +19,7 @@ $U=\begin{bmatrix} \mathbf u_1 & \mathbf u_2 & \mathbf u_3 \end{bmatrix}$
 这个矩阵有什么用处呢？它隐藏着一个很重要的性质：$U^TU=I$。这个性质的证明也很简单，如下所示：
 
 $U^TU=\begin{bmatrix} \mathbf u_1^T \\\\ \mathbf u_2^T \\\\ \mathbf u_3^T \end{bmatrix} \begin{bmatrix} \mathbf u_1 &  \mathbf u_2 &  \mathbf u_3  \end{bmatrix}$
+
 $=\begin{bmatrix} \mathbf u_1^T\mathbf u_1 & \mathbf u_1^T\mathbf u_2 & \mathbf u_1^T\mathbf u_3 \\\\ \mathbf u_2^T\mathbf u_1 & \mathbf u_2^T\mathbf u_2 & \mathbf u_2^T\mathbf u_3 \\\\ \mathbf u_3^T\mathbf u_1 & \mathbf u_3^T\mathbf u_2 & \mathbf u_3^T\mathbf u_3  \end{bmatrix}$
 
 结合前面的数学定义，很容易得到：$U^TU=I$
