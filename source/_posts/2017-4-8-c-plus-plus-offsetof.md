@@ -56,5 +56,5 @@ int main(int argc, const char * argv[]) {
 
 ### 参考
 
-+ [c++官网](http://www.cplusplus.com/reference/cstddef/offsetof/)
++ [C++官网](http://www.cplusplus.com/reference/cstddef/offsetof/)
 + [C语言字节对齐问题详解](http://www.cnblogs.com/clover-toeic/p/3853132.html)

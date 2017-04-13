@@ -15,6 +15,9 @@ categories: [杂谈]
 
 （图片来自 [collider.com](http://collider.com/matt-damon-on-the-martian-his-break-from-acting-and-more/)）
 
+<!--more-->
+
+
 就在某天，我正和我的一个学生在 Google Hangout 上谈论这个话题。
 
 在谈话结束时，他跟我说：
