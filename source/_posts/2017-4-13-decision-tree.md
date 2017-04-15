@@ -144,13 +144,11 @@ CART 按照这样的方式，不断挑选特征分裂子数，直到剩下的子
 
 #### 回归树的生成
 
+「未完待续」
 
 
 
 
-### 延伸
-
-我们前面讨论的这些例子中，属性都是离散变量，而且构建出来的决策树也只能用于分类。而事实上，决策树对于连续的属性同样适用，而且在回归问题上也存在大量应用。关于这一点，下次继续补充。
 
 
 
@@ -159,5 +157,7 @@ CART 按照这样的方式，不断挑选特征分裂子数，直到剩下的子
 + [算法杂货铺——分类算法之决策树(Decision tree)](http://www.cnblogs.com/leoo2sk/archive/2010/09/19/decision-tree.html)
 + [ID3 algorithm](https://en.wikipedia.org/wiki/ID3_algorithm)
 + [C4.5 algorithm](https://en.wikipedia.org/wiki/C4.5_algorithm)
-+ [决策树（主要针对CART）的生成与剪枝](http://www.cnblogs.com/lvlvlvlvlv/p/5856986.html)
 + [CART算法学习及实现](http://www.cnblogs.com/happyblog/archive/2011/09/30/2196901.html)
++ [分类与回归树（classification and regression tree，CART）](http://idatamining.net/blog/?p=698)
++ [CART分类与回归树 学习笔记](http://www.cnblogs.com/liuwu265/p/4688403.html)
++ [CART之回归树构建](https://cethik.vip/2016/09/21/machineCAST/)
