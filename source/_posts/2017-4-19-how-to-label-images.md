@@ -49,7 +49,7 @@ image_tag = {0: '3', 1: '5', 2: '6', 3: '7', 4: '8', 5: 'a', 6: 'c', 7: 'e', 8: 
 
 要训练分类器，挑选样本是必须的，我从分割的图片中，随机挑出一两百张，将它们分类到相应的目录内：
 
-![屏幕快照 2017-04-19 下午10.29.55](/images/2017-4-19/预分类数据/屏幕快照 2017-04-19 下午10.29.55.png)
+![屏幕快照 2017-04-19 下午10.29.55](/images/2017-4-19/屏幕快照 2017-04-19 下午10.29.55.png)
 
 然后，我需要一个函数来读取这些文件夹的数据，方便之后继续训练。
 
@@ -232,7 +232,7 @@ def test_image(image_folder, result_folder, model):
 
 如果运气好的，这个初步训练好的 SVM 已经稍微有点「聪明」了。看看我得到的分类结果：
 
-![good result](/Users/xyz/GitCode/jermmy.github.io/source/images/2017-4-19/good result.png)
+![good result](/images/2017-4-19/good result.png)
 
 
 
@@ -240,7 +240,7 @@ def test_image(image_folder, result_folder, model):
 
 当然，肯定有分的不好的情况：
 
-![bad result](/Users/xyz/GitCode/jermmy.github.io/source/images/2017-4-19/bad result.png)
+![bad result](/images/2017-4-19/bad result.png)
 
 对于这种，就是发挥你眼里的时候了。基本上，之后所有的工作都是在这一堆类似的图片里面找不同。当然，你要相信这种情况会越来越少，因为随着样本逐渐增多，SVM 的训练效果会越来越好。如果越到后面效果越差，程序员，请你不要怀疑，一定是你的代码出问题了。
 
