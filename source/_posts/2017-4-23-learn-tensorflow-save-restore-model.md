@@ -1,6 +1,6 @@
 ---
 title: TensorFlow学习笔记：保存和读取模型
-date: 2017-04-22 14:09:34
+date: 2017-04-23
 tags: [TensorFlow]
 categories: TensorFlow
 ---
