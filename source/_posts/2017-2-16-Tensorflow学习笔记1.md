@@ -1,11 +1,11 @@
 ---
-title: Tensorflow学习笔记（1）
+title: TensorFlow学习笔记（1）
 date: 2017-02-16 23:18:54
-tags: [Tensorflow, 深度学习]
-categories: Tensorflow
+tags: [TensorFlow, 深度学习]
+categories: TensorFlow
 ---
 
-最近跟着 Udacity 上的[深度学习课程](https://cn.udacity.com/course/deep-learning--ud730)学了一丢丢 Tensorflow，这里记录一下用  tensorflow搭建简单 CNN 网络的代码模板。
+最近跟着 Udacity 上的[深度学习课程](https://cn.udacity.com/course/deep-learning--ud730)学了一丢丢 TensorFlow，这里记录一下用  TensorFlow搭建简单 CNN 网络的代码模板。
 
 <!--more-->
 
