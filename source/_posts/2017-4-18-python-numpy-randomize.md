@@ -1,15 +1,17 @@
 ---
 title: python numpy 三行代码打乱训练数据
 date: 2017-04-18 10:39:00
-tags: [python, numpy]
-categories: python
+tags: [Python, numpy]
+categories: Python
 ---
 
 今天发现一个用 `numpy` 随机化数组的技巧。
 
 ### 需求
 
-我有两个数组（ ndarray ），train_datasets 和 train_labels。其中，train_datasets 的每一行和 train_labels 是一一对应的。现在我要将数组打乱并用于训练，打乱后要求 两者的行与行之间必须保持原来的对应关系。
+我有两个数组（ ndarray ）：train_datasets 和 train_labels。其中，train_datasets 的每一行和 train_labels 是一一对应的。现在我要将数组打乱并用于训练，打乱后要求两者的行与行之间必须保持原来的对应关系。
+
+<!--more-->
 
 ### 实现
 

@@ -1,8 +1,8 @@
 ---
 title: C++ offsetof
 date: 2017-04-08 11:49:40
-tags: [c++]
-categories: c++
+tags: [C++]
+categories: C++
 ---
 
 今天写 OpenGL 时，发现一个 C/C++ 中可能很实用但出现频率较低的函数： `offsetof(type, member)`。

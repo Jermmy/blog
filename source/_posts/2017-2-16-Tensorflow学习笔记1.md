@@ -5,7 +5,7 @@ tags: [Tensorflow, 深度学习]
 categories: Tensorflow
 ---
 
-最近跟着Udacity上的[深度学习课程](https://cn.udacity.com/course/deep-learning--ud730)学了一丢丢Tensorflow，这里记录一下用tensorflow搭建简单CNN网络的代码模板。
+最近跟着 Udacity 上的[深度学习课程](https://cn.udacity.com/course/deep-learning--ud730)学了一丢丢 Tensorflow，这里记录一下用  tensorflow搭建简单 CNN 网络的代码模板。
 
 <!--more-->
 
