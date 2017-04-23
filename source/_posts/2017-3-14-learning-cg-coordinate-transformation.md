@@ -1,14 +1,14 @@
 ---
 title: 坐标系统之间的转换
 date: 2017-03-14
-tags: [Computer Graphics, Linear Algebra, OpenGL]
-categories: [Computer Graphics]
+tags: [计算机图形学, 线性代数, OpenGL]
+categories: [计算机图形学]
 mathjax: true
 ---
 
 **（阅读本文需要有线性代数基础。）**
 ### 概要
-这篇文章中，我们来聊聊OpenGL中的坐标系统以及它们之间的转换。
+这篇文章中，我们来聊聊 OpenGL 中的坐标系统以及它们之间的转换。
 ### 坐标变换原理
 首先，我们需要运用一点线性代数的知识，了解不同坐标系统变换的原理。
 由于本文针对的是三维坐标，所以讨论的空间是$R^3$空间。

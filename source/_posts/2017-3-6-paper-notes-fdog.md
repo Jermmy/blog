@@ -1,8 +1,8 @@
 ---
 title: 论文笔记：Flow-Based Image Abstraction
 date: 2017-03-06 22:21:20
-tags: [paper, Computer Vision]
-categories: [Computer Vision]
+tags: [论文, 计算机视觉]
+categories: [计算机视觉]
 mathjax: true
 
 ---

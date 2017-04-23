@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Android-自定义控件之FlowLayout(三)
-tags: [Android, NDK]
+tags: [Android]
 categories: Android
 ---
 

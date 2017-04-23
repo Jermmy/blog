@@ -1,5 +1,5 @@
 ---
-title: TensorFlow学习笔记（1）
+title: TensorFlow学习笔记：搭建CNN模型
 date: 2017-02-16 23:18:54
 tags: [TensorFlow, 深度学习]
 categories: TensorFlow

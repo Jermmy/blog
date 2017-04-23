@@ -1,8 +1,8 @@
 ---
 title: 协方差矩阵
 date: 2017-03-19 09:41:39
-tags: [Linear Algebra, Probability Statistics]
-categories: Linear Algebra
+tags: [线性代数, 概率统计]
+categories: 线性代数
 mathjax: true
 
 ---

@@ -1,8 +1,8 @@
 ---
 title: 决策树生成算法
 date: 2017-04-13 12:10:03
-tags: [Machine Learning, Decision Tree]
-categories: Machine Learning
+tags: [机器学习, 决策树]
+categories: 机器学习
 mathjax: true
 ---
 

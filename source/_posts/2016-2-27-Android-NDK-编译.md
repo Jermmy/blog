@@ -1,6 +1,6 @@
 ---
 title: Android NDK编译
-tags: Android
+tags: [Android, NDK]
 categories: Android
 ---
 

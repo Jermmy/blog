@@ -3,11 +3,12 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 折戟沉沙
+title: 吾日三省吾身
 subtitle:
 description: In me the tiger sniffs the rose.
 author: Jermmy
 language: zh-Hans
+#language:
 timezone:
 avatar: https://avatars2.githubusercontent.com/u/7380327?v=3&u=00ca25dac0efb33afc8eb5a84eae545c398f0c00&s=140
 
@@ -64,6 +65,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
+#theme: yilia
 theme: next
 
 # Plugins
@@ -123,4 +125,33 @@ since: 2016
 
 # =============================================================================
 # End NexT Theme configuration
+# =============================================================================
+
+
+# =============================================================================
+# Yilia Theme
+# =============================================================================
+
+
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: false
+    tags: true
+
+# =============================================================================
+# End Yilia Theme
 # =============================================================================

@@ -1,8 +1,8 @@
 ---
 title: Bagging, Boosting, Bootstrap
 date: 2017-04-12 10:19:08
-tags: [Machine Learning]
-categories: [Machine Learning]
+tags: [机器学习]
+categories: [机器学习]
 ---
 
 Bagging 和 Boosting 都属于机器学习中的元算法（meta-algorithms）。所谓元算法，简单来讲，就是将几个较弱的机器学习算法综合起来，构成一个更强的机器学习模型。这种「三个臭皮匠，赛过诸葛亮」的做法，可以帮助减小方差（over-fitting）和偏差（under-fitting），提高准确率。

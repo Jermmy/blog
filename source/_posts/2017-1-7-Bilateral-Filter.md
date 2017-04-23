@@ -1,8 +1,8 @@
 ---
 title: Bilateral Filter
 date: 2017-01-07
-tags: Computer Vision
-categories: Computer Vision
+tags: 计算机视觉
+categories: 计算机视觉
 mathjax: true
 ---
 

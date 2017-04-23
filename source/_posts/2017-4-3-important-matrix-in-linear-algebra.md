@@ -1,8 +1,8 @@
 ---
 title: 线性代数中的重要矩阵
 date: 2017-04-03
-tags: [Linear Algebra]
-categories: Linear Algebra
+tags: [线性代数]
+categories: 线性代数
 mathjax: true
 ---
 

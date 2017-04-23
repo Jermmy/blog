@@ -1,8 +1,8 @@
 ---
 title: 如何「优雅」地标数据
 date: 2017-04-19 20:56:02
-tags: [Machine Learning, Tag]
-categories: Machine Learning
+tags: [机器学习, 标数据]
+categories: 机器学习
 ---
 
 最近想做一个识别验证码的程序。目标其实很简单，就是识别出某网站验证码的字母和数字。
