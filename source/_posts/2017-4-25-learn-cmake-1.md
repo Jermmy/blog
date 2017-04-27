@@ -1,5 +1,5 @@
 ---
-title: cmake学习笔记（1）
+title: cmake学习笔记(1): HelloWorld
 date: 2017-04-25 22:26:01
 tags: [工具, cmake]
 categories: 工具
@@ -35,14 +35,17 @@ int main(int argc, char *argv[]) {
 ```cmake
 cmake_minimum_required(VERSION 2.8.9)
 project (hello)
+# add source file to compile
 add_executable(hello helloworld.cpp)
 ```
 
 作为第一个 cmake 程序，我们要分析一下上面三条简单的命令：
 
-+ 第一条命令指明 cmake 的最低版本，这个命令的功能不言而喻，一般来说照抄就可以了；
-+ 第二条命令设置了项目的名字；
-+ 第三条命令比较重要。`add_executable()` 命令的第一个参数表示我们最终编译出来的程序的名称，第二个参数是编译所需要的代码文件。
++ 第一条命令 `cmake_minimum_required()` 指明 cmake 的最低版本，这个命令的功能不言而喻，一般来说照抄就可以了；
++ 第二条命令 `project()` 设置了项目的名字；
++ 第三条命令比较重要。`add_executable()` 命令的第一个参数表示我们最终编译出来的程序的名称，第二个参数是编译所需要的代码文件。注意，参数之间有空格隔开。
+
+由于 CMakeList.txt 也属于脚本文件，所以打注释的方式和 Makefile 一样，在命令前加上「#」。
 
 下面，我们用 cmake 来编译这个 HelloWorld 程序。
 
