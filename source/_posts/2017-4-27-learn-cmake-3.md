@@ -1,5 +1,5 @@
 ---
-title: cmake学习笔记(3): 编译和引用链接库
+title: cmake学习笔记(3)——编译和引用链接库
 date: 2017-04-26 15:44:39
 tags: [工具, cmake]
 categories: 工具

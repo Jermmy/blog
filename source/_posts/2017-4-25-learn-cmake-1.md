@@ -1,5 +1,5 @@
 ---
-title: cmake学习笔记(1): HelloWorld
+title: cmake学习笔记(1)——HelloWorld
 date: 2017-04-25 22:26:01
 tags: [工具, cmake]
 categories: 工具
