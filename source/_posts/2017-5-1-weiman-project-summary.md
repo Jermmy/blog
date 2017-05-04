@@ -21,37 +21,37 @@ categories: Android
 
 ### Android 端踩坑总结
 
-#### 1. 数据库
+#### 数据库
 
-Android 端的数据库采用的是 SQLite，主要用来保存 SVG 素材，后期为了素材加密又采用了 [sqlcipher](https://github.com/sqlcipher/android-database-sqlcipher) 。我之前对数据库的使用很少，因此这个项目算是正儿八经地使用数据库。其中遇到不少小问题，比如如何存储数组等。当然，最重要的一点是，数据库 `SQLiteOpenHelper` 要做成单例类，否则多线程读取数据库会导致数据库 lock。具体可以看这个链接http://stackoverflow.com/questions/18673994/sqliteexception-error-code-5-database-is-locked-when-accessing-contentprovide。而且，选择单例类，能够有效避免数据库因为只 open 而没有 close 导致的内存泄漏问题，可以看另一个链接[Correctly Managing your SQLite Database](http://www.androiddesignpatterns.com/2012/05/correctly-managing-your-sqlite-database.html)。
+Android 端的数据库采用的是 SQLite，主要用来保存 SVG 素材，后期为了素材加密又采用了 [sqlcipher](https://github.com/sqlcipher/android-database-sqlcipher) 。我之前对数据库的使用很少，因此这个项目算是正儿八经地使用数据库。其中遇到不少小问题，比如如何存储数组等。当然，最重要的一点是，数据库 `SQLiteOpenHelper` 要做成单例类，否则多线程读取数据库会导致数据库 lock。具体可以看这个链接[SQLiteException: error code 5: database is locked. When accessing ContentProvider from AsyncTask](http://stackoverflow.com/questions/18673994/sqliteexception-error-code-5-database-is-locked-when-accessing-contentprovide)。而且，选择单例类，能够有效避免数据库因为只 open 而没有 close 导致的内存泄漏问题，可以看另一个链接[Correctly Managing your SQLite Database](http://www.androiddesignpatterns.com/2012/05/correctly-managing-your-sqlite-database.html)。
 
-#### 2. 单例模式的内存泄漏问题
+#### 单例模式的内存泄漏问题
 
 这个主要是在单例类中传入 `Context` 引起的，解决办法是将传入的 `Activity` 换成 `Application`。
 
-#### 3. SVG 文件的存储
+#### SVG 文件的存储
 
 五官素材都是以 SVG 文件的形式存在，文件数目比较多，每个文件大小大概在 1k ～ 2k。我考虑了两张方案，一种是直接以文件形式存放，再在数据库存放素材文件路径；另一种方案是将文件内容以 BLOB 格式写入。通过开多线程读取多个 SVG 素材并统计读取时间，最后我发现存数据库 BLOB 的方案效率较高，所以选择 BLOB 的方式存储。当然，由于素材数量很多，需要先压缩再存入数据库。而关于压缩算法，我从众多常用的压缩策略中，选择了压缩比更大的 Deflate 算法，时间上虽然开销略大，但总体还能接受（渲染头像的时候可以在 1～2s 内出现）。这里提供当时参考的链接http://www.importnew.com/14410.html。
 
-#### 4. Java、JS通信
+####  Java、JS通信
 
 这个应用里面用到 JS 的地方主要集中在 WebView 渲染部分。虽然也只是简单调用 JS 的函数，并传一些参数什么的，但为了统一我还是用一个类来管理这些函数。后来需要导出 SVG 素材的时候，需要通过 JS 获得 HTML 中 SVG 标签的内容，这一步比较耗时，还需要给 JS 注册回调函数。这时我才意识到，随着交互的东西越来越多，一个通用的交互框架将变得十分必要。当然，后来由于项目进展受阻，也就不了了之了。
 
-#### 5. WebView的各种小问题
+#### WebView的各种小问题
 
 WebView 的问题几乎是最吃力不讨好的。熟悉它的朋友都知道，Android 的 WebView 一直有内存泄漏问题，当然我最后找到一个最简单粗暴的方法，暂时解决了它。那就是不在 XML 中声明 WebView，而是在 Java 中实例化，并传入 Application 作为 Context。在网上查资料的过程中，我发现，微信使用了一个 tool 进程来管理跟 WebView 相关的东西，而开多进程会导致数据通信十分麻烦，而且，由于我的数据类是单例的（这样可以加快渲染速度），会导致传参更加复杂，也就果断放弃多进程的方案了。
 
-#### 6. SurfaceView如何做放大镜
+#### SurfaceView如何做放大镜
 
 `SurfaceView` 涉及到 Android 很低层的机制了。它跟一般的 `View` 有一个比较明显的区别，就是我们没法得到 `SurfaceView` 的帧。在制作放大镜的时候，帧的获取又是必须的，结果导致 `SurfaceView` 的放大镜实现不是那么直接。在搜了一些资料后，我也找到了一种最常见的实现思路，具体可见另一篇博文[Android：在SurfaceView上做放大镜效果](http://jermmy.xyz/2016/10/23/2016-10-23-Android-SurfaceView%E5%81%9A%E6%94%BE%E5%A4%A7%E9%95%9C%E6%95%88%E6%9E%9C/)。
 
-#### 7. JNI的使用
+#### JNI的使用
 
 之前一直都很想学一下 JNI，这次终于有了这个机会。其实 JNI 也没什么神秘的，无非是先用 C/C++ 实现好核心功能后，再通过 JNI 接口和 Java 通信。不过真正写代码的时候，Debug 是一个很蛋疼的问题，因为 Android Studio 对 JNI 的支持还不是很好（当然，写这篇文章的时候 Google 已经增强了这方面的功能），当时为了加快调试的速度，我自己也找了一些[技巧](http://jermmy.xyz/2016/07/08/2016-7-8-Shell%E5%B7%A5%E5%85%B7-shell%E8%84%9A%E6%9C%AC%E8%B7%91adb%E5%91%BD%E4%BB%A4/)。
 
 JNI 虽然看似酷炫，却未必有卵用。我觉得它最大的好处是跨平台，毕竟目前主流的操作系统（Android、ios等）都是对 C/C++ 很友好的。但对于一般的程序员，还真的没必要用到 JNI。原因除了 C/C++ 比 Java 更容易出错外，还在于它并不一定能给你带来性能上的提升。不过，如果技术真的屌，倒是可以把一些算法模块写在 C/C++ 里面，这样代码被反编译的可能性也更小。如果有人想直接调用你的 .so 库，你可以在 C/C++ 里面判断一下应用的打包密钥，这样，你的核心算法除了你的应用，其他人都动不了了。
 
-#### 8. SVG导出成位图以及动画相关
+#### SVG导出成位图以及动画相关
 
 虽然我们的应用是针对矢量图的漫画制作，但业界主流平台支持的还是位图（PNG、JPG、GIF）等，因此，如果真的想在手机上查看或者在其他平台上传播头像，必须先把 SVG 导出成位图。我在 github 上搜了一下，能够完美支持 SVG 的库其实不多，后来找到一个最新的 [androidsvg](https://github.com/BigBadaboom/androidsvg)，虽然不是所有标签都支持，但基本满足要求了，渲染速度在图片尺寸不大的前提下还是能接受的。另外，微信对 SVG 的[研究](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0909/3433.html)似乎也很有参考价值，不过，也仅仅供参考而已。
 
@@ -59,7 +59,7 @@ JNI 虽然看似酷炫，却未必有卵用。我觉得它最大的好处是跨�
 
 SVG 的另一个坑是动画。SVG 的动画只在 Web 世界里通用，一旦离开浏览器的引擎，就完全跑不起来了。不管是 SVG 本身提供的 animation，还是基于 CSS 的动画，抑或是通过 Js 控制，都属于一种「解释型」的动画。而主流的平台其实还是倾向于帧动画的（主要是 GIF）。当时花了很多时间寻找一座能沟通这两种动画的桥梁（主要是寻找有没有类似的 Js 库），后来我觉得这就好像要把两个完全不同的流派统一起来，理论上可行，实际上忒难，最后也就放弃了。
 
-#### 9. 其他问题
+#### 其他问题
 
 除了以上这些问题外，这个应用的架构方面也存在很多不足，灵活性方面其实很差。虽然我将算法的核心部分以及 Model 层都封装成全局的控制类，但后来需要添加素材或做一些修改的时候，发现需要改动的地方还是很多，改起来 bug 不断。我觉得一个好的架构其实就是一个改动很轻松，也不容易出 bug 的设计，所以这个应用的结构上是存在很大短板的。
 
