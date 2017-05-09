@@ -1,7 +1,7 @@
 ---
 title: TensorFlow学习笔记：保存和读取模型
 date: 2017-04-23
-tags: [TensorFlow]
+tags: [TensorFlow, 深度学习]
 categories: TensorFlow
 ---
 
