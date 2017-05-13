@@ -2,8 +2,8 @@
 layout: post
 title: 从贝塞尔曲线反推控制点
 date: 2016-08-01 23:17:19
-tags: SVG
-categories: SVG
+tags: [SVG,计算机图形学]
+categories: 计算机图形学
 mathjax: true
 ---
 

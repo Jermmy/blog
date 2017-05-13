@@ -1,8 +1,8 @@
 ---
 layout: post 
 title: 利用SVG中的控制点绘制贝塞尔曲线
-tags: SVG
-categories: SVG
+tags: [SVG,计算机图形学]
+categories: 计算机图形学
 mathjax: true
 date: 2016-7-17
 ---
