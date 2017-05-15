@@ -73,7 +73,7 @@ sigmoid 函数也可以看作是对 step 函数的平滑，step 函数如下：
 
 事实上，正是 sigmoid 函数这种平滑的特性起了关键作用，而函数的具体形式则无关紧要。在本书后面的章节中，还会介绍其他函数来代替 sigmoid，这类函数有个学名叫**激活函数 (activation function)**。从数学上讲，函数平滑意味着函数在定义域内是可导的，而且导数有很好的数学特性（比如上面提到的线性关系），step 函数虽然分段可导，但它的导数值要么一直是 0，要么在突变点不可导，所以它不具备平滑性。
 
-### The architecture of neural networks
+### Learning with gradient descent
 
 
 
