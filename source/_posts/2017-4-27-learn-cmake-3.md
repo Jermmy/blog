@@ -83,6 +83,30 @@ Install the project...
 
 在类 Unix 系统中，只要链接库在 `/usr/local/lib` 或 `/usr/lib` 目录下，我们就可以在链接时用 `-l` 来链接这些库了。
 
+当然，上面的程序很简单，没有用到一些依赖库。如果动态库本身需要依赖其他外部库，那我们需要将这些依赖库的路径信息包含进去。
+
+cmake 提供了一个 `find_package()` 指令来帮助搜寻这些依赖库。比如，如果我们需要引用到 OpenGL，可以加入以下几条命令：
+
+```shell
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+```
+
+然后在 `add_library()` 之后链接库文件：
+
+```shell
+target_link_libraries(hello ${OPENGL_LIBRARIES})
+```
+
+不过，`find_package()`并不保证一定能找到这个依赖库，这个时候就需要手动添加文件路径了，比如，如果需要用到 `freeglut` 作为依赖，我们可以设置 `freeglut` 的库文件位置（类 Unix 系统一般都在 `/usr/local/include` 和 `/usr/local/lib`下），其他操作和 `find_package()` 一样：
+
+```shell
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+...
+target_link_libraries(hello glut)
+```
+
 ### 编译静态链接库(.a) 
 
 讲完如何构建动态链接库，下面依葫芦画瓢，看看如何构建静态链接库。
