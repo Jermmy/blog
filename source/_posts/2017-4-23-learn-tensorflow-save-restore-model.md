@@ -133,7 +133,7 @@ with tf.Session() as sess:
 
 这段代码是本文的关键，我们先通过 `tf.train.Saver()` 构造一个 `Saver` 对象，注意，这一步要在 `Session` 启动之后执行，否则会抛异常 `ValueError("No variables to save")`，至少 v1.0 是这样。
 
-通过 `Saver`，我们可以在模型训练完之后，将参数保存下来。`Saver` 保存数据的方法十分简单，只要将 `session` 和 文件路径传入 `save` 函数即可：`saver.save(session, model_folder + "/" + model_file)`。
+通过 `Saver`，我们可以在模型训练完之后，将参数保存下来。`Saver` 保存数据的方法十分简单，只要将 `session` 和文件路径传入 `save` 函数即可：`saver.save(session, model_folder + "/" + model_file)`。
 
 如果我们一开始想载入本地的模型文件，而不是让 TF 自动初始化训练，则可以通过 `Saver` 的 `restore` 函数读取模型文件，文件路径需要和之前保存的文件路径一致。注意，如果是通过这种方式初始化变量，则不能再调用 `tf.global_variables_initializer()` 函数。之后，训练或预测的代码不需要改变，TensorFlow 会自动根据模型文件，将你的模型参数初始化。
 
