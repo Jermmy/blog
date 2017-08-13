@@ -22,11 +22,19 @@ mathjax: true
 
 下图是训练过程中 cost 的变化：
 
-![overfitting1](/images/2017-7-22/overfitting1.png)
+<center>
+
+<img src="/images/2017-7-22/overfitting1.png" width="520px">
+
+</center>
 
 可以看到，cost 是在逐渐变小的。不过这是否意味着网络被训练得越来越好呢？我们来看看每一轮的准确率情况：
 
-![overfitting1](/images/2017-7-22/overfitting2.png)
+<center>
+
+<img src="/images/2017-7-22/overfitting2.png" width="520px">
+
+</center>
 
 在大概 280 轮训练之前，网络的准确率确实在缓慢上升，但之后，我们看到，准确率基本没有大的改进，始终维持在 82.20 上下。这和 cost 下降的情况是背道而驰的。这种看似得到训练，其实结果很差的情况，就是**过拟合（overfitting）**。
 
@@ -36,13 +44,21 @@ mathjax: true
 
 下图是训练过程中，在测试数据上的 cost（之前是训练数据上的）：
 
-![overfitting1](/images/2017-7-22/overfitting3.png)
+<center>
+
+<img src="/images/2017-7-22/overfitting3.png" width="520px">
+
+</center>
 
 图中，cost 在前 15 轮训练中逐渐改善，但之后却又开始上升。这是网络出现过拟合的信号之一。
 
 另一个过拟合的信号请看下图：
 
-![overfitting1](/images/2017-7-22/overfitting4.png)
+<center>
+
+<img src="/images/2017-7-22/overfitting4.png" width="520px">
+
+</center>
 
 这是训练集上的准确率。可以看出，网络的准确率一路上升直到 100%。有人可能会疑惑，准确率高不是好事吗？确实，准确率高是我们需要的，但必须是测试集上的准确率。而训练集上的高准确率，带来的结果未必是好事。它可能意味着，网络在训练数据上「钻了牛角尖」。它并不是学习出如何识别手写体数字，而是仅仅记住了训练数据长什么样。换句话说，它在训练数据上拟合太过了。
 
@@ -66,7 +82,11 @@ mathjax: true
 
 ##### 增加训练数据
 
-![overfitting_full](/images/2017-7-22/overfitting_full.png)
+<center>
+
+<img src="/images/2017-7-22/overfitting_full.png" width="520px">
+
+</center>
 
 上图是用所有训练数据进行训练时，训练集和测试集上准确率的变化情况。
 
@@ -139,15 +159,27 @@ $$
 
 现在，在 1000 个训练样本的例子中，我们加入正则化项（$\lambda$ 设为0.1，其他参数和之前一样），并看看训练的结果如何：
 
-![regularized1](/images/2017-7-22/regularized1.png)
+<center>
 
-![regularized2](/images/2017-7-22/regularized2.png)
+<img src="/images/2017-7-22/regularized1.png" width="520px">
+
+</center>
+
+<center>
+
+<img src="/images/2017-7-22/regularized2.png" width="520px">
+
+</center>
 
 可以看出，准确率较之前的 82.27% 有了明显的提高，也就是说，正则化确实在一定程度上抑制了过拟合。
 
 现在，我们用所有的 50000 张图片训练，看看正则化能否起作用（这里我们设置 $\lambda$ 为 5.0，因为 n 由原来的 1000 变为 50000，如果 $\lambda$ 的值和之前一样，那么 $\frac{\eta \lambda}{n}$ 的值就会小很大，weight decay 的效果就会大打折扣）。
 
-![regularized_full](/images/2017-7-22/regularized_full.png)
+<center>
+
+<img src="/images/2017-7-22/regularized_full.png" width="520px">
+
+</center>
 
 可以看到，准确率上升到 96.49%，而且测试集准确率和训练集准确率之间的差距也进一步缩小了。
 
@@ -192,11 +224,19 @@ dropout 和 L1、L2 存在很大区别，它不会修改代价函数，相反地
 
 假设我们要训练如下的网络：
 
-![tikz30](/images/2017-7-22/tikz30.png)
+<center>
+
+<img src="/images/2017-7-22/tikz30.png">
+
+</center>
 
 在梯度下降时，dropout 会随机删除隐藏层中一半的神经元，如下（虚线表示删除的神经元）：
 
-![tikz31](/images/2017-7-22/tikz31.png)
+<center>
+
+<img src="/images/2017-7-22/tikz31.png">
+
+</center>
 
 让网络在这种「残缺」的状态下训练。
 
@@ -212,11 +252,19 @@ dropout 的思想可以这么理解：假设我们按照标准模式 (没有 dro
 
 为了解训练数据集对结果的影响，我们准备做几组实验。每组实验的训练集大小不同，训练的轮数和正则化的参数 $\lambda$ 也会做相应调整，其他参数则保持不变。
 
-![more_data](/images/2017-7-22/more_data.png)
+<center>
+
+<img src="/images/2017-7-22/more_data.png" width="520px">
+
+</center>
 
 正如图中所示，训练数据量的增加有助于提高分类的准确率。图中的结果看似网络已经趋于收敛，但换成对数坐标后，这种效果就更加明显了：
 
-![more_data_log](/images/2017-7-22/more_data_log.png)
+<center>
+
+<img src="/images/2017-7-22/more_data_log.png" width="520px">
+
+</center>
 
 因此，如果我们能将数据集扩大到几十万几百万，准确率应当能够持续上升。
 
@@ -224,11 +272,19 @@ dropout 的思想可以这么理解：假设我们按照标准模式 (没有 dro
 
 例如，我们有一张 MNIST 的训练图片：
 
-![more_data_5](/images/2017-7-22/more_data_5.png)
+<center>
+
+<img src="/images/2017-7-22/more_data_5.png" width="120px">
+
+</center>
 
 旋转 15º 后，我们就得到另一张样本图片：
 
-![more_data_rotated_5](/images/2017-7-22/more_data_rotated_5.png)
+<center>
+
+<img src="/images/2017-7-22/more_data_rotated_5.png" width="120px">
+
+</center>
 
 这两张图片肉眼都可以看出是「5」，但在像素级别上，它们差别很大，因此不失为不错的训练样本。重复这种做法（旋转平移等等操作），我们可以获得数倍于原训练数据集大小的样本。
 
