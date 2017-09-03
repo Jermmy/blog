@@ -12,8 +12,9 @@ mathjax: true
 
 ### 单位正交矩阵(orthonormal matrix)
 单位正交矩阵，顾名思义，就是矩阵的列由两两相互正交的单位向量组成。用数学语言表达为（以 3 * 3 得矩阵为例）：
-
-$U=\begin{bmatrix} \mathbf u_1 & \mathbf u_2 & \mathbf u_3 \end{bmatrix}$
+$$
+U=\begin{bmatrix} \mathbf u1 & \mathbf u2 & \mathbf u_3 \end{bmatrix}
+$$
 其中，$\mathbf u_1^T\mathbf u_2=\mathbf u_2^T\mathbf u_1=0$，$\mathbf u_1^T\mathbf u_3=\mathbf u_3^T\mathbf u_1=0$，$\mathbf u_2^T\mathbf u_3=\mathbf u_3^T\mathbf u_2=0$，
 并且，$\mathbf u_1^T\mathbf u_1=1, \mathbf u_2^T\mathbf u_2=1, \mathbf u_3^T\mathbf u_3=1$。
 

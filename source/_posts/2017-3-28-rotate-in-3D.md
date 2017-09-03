@@ -27,10 +27,16 @@ mathjax: true
 ![rotate-x-axis](/images/2017-3-28/rotate-x-axis.png)
 上图是一个绕 x 轴旋转的图示。假设我们需要从点($x, y, z$)绕 x 轴旋转 $\theta$ 角到点 ($x^,, y^,, z^,$)，那么，旋转过程中，x 的坐标值始终都是固定不变的，因此，我们可以把它当作是在$x=x^,$这个平面上进行旋转，从而退化成一个 2D 旋转的问题。
 上图右边的两个矩阵，上面那个是 2D 旋转矩阵，而底下那个只是把该矩阵延伸到 3D 空间而已（为了将平移也纳入矩阵运算，3D 的变换都是采用齐次坐标）。因为 x 轴是旋转轴，因此实际上是在 yoz 平面上做 2D 旋转。只要你知道 2D 空间那个旋转矩阵怎么计算，3D 的变换只是依葫芦画瓢而已。
+
 #### 绕 y 轴旋转
+
 同理，这里不再赘述。
 ![rotate-y-axis](/images/2017-3-28/rotate-y-axis.png)
+
+
+
 #### 绕 z 轴旋转
+
 同理，这里不再赘述。
 ![rotate-z-axis](/images/2017-3-28/rotate-z-axis.png)
 
@@ -39,39 +45,43 @@ mathjax: true
 
 现在，假设我们要绕旋转轴 $P$ 旋转 $\theta$ 角（如下图所示），那又该如何？
 ![3d-angle-rotation](/images/2017-3-28/3d-angle-rotation.png)
-目前我们已有的工具只是绕 x / y / z 轴旋转的矩阵而已。回想 2D 中绕任意点旋转的情况，我们是将任意点变换到原点，绕原点旋转后，再变换回原来的位置。所以，同样的道理，这次我们也将绕 $P$ 轴的旋转分解为三步（跟原文例子的解释稍有不同，但本质上是一样的）：
+目前我们已有的工具只是绕 x / y / z 轴旋转的矩阵而已。回想 2D 中绕任意点旋转的情况，我们是将任意点变换到原点，绕原点旋转后，再变换回原来的位置。所以，同样的道理，这次我们也将绕 $P$ 轴的旋转分解为三步（跟原文例子的解释稍有不同，但本质上是一样的）:
+
 + 将 $P$ 轴旋转到与 z 轴重合，此时物体跟着旋转到新位置；
 + 让物体绕 z 轴旋转 $\theta$ 角（可以直接套用之前的矩阵）；
 + 将物体逆向旋转回原来的位置。
 
 下面就针对这三步，解释一下具体的操作。
+
 **(1) 首先是将旋转轴旋转到与 z 轴重合。**为此，我们需要将 $P$ 轴绕 z 轴旋转 $\psi$ 角（根据前面的声明，这里是正方向）。因此，需要乘以矩阵：
-
-$R\_z(\psi)=\begin{bmatrix} cos\psi & -sin\psi & 0 & 0 \\\\ sin\psi & cos\psi & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & 1 \end{bmatrix}$
-
+$$
+R_z(\psi)=\begin{bmatrix} cos\psi & -sin\psi & 0 & 0 \\ sin\psi & cos\psi & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
+$$
 旋转完后，$P$ 轴落入 xoz 平面，然后，按照同样的思路，绕 y 轴旋转 $\phi$ 角，再乘以矩阵：
-
-$R_y(\phi)=\begin{bmatrix} cos\phi & 0 & -sin\phi & 0 \\\\ 0 & 1 & 0 & 0 \\\\ sin\phi & 0 & cos\phi & 0 \\\\ 0 & 0 & 0 & 1  \end{bmatrix}$
-
+$$
+R_y(\phi)=\begin{bmatrix} cos\phi & 0 & -sin\phi & 0 \\ 0 & 1 & 0 & 0 \\ sin\phi & 0 & cos\phi & 0 \\ 0 & 0 & 0 & 1  \end{bmatrix}
+$$
 这时，$P$ 轴与 z 轴已经重合了。
 
 **(2) 然后我们让物体绕 z 轴旋转 $\theta$ 角：**
-
-$R\_z(\theta)=\begin{bmatrix} cos\theta & -sin\theta & 0 & 0 \\\\ sin\theta & cos\theta & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & 1 \end{bmatrix}$
-
+$$
+R_z(\theta)=\begin{bmatrix} cos\theta & -sin\theta & 0 & 0 \\ sin\theta & cos\theta & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
+$$
 **(3) 最后，将物体旋转回之前的位置。**具体做法是乘以之前矩阵的逆矩阵。至此，我们得到物体旋转所需要的最终矩阵：
-
-$R(\theta)=R\_z(-\psi)R\_y(-\phi)R_z(\theta)R\_y(\phi)R\_z(\psi)$。
-
+$$
+R(\theta)=R_z(-\psi)R_y(-\phi)R_z(\theta)R_y(\phi)R_z(\psi)
+$$
 利用旋转矩阵的性质：$R(-\alpha)=R^{-1}(\alpha)=R^T(\alpha)$，我们也可以写成：
-
-$R(\theta)=R\_z^T(\psi)R\_y^T(\phi)R_z(\theta)R\_y(\phi)R\_z(\psi)$
+$$
+R(\theta)=R_z^T(\psi)R_y^T(\phi)R_z(\theta)R_y(\phi)R_z(\psi)
+$$
 
 
 ### 绕不通过原点的直线旋转
 有了上面的基础作铺垫，这种情况将变得十分简单。只要将旋转轴平移到经过原点的位置，那么问题就转换成上面的情况，最后再平移回去就可以了。因此，变换矩阵只是在上一种情况的基础上，乘上平移矩阵：
-
-$R(\theta)=T(x\_1, y\_1, z\_1)R\_z^T(\psi)R\_y^T(\phi)R_z(\theta)R\_y(\phi)R\_z(\psi)T(-x\_1, -y\_1, -z\_1)$
+$$
+R(\theta)=T(x_1, y_1, z_1)R_z^T(\psi)R_y^T(\phi)R_z(\theta)R_y(\phi)R_z(\psi)T(-x_1, -y_1, -z_1)
+$$
 
 
 ### 参考

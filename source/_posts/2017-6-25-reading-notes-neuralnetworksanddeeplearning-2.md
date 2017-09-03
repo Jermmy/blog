@@ -19,21 +19,21 @@ backpropagation 算法起源于上个世纪 70 年代，但一直到 [Hinton](ht
 
 首先，引入几个符号表示。
 
-假设 $w\_{jk}^{l}$ 表示从第 l-1 层的第 k 个神经元到第 l 层的第 j 个神经元的权值，如下图所示。
+假设 $w_{jk}^{l}$ 表示从第 l-1 层的第 k 个神经元到第 l 层的第 j 个神经元的权值，如下图所示。
 
 ![tikz16](/images/2017-6-25/tikz16.png)
 
-假设 $b\_{j}^{l}$ 表示 l 层第 j 个神经元的偏差，$a\_{j}^{l}$ 表示 l 层第 j 个神经元的激活层，如下图所示：
+假设 $b_{j}^{l}$ 表示 l 层第 j 个神经元的偏差，$a_{j}^{l}$ 表示 l 层第 j 个神经元的激活层，如下图所示：
 
 ![tikz16](/images/2017-6-25/tikz17.png)
 
-有了这些标记，第 l 层的第 j 个神经元的激活层 $a\_{j}^{l}$ 就可以和 l-1 层的激活层关联起来：
+有了这些标记，第 l 层的第 j 个神经元的激活层 $a_{j}^{l}$ 就可以和 l-1 层的激活层关联起来：
 $$
-a\_{j}^l = \sigma(\sum\_{k}{w\_{jk}^{l}a\_{k}^{l-1}+b\_{j}^{l}})      \tag{23}
+a_{j}^l = \sigma(\sum_{k}{w_{jk}^{l}a_{k}^{l-1}+b_{j}^{l}})      \tag{23}
 $$
 其中，$\sigma()$ 是一个激活函数，例如 sigmoid 函数之类的。
 
-现在，为了方便书写，我们为每一层定义一个权值矩阵 $W^l$，矩阵的每个元素对应上面提到的 $w\_{jk}^{l}$。类似地，我们为每一层定义一个偏差向量 $b^l$ 以及一个激活层向量 $a^l$。
+现在，为了方便书写，我们为每一层定义一个权值矩阵 $W^l$，矩阵的每个元素对应上面提到的 $w_{jk}^{l}$。类似地，我们为每一层定义一个偏差向量 $b^l$ 以及一个激活层向量 $a^l$。
 
 然后，我们将公式 (23) 表示成矩阵的形式：
 $$
@@ -47,38 +47,38 @@ $$
 
 BP 算法的目标是要计算偏导数 $\partial C$/$\partial w$ 和 $\partial C$/$\partial b$，要让 BP 算法起作用，我们需要两个前提假设：
 
-1. 代价函数可以表示成 $C=\frac{1}{n}\sum\_{x}{C\_x}$，其中 $C\_x$ 是每个训练样本 x 的代价函数。
+1. 代价函数可以表示成 $C=\frac{1}{n}\sum_{x}{C_x}$，其中 $C_x$ 是每个训练样本 x 的代价函数。
 2. 代价函数用神经网络的输出作为函数的输入：
 
 ![tikz16](/images/2017-6-25/tikz18.png)
 
 ### BP 算法背后的四个基本公式
 
-BP 算法本质上是为了计算出 $\partial C$ / $\partial w\_{jk}^{l}$ 和 $\partial C$ / $\partial b\_{j}^{l}$。为了计算这两个导数，我们引入一个中间变量 $\delta\_{j}^{l}$，这个中间变量表示第 l 层第 j 个神经元的**误差**。BP 算法会计算出这个**误差**，然后用它来计算$\partial C$ / $\partial w\_{jk}^{l}$ 和 $\partial C$ / $\partial b\_{j}^{l}$。
+BP 算法本质上是为了计算出 $\partial C$ / $\partial w_{jk}^{l}$ 和 $\partial C$ / $\partial b_{j}^{l}$。为了计算这两个导数，我们引入一个中间变量 $\delta_{j}^{l}$，这个中间变量表示第 l 层第 j 个神经元的**误差**。BP 算法会计算出这个**误差**，然后用它来计算$\partial C$ / $\partial w_{jk}^{l}$ 和 $\partial C$ / $\partial b_{j}^{l}$。
 
-$\delta\_{j}^{l}$ 被定义为：
+$\delta_{j}^{l}$ 被定义为：
 $$
-\delta \_{j}^{l}=\frac{\partial C}{\partial z\_{j}^{l}}  \tag{29}
+\delta _{j}^{l}=\frac{\partial C}{\partial z_{j}^{l}}  \tag{29}
 $$
-这个定义来源于这样一个事实：代价函数 $C$ 可以看作是关于 $z$ 的函数，而 $z$ 是 $W$ 和 $b$ 的线性组合（考虑到代价函数的两个前提假设，$C$ 是关于网络输出 $a$ 的函数，而 $a$ 又是 $z$ 的函数，所以 $C$ 也可以看作是 $z$ 的函数）。其实，我们也可以将它定义为：$\delta\_{j}^{l}=\frac{\partial C}{\partial a\_{j}^{l}}$（$a$ 是神经网络某一层的输出），但这样会导致之后的计算十分复杂，所以，我们还是保留原先的定义。
+这个定义来源于这样一个事实：代价函数 $C$ 可以看作是关于 $z$ 的函数，而 $z$ 是 $W$ 和 $b$ 的线性组合（考虑到代价函数的两个前提假设，$C$ 是关于网络输出 $a$ 的函数，而 $a$ 又是 $z$ 的函数，所以 $C$ 也可以看作是 $z$ 的函数）。其实，我们也可以将它定义为：$\delta_{j}^{l}=\frac{\partial C}{\partial a_{j}^{l}}$（$a$ 是神经网络某一层的输出），但这样会导致之后的计算十分复杂，所以，我们还是保留原先的定义。
 
 BP 算法基于 4 个基本公式，这些公式会告诉我们如何计算 $\delta^{l}$ 和代价函数的梯度。
 
 #### 输出层误差 $\delta^{L}$的计算公式
 
 $$
-\delta\_{j}^{L}=\frac{\partial C}{\partial z\_{j}^{L}}=\frac{\partial C}{\partial a\_{j}^{L}}\sigma'(z\_{j}^{L})  \tag{BP1}
+\delta_{j}^{L}=\frac{\partial C}{\partial z_{j}^{L}}=\frac{\partial C}{\partial a_{j}^{L}}\sigma'(z_{j}^{L})  \tag{BP1}
 $$
 
 这个公式是最直接的，只需要知道 $a^{L}=\sigma(z^{L})$，然后根据链式法则即可得到。
 
 为了更好地运用矩阵运算，我们改变一下上面式子的形式：
 $$
-\delta^{L}=\nabla\_a C \odot \sigma'(z^L).  \tag{BP1a}
+\delta^{L}=\nabla_a C \odot \sigma'(z^L).  \tag{BP1a}
 $$
-其中，$\odot$ 表示 elementwise 运算，而 $\nabla\_a C$ 可以看作是 $\partial C / \partial a\_{j}^{L}$ 组成的向量。
+其中，$\odot$ 表示 elementwise 运算，而 $\nabla_a C$ 可以看作是 $\partial C / \partial a_{j}^{L}$ 组成的向量。
 
-举个例子，假设 $C=\frac{1}{2}\sum\_{j}{(y\_j - a\_{j}^{L})}^2$，则 $\partial C / \partial a\_{j}^{L}=\begin{bmatrix} \partial C / \partial a\_0^l \\\\ \partial C / \partial a\_1^l \\\ \vdots \\\\ \partial C / \partial a\_n^l \end{bmatrix}=(a\_{j}^{L}-y\_j)=\begin{bmatrix} a\_0^l-y\_0 \\\\ a\_1^l-y\_1 \\\\ \vdots \\\\ a\_n^l-y\_l \end{bmatrix}$，那么公式(BP1)可以表示成：$\delta^{L}=(a\_{L}-y) \odot \sigma'(z^L)$。
+举个例子，假设 $C=\frac{1}{2}\sum_{j}{(y_j - a_{j}^{L})}^2$，则 $\partial C / \partial a_{j}^{L}=\begin{bmatrix} \partial C / \partial a_0^l \\ \partial C / \partial a_1^l \\ \vdots \\ \partial C / \partial a_n^l \end{bmatrix}=(a_{j}^{L}-y_j)=\begin{bmatrix} a_0^l-y_0 \\ a_1^l-y_1 \\ \vdots \\ a_n^l-y_l \end{bmatrix}$，那么公式(BP1)可以表示成：$\delta^{L}=(a_{L}-y) \odot \sigma'(z^L)$。
 
 #### $\delta^L$与$\delta^{L+1}$的计算公式
 
@@ -91,7 +91,7 @@ $$
 #### bias 的导数计算公式
 
 $$
-\frac{\partial C}{\partial b\_j^{l}}=\delta\_j^l \tag{BP3}
+\frac{\partial C}{\partial b_j^{l}}=\delta_j^l \tag{BP3}
 $$
 
 这个公式表明，第 l 层偏差 bias 的导数和第 l 层的误差值相等。
@@ -99,18 +99,18 @@ $$
 #### 权重 W 的导数计算公式
 
 $$
-\frac{\partial C}{\partial w\_{jk}^{l}}=a\_{k}^{l-1}\delta\_{j}^{l} \tag{BP4}
+\frac{\partial C}{\partial w_{jk}^{l}}=a_{k}^{l-1}\delta_{j}^{l} \tag{BP4}
 $$
 
 同理，这个公式揭露出权重 W 的导数和误差以及网络输出之间的关系。用一种更简洁的方式表示为：
 $$
-\frac{\partial C}{\partial w} = a\_{in}\delta\_{out}  \tag{32}
+\frac{\partial C}{\partial w} = a_{in}\delta_{out}  \tag{32}
 $$
-其中，$a\_{in}$ 是权重 $W$ 的输入，而 $\delta_{out}$ 是权重 $W$ 对应的 $z$ 的误差。用一幅图表示如下：
+其中，$a_{in}$ 是权重 $W$ 的输入，而 $\delta_{out}$ 是权重 $W$ 对应的 $z$ 的误差。用一幅图表示如下：
 
 ![tikz20](/images/2017-6-25/tikz20.png)
 
-公式 (32) 一个很好的效果是：当 $a\_{in} \approx 0$ 时，梯度公式的值会很小，换句话说，当权重 $W$ 的输入 $a\_{in}$，也就是上一层激活层的输出接近 0 时，那么这个激活层对网络的影响就变得很小，$W$ 的学习也会变得很慢。
+公式 (32) 一个很好的效果是：当 $a_{in} \approx 0$ 时，梯度公式的值会很小，换句话说，当权重 $W$ 的输入 $a_{in}$，也就是上一层激活层的输出接近 0 时，那么这个激活层对网络的影响就变得很小，$W$ 的学习也会变得很慢。
 
 #### 一些启发（insights）
 
@@ -138,41 +138,41 @@ $$
 
 公式 (BP1) 的证明是十分简单的，不过需要习惯向量或矩阵的 elementwise 的求导形式。
 
-我们假设 $C=f(\sigma(z^L))=f(\sigma(z\_0^L), \sigma(z\_1^L), \cdots, \sigma(z\_n^L))$，根据定义 $\delta\_j^L=\frac{\partial C}{\partial z\_j^L}$，由于 $z\_j^L$ 只跟 $a\_j^L$ 相关，于是我们用链式法则可以得到（可以画个网络图帮助理解）：
+我们假设 $C=f(\sigma(z^L))=f(\sigma(z_0^L), \sigma(z_1^L), \cdots, \sigma(z_n^L))$，根据定义 $\delta_j^L=\frac{\partial C}{\partial z_j^L}$，由于 $z_j^L$ 只跟 $a_j^L$ 相关，于是我们用链式法则可以得到（可以画个网络图帮助理解）：
 $$
 \delta_j^L=\frac{\partial f}{\partial \sigma(z_j^L)}\frac{\partial \sigma(z_j^L)}{\partial z_j^L}=\frac{\partial C}{\partial a_j^L}\frac{\partial a_j^L}{\partial z_j^L} \tag{38}
 $$
 其中，$a_j^L=\sigma(z_j^L)$，我们也可以将它表示成另一种形式：
 $$
-\delta\_j^L=\frac{\partial C}{\partial a\_j^L}\sigma'(z\_j^L)  \tag{39}
+\delta_j^L=\frac{\partial C}{\partial a_j^L}\sigma'(z_j^L)  \tag{39}
 $$
 上式就是 BP1 的形式了。
 
 #### BP2
 
-BP2 需要用到后一层计算出来的 $\delta^{l+1}$，因此，我们先根据 BP1 得出：$\delta\_k^{l+1}=\frac{\partial C}{\partial z\_k^{l+1}}$。
+BP2 需要用到后一层计算出来的 $\delta^{l+1}$，因此，我们先根据 BP1 得出：$\delta_k^{l+1}=\frac{\partial C}{\partial z_k^{l+1}}$。
 
-由 $\delta\_k^{l}=\frac{\partial C}{\partial z\_k^l}$ 和 $C=f(\sigma(z\_0^L), \sigma(z\_1^L), \cdots, \sigma(z\_n^L))$ 可以得到：
+由 $\delta_k^{l}=\frac{\partial C}{\partial z_k^l}$ 和 $C=f(\sigma(z_0^L), \sigma(z_1^L), \cdots, \sigma(z_n^L))$ 可以得到：
 $$
 \begin{eqnarray}
 \delta_j^{l} & = & \frac{\partial C}{\partial z_0^{l+1}}\frac{\partial z_0^{l+1}}{\partial z_j^{l}}+\cdots+\frac{\partial C}{\partial z_n^{l+1}}\frac{\partial z_n^{l+1}}{\partial z_j^{l}} \\\\
-& = & \sum\_k{\frac{\partial C}{\partial z\_k^{l+1}}\frac{\partial z\_k^{l+1}}{\partial z\_j^j}} \\\\
-& = & \sum\_k \delta\_k^{l+1}\frac{\partial z\_k^{l+1}}{\partial z\_j^{l}}   \tag{42}
+& = & \sum_k{\frac{\partial C}{\partial z_k^{l+1}}\frac{\partial z_k^{l+1}}{\partial z_j^j}} \\\\
+& = & \sum_k \delta_k^{l+1}\frac{\partial z_k^{l+1}}{\partial z_j^{l}}   \tag{42}
 \end{eqnarray}
 $$
 
-我们还要进一步找出 $z\_k^{l+1}$ 和 $z\_k^{l}$ 之间的关系。根据前向传播，可以得到：
+我们还要进一步找出 $z_k^{l+1}$ 和 $z_k^{l}$ 之间的关系。根据前向传播，可以得到：
 $$
-z\_k^{l+1}=\sum\_j{w\_{kj}^{l+1}a\_j^l+b\_k^{l+1}}=\sum\_j{w\_{kj}^{l+1}\sigma(z\_j^l)+b\_k^{l+1}} \tag{43}
+z_k^{l+1}=\sum_j{w_{kj}^{l+1}a_j^l+b_k^{l+1}}=\sum_j{w_{kj}^{l+1}\sigma(z_j^l)+b_k^{l+1}} \tag{43}
 $$
 进而可以得到：
 $$
-\frac{\partial z\_k^{l+1}}{\partial z\_j^l}=w\_{kj}^{l+1}\sigma'(z\_j^l) \tag{44}
+\frac{\partial z_k^{l+1}}{\partial z_j^l}=w_{kj}^{l+1}\sigma'(z_j^l) \tag{44}
 $$
 
 将式 (44) 代入 (42) 得：
 $$
-\delta\_j^l=\sum\_k{w\_{kj}^{l+1}\sigma'(z\_j^l)\delta\_k^{l+1}}=\sigma'(z\_j^l)\sum\_k{w\_{kj}^{l+1}\delta\_k^{l+1}}   \tag{45}
+\delta_j^l=\sum_k{w_{kj}^{l+1}\sigma'(z_j^l)\delta_k^{l+1}}=\sigma'(z_j^l)\sum_k{w_{kj}^{l+1}\delta_k^{l+1}}   \tag{45}
 $$
 表示成矩阵的形式就是：
 $$
@@ -183,30 +183,30 @@ $$
 #### BP3
 
 $$
-z_j^l=\sum\_k{W_{jk}^l a_k^{l-1}}+b_j^l
+z_j^l=\sum_k{W_{jk}^l a_k^{l-1}}+b_j^l
 $$
 
 $$
-\frac{\partial z\_j^l}{\partial b\_j^l}=1
+\frac{\partial z_j^l}{\partial b_j^l}=1
 $$
 
 $$
-\frac{\partial C}{\partial b\_j^l}=\frac{\partial C}{\partial z\_j^l}\frac{\partial z\_j^l}{\partial b\_j^l}=\frac{\partial C}{\partial z\_j^l}=\delta\_j^l
+\frac{\partial C}{\partial b_j^l}=\frac{\partial C}{\partial z_j^l}\frac{\partial z_j^l}{\partial b_j^l}=\frac{\partial C}{\partial z_j^l}=\delta_j^l
 $$
 
 #### BP4
 
 证明过程同 BP3：
 $$
-z_j^l=\sum\_k{W_{jk}^l a_k^{l-1}}+b_j^l
+z_j^l=\sum_k{W_{jk}^l a_k^{l-1}}+b_j^l
 $$
 
 $$
-\frac{\partial z\_j^l}{\partial W\_{jk}^l}=a\_k^{l-1}
+\frac{\partial z_j^l}{\partial W_{jk}^l}=a_k^{l-1}
 $$
 
 $$
-\frac{\partial C}{\partial W\_{jk}^l}=\frac{\partial C}{\partial z\_j^l}\frac{\partial z\_j^l}{\partial W\_{jk}^l}=\frac{\partial C}{\partial z\_j^l}a\_k^{l-1}=\delta\_j^la\_k^{l-1}
+\frac{\partial C}{\partial W_{jk}^l}=\frac{\partial C}{\partial z_j^l}\frac{\partial z_j^l}{\partial W_{jk}^l}=\frac{\partial C}{\partial z_j^l}a_k^{l-1}=\delta_j^la_k^{l-1}
 $$
 
 ### 后向传播算法(BP)
@@ -215,16 +215,16 @@ $$
 > 2. **Feedforward: ** For each l = 2, 3, …, L compute $z^l=w^la^{l-1}+b^l$ and $a^l=\sigma(z^l)$.
 > 3. **Output error **$\delta^L$: Compute the vector $\delta^L=\nabla\_a C \odot \sigma'(z^L)$.
 > 4. **Backpropagate the error: **For each l = L-1, L-2, …, 2 compute $\delta^l=((W^{l+1})^T \delta^{l+1}) \odot \sigma'(z^l)$.
-> 5. **Output: **The gradient of the cost function is given by $\frac{\partial C}{\partial w\_{jk}^l}=a\_k^{l-1}\delta\_j^{l}$ and $\frac{\partial C}{\partial b\_j^l}=\delta\_j^l$.
+> 5. **Output: **The gradient of the cost function is given by $\frac{\partial C}{\partial w_{jk}^l}=a_k^{l-1}\delta_j^{l}$ and $\frac{\partial C}{\partial b_j^l}=\delta_j^l$.
 
 以上算法是针对一个训练样本进行的，实际操作中，通常是用随机梯度下降算法，用几个样本进行训练，因此我们将算法略微修改如下：
 
 > 1. **Input a set of training examples**
 > 2. **For each training example **x: Set the corresponding input activation $a^{x, 1}$, and perform the following steps:
 >    + **Feedforward: **For each l = 2, 3, …, L compute $z^{x, l}=w^la^{x, l-1}+b^l$ and $a^{x, l}=\sigma(z^{x,l})$.
->    + **Output error **$\delta^{x, L}$: Compute the vector $\delta^{x, L}=\nabla\_a C\_x \odot \sigma'(z^{x,L})$.
+>    + **Output error **$\delta^{x, L}$: Compute the vector $\delta^{x, L}=\nabla_a C_x \odot \sigma'(z^{x,L})$.
 >    + **Backpropagate the error: **For each l = L-1, L-2, …, 2 compute $\delta^{x,l}=((W^{l+1})^T \delta^{x,l+1}) \odot \sigma'(z^{x,l})$.
-> 3. **Gradient descent: **For each l = L, L-1, …, 2 update the weights according to the rule $W^l \rightarrow W^l-\frac{\eta}{m} \sum\_x \delta^{x,l}(a^{x,l-1})^T$, and the biases according to the rule $b^l \rightarrow b^l - \frac{\eta}{m} \sum\_x{\delta^{x,l}}$.
+> 3. **Gradient descent: **For each l = L, L-1, …, 2 update the weights according to the rule $W^l \rightarrow W^l-\frac{\eta}{m} \sum_x \delta^{x,l}(a^{x,l-1})^T$, and the biases according to the rule $b^l \rightarrow b^l - \frac{\eta}{m} \sum_x{\delta^{x,l}}$.
 
 ### 参考
 

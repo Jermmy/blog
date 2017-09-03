@@ -106,19 +106,19 @@ mathjax: true
 
 L2 正则化是在代价函数中添加**正则化项(regularization term)**。比如，下面是正则化后的交叉熵函数：
 $$
-C=-\frac{1}{n}\sum\_{xj}{[y\_j \ln a\_j^L+(1-y\_j)\ln(1-a\_j^L)]}+\frac{\lambda}{2n}\sum\_w{w^2} \tag{85}
+C=-\frac{1}{n}\sum_{xj}{[y_j \ln a_j^L+(1-y_j)\ln(1-a_j^L)]}+\frac{\lambda}{2n}\sum_w{w^2} \tag{85}
 $$
 所谓正则化项，其实就是权值的平方和，前面的 $\lambda / 2n$ 是针对所有样本取均值，而 $\lambda$ 就是我们说的**超参数**。之后会讨论 $\lambda$ 的值该如何取。注意，正则项中并没有偏差，因为对偏差的正则化效果不明显，所以一般只对权值进行正则化。
 
 L2 正则化也可以用在其他代价函数中，比如平方差函数：
 $$
-C=\frac{1}{2n}\sum\_x{||t-a^L||^2}+\frac{\lambda}{2n}\sum\_w{w^2} \tag{86}
+C=\frac{1}{2n}\sum_x{||t-a^L||^2}+\frac{\lambda}{2n}\sum_w{w^2} \tag{86}
 $$
 我们可以写出 L2 正则化的通式：
 $$
-\begin{eqnarray}  C = C\_0 + \frac{\lambda}{2n}\sum_w w^2,\tag{87}\end{eqnarray}
+\begin{eqnarray}  C = C_0 + \frac{\lambda}{2n}\sum_w w^2,\tag{87}\end{eqnarray}
 $$
-其中，$C\_0$ 是原先的代价函数。
+其中，$C_0$ 是原先的代价函数。
 
 直观上，正则化的效果就是让学习的权值尽可能的小。可以说，正则化就是在最小化原代价函数和寻找小权值之间找折中。而两者之间的重要性由 $\lambda$ 控制。当 $\lambda$ 大时，网络会尽可能减小权重，反之，则尽可能减小原先的代价函数。
 
@@ -127,24 +127,24 @@ $$
 添加正则化项后，梯度下降的偏导数会发生一点变化：
 $$
 \begin{eqnarray} 
-  \frac{\partial C}{\partial w} & = & \frac{\partial C\_0}{\partial w} + 
+  \frac{\partial C}{\partial w} & = & \frac{\partial C_0}{\partial w} + 
   \frac{\lambda}{n} w \tag{88}\\\\
-  \frac{\partial C}{\partial b} & = & \frac{\partial C\_0}{\partial b}.
+  \frac{\partial C}{\partial b} & = & \frac{\partial C_0}{\partial b}.
 \tag{89}\end{eqnarray}
 $$
-其中，$\partial C\_0/\partial w$ 和 $\partial C\_0/\partial b$ 可以通过 BP 算法计算，因此，新的偏导数很容易计算：
+其中，$\partial C_0/\partial w$ 和 $\partial C_0/\partial b$ 可以通过 BP 算法计算，因此，新的偏导数很容易计算：
 $$
 \begin{eqnarray} 
-  w & \rightarrow & w-\eta \frac{\partial C\_0}{\partial
+  w & \rightarrow & w-\eta \frac{\partial C_0}{\partial
     w}-\frac{\eta \lambda}{n} w \tag{91}\\\\
   & = & \left(1-\frac{\eta \lambda}{n}\right) w -\eta \frac{\partial
-    C\_0}{\partial w}. 
+    C_0}{\partial w}. 
 \tag{92}\end{eqnarray} \\
 $$
 
 $$
 \begin{eqnarray}
-b & \rightarrow & b -\eta \frac{\partial C\_0}{\partial b}.
+b & \rightarrow & b -\eta \frac{\partial C_0}{\partial b}.
 \tag{90}\end{eqnarray}
 $$
 
@@ -152,7 +152,7 @@ $$
 $$
 \begin{eqnarray} 
   w \rightarrow \left(1-\frac{\eta \lambda}{n}\right) w -\frac{\eta}{m}
-  \sum\_x \frac{\partial C\_x}{\partial w}, 
+  \sum_x \frac{\partial C_x}{\partial w}, 
 \tag{93}\end{eqnarray}
 $$
 **（注意，式子前半部分除的是训练数据大小 n，后半部分是批训练的 m）**
@@ -197,14 +197,14 @@ $$
 
 L1 正则化的形式和 L2 很像，只不过正则化项略有区别：
 $$
-C=C\_0+\frac{\lambda}{n}\sum\_w{|w|}   \tag{95}
+C=C_0+\frac{\lambda}{n}\sum_w{|w|}   \tag{95}
 $$
 下面来看看 L1 正则化对网络产生的影响。
 
 首先，我们对 (95) 式求偏导：
 $$
 \begin{eqnarray}  \frac{\partial C}{\partial
-    w} = \frac{\partial C\_0}{\partial w} + \frac{\lambda}{n} \, {\rm
+    w} = \frac{\partial C_0}{\partial w} + \frac{\lambda}{n} \, {\rm
     sgn}(w),
 \tag{96}\end{eqnarray}
 $$
@@ -212,7 +212,7 @@ $$
 
 这样，梯度下降的公式就变成：
 $$
-w \rightarrow w'=w-\frac{\eta \lambda}{n}{\rm sgn}(w)-\eta \frac{\partial C\_0}{\partial w}  \tag{97}
+w \rightarrow w'=w-\frac{\eta \lambda}{n}{\rm sgn}(w)-\eta \frac{\partial C_0}{\partial w}  \tag{97}
 $$
 对比 L2 的公式 (93)，我们发现，两个式子都有缩小 weight 的功能，这跟之前分析正则化能起作用的原因是一致的。只不过 weight 缩小的方式不一样。在 L1 中，正则化项让 weight 以一个固定的常数向 0 靠近（weight 是正是负都一样），而 L2 中weight 减小的量跟 weight 本身存在一个比例关系（也就是说，weight 越小，这个量也越小）。所以，当 weight 的绝对值很大时，L2 对 weight 的抑制作用比 L1 大。
 

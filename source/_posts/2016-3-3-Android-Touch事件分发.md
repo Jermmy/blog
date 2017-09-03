@@ -584,9 +584,7 @@ public boolean dispatchTouchEvent(MotionEvent event) {
 
 另外，在 View 的分发过程中，如果 onTouch 消费了事件，onClick 也不会再执行。
 
-## 实际运用
 
-未完待续。。。
 
 
 

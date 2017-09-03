@@ -23,43 +23,65 @@ mathjax: true
 
 假设我们已经得到了贝塞尔曲线的表达式：
 $$
-\overline{P^3} = (1-t)^3\overline{P\_{0}} + 3t(1-t)^2\overline{P\_{1}}+3t^2(1-t)\overline{P\_{2}}+t^3\overline{P\_{3}}  \ \ \ \ \ \ (1)
+\overline{P^3} = (1-t)^3\overline{P_{0}} + 3t(1-t)^2\overline{P_{1}}+3t^2(1-t)\overline{P_{2}}+t^3\overline{P_{3}}  \tag{1}
 $$
-其中，$\overline{P^3} $ 是三次贝塞尔曲线上的点，$\overline{P\_{0}} 、\overline{P\_{1}}、\overline{P\_{2}}、\overline{P\_{3}}$ 分别是贝塞尔曲线的控制点，因为 $\overline{P\_{0}} 、\overline{P\_{3}}$ 本身就是贝塞尔曲线的两个端点，所以它们的坐标是事先知道的，我们的目标是要求出 $\overline{P\_{1}}、\overline{P\_{2}}$。注意到，贝塞尔曲线的点是 t 由 0 逐渐增加到 1 的过程中采样得到的（数学上需要对 t 取极限，但计算机是离散的，所以称为采样），因为项目中，我是通过原控制点得到贝塞尔曲线后，对曲线做形变处理，然后再反推控制点，所以我只需要在原来的贝塞尔曲线表达式中分别取 t=$\frac{1}{3}$ 和 $\frac{2}{3}$ ( t 的取值可以是 0 到 1 之间任意实数，当然不能是 0 和 1，不然就和端点重合了)，就可以得到两个 $\overline{P^3}$ 点的坐标，形变处理完后，我同样**近似**地认为这两个点是新曲线中 t 取 $\frac{1}{3}$ 和 $\frac{2}{3}$ 的坐标点。这样，我们相当于知道了四个点的坐标，对于一个二元一次方程，我们由这四个点可以得到两组方程，最终一定可以把 $\overline{P\_{1}} 、\overline{P\_{2}}$ 解出来。对于原表达式不知道的情况，可以根据端点坐标来近似取点，具体可以看参考链接。
+其中，$\overline{P^3} $ 是三次贝塞尔曲线上的点，$\overline{P_{0}}$、$\overline{P_{1}}$、$\overline{P_{2}}$、$\overline{P_{3}}$ 分别是贝塞尔曲线的控制点，因为 $\overline{P_{0}}$、$\overline{P_{3}}$ 本身就是贝塞尔曲线的两个端点，所以它们的坐标是事先知道的，我们的目标是要求出 $\overline{P_{1}}$、$\overline{P_{2}}$。注意到，贝塞尔曲线的点是 t 由 0 逐渐增加到 1 的过程中采样得到的（数学上需要对 t 取极限，但计算机是离散的，所以称为采样），因为项目中，我是通过原控制点得到贝塞尔曲线后，对曲线做形变处理，然后再反推控制点，所以我只需要在原来的贝塞尔曲线表达式中分别取 t=$\frac{1}{3}$ 和 $\frac{2}{3}$ ( t 的取值可以是 0 到 1 之间任意实数，当然不能是 0 和 1，不然就和端点重合了)，就可以得到两个 $\overline{P^3}$ 点的坐标，形变处理完后，我同样**近似**地认为这两个点是新曲线中 t 取 $\frac{1}{3}$ 和 $\frac{2}{3}$ 的坐标点。这样，我们相当于知道了四个点的坐标，对于一个二元一次方程，我们由这四个点可以得到两组方程，最终一定可以把 $\overline{P_{1}} 、\overline{P_{2}}$ 解出来。对于原表达式不知道的情况，可以根据端点坐标来近似取点，具体可以看参考链接。
 
 #### step1
 
 对于 (1) 式，令 t＝$\frac{1}{3}$，我们得到：
 $$
-\overline{P^3}=(\frac{2}{3})^3\overline{P\_{0}}+(\frac{2}{3})^2\overline{P\_{1}}+3(\frac{1}{3})^2\frac{2}{3}\overline{P\_{2}}+(\frac{1}{3})^3\overline{P\_{3}}    \\\\
-\overline{P^3}-\frac{8}{27}\overline{P\_{0}}-\frac{1}{27}\overline{P\_{3}}=\frac{4}{9}\overline{P\_{1}}+\frac{2}{9}\overline{P\_{2}}    \ \ \ \ \ \ \ \ (2)
+\overline{P^3}=(\frac{2}{3})^3\overline{P_{0}}+(\frac{2}{3})^2\overline{P_{1}}+3(\frac{1}{3})^2\frac{2}{3}\overline{P_{2}}+(\frac{1}{3})^3\overline{P_{3}} 
 $$
-因为 $\overline{P^3}$、$\overline{P\_{0}}$、$\overline{P\_{3}}$ 的坐标是事先已知的，所以可以设 $\overline{P^3}-\frac{8}{27}\overline{P\_{0}}-\frac{1}{27}\overline{P\_{3}}$ 为 $\overline{B}$。我们设 $\overline{P\_{1}}$、$\overline{P\_{2}}$ 的坐标分别为 (x1, y1)、(x2, y2)，$\overline{B}$ 的坐标为($x\_{b}$， $y\_{b}$)，由 (2) 式可以得到如下方程：
 $$
-\frac{4}{9}x\_{1}+\frac{2}{9}x\_{2}=x\_{b}     \\\\
-\frac{4}{9}y\_{1}+\frac{2}{9}y\_{2}=y\_{b}
+\overline{P^3}-\frac{8}{27}\overline{P_{0}}-\frac{1}{27}\overline{P_{3}}=\frac{4}{9}\overline{P_{1}}+\frac{2}{9}\overline{P_{2}}    \tag{2}
 $$
+
+
+
+因为 $\overline{P^3}$、$\overline{P_{0}}$、$\overline{P_{3}}$ 的坐标是事先已知的，所以可以设 $\overline{P^3}-\frac{8}{27}\overline{P_{0}}-\frac{1}{27}\overline{P_{3}}$ 为 $\overline{B}$。我们设 $\overline{P_{1}}$、$\overline{P_{2}}$ 的坐标分别为 (x1, y1)、(x2, y2)，$\overline{B}$ 的坐标为($x_{b}$， $y_{b}$)，由 (2) 式可以得到如下方程：
+$$
+\frac{4}{9}x_{1}+\frac{2}{9}x_{2}=x_{b} 
+$$
+
+$$
+\frac{4}{9}y_{1}+\frac{2}{9}y_{2}=y_{b}
+$$
+
+
 
 #### step2
 
 按照 step1 的思路，令 t=$\frac{2}{3}$，可以得到：
 $$
-\overline{P^3}-\frac{1}{27}\overline{P\_{0}}-\frac{8}{27}\overline{P\_{3}}=\frac{2}{9}\overline{P\_{1}}+\frac{4}{9}\overline{P\_{2}}    \ \ \ \ \ \ \ \ (3)
+\overline{P^3}-\frac{1}{27}\overline{P_{0}}-\frac{8}{27}\overline{P_{3}}=\frac{2}{9}\overline{P_{1}}+\frac{4}{9}\overline{P_{2}}    \tag{3}
 $$
-令 $\overline{P^3}-\frac{1}{27}\overline{P\_{0}}-\frac{8}{27}\overline{P\_{3}}$ 为 $\overline{C}$，设 $\overline{C}$ 的坐标为 ($x\_{c}$, $y\_{c}$)，同样的可以得到另一组方程：
+令 $\overline{P^3}-\frac{1}{27}\overline{P_{0}}-\frac{8}{27}\overline{P_{3}}$ 为 $\overline{C}$，设 $\overline{C}$ 的坐标为 ($x_{c}$, $y_{c}$)，同样的可以得到另一组方程：
 $$
-\frac{2}{9}x\_{1}+\frac{4}{9}x\_{2}=x\_{c}     \\\\
-\frac{2}{9}y\_{1}+\frac{4}{9}y\_{2}=y\_{c}
+\frac{2}{9}x_{1}+\frac{4}{9}x_{2}=x_{c}
+$$
+
+$$
+\frac{2}{9}y_{1}+\frac{4}{9}y_{2}=y_{c}
 $$
 
 #### step3
 
-联立 step1 和 step2 的方程组，最终可以吧 $\overline{P\_{1}}$、$\overline{P\_{2}}$ 的坐标求出来。
+联立 step1 和 step2 的方程组，最终可以吧 $\overline{P_{1}}$、$\overline{P_{2}}$ 的坐标求出来。
 $$
-x\_{1}=3x\_{b}-\frac{3}{2}x\_{c}     \\\\
-y\_{1}=3y\_{b}-\frac{3}{2}y\_{c}      \\\\
-x\_{2}=3x\_{c}-\frac{3}{2}x\_{b}      \\\\
-y\_{2}=3y\_{c}-\frac{3}{2}y\_{b}
+x_{1}=3x_{b}-\frac{3}{2}x_{c}
+$$
+
+$$
+y_{1}=3y_{b}-\frac{3}{2}y_{c} 
+$$
+
+$$
+x_{2}=3x_{c}-\frac{3}{2}x_{b} 
+$$
+
+$$
+y_{2}=3y_{c}-\frac{3}{2}y_{b}
 $$
 
 ### 代码实现
@@ -130,7 +152,7 @@ vector<Point> regain_new_points(vector<Point>& points) {
 
 ![rotate](/images/2016-8-1/rotate.jpg)
 
-看得出，这些基本的线性变换都不会导致贝塞尔曲线“失真”:-)，这是个好消息。
+看得出，这些基本的线性变换都不会导致贝塞尔曲线「失真」:-)，这是个好消息。
 
 ### 参考
 

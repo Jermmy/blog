@@ -71,32 +71,32 @@ $$
 
 则交叉熵函数被定义为（这里假定 y 是个概率值，在 0～1 之间，这样才能跟 a 相搭）：
 $$
-C=-\frac{1}{n}\sum\_x{[y \ln a + (1-y) \ln (1-a)]}   \tag{57}
+C=-\frac{1}{n}\sum_x{[y \ln a + (1-y) \ln (1-a)]}   \tag{57}
 $$
 当然，直觉上看不出这个函数能解决学习速率下降的问题，甚至看不出这可以成为一个代价函数。
 
 我们先解释为什么这个函数可以作为代价函数。首先，这个函数是非负的，即 $C>0$（注意 $a$ 的值在 0～1 之间）。其次，当神经元实际输出跟我们想要的结果接近时，交叉熵函数值会趋近 0。因此，交叉熵满足代价函数的基本条件。
 
-另外，交叉熵解决了学习速率下降的问题。我们将 $a=\sigma(z)$ 代入 (57) 式，并运用链式法则可以得到（这里的 $w\_j$ 应该特指最后一层的参数，即 $w\_j^L$）：
+另外，交叉熵解决了学习速率下降的问题。我们将 $a=\sigma(z)$ 代入 (57) 式，并运用链式法则可以得到（这里的 $w_j$ 应该特指最后一层的参数，即 $w_j^L$）：
 $$
 \begin{eqnarray}
-  \frac{\partial C}{\partial w\_j} & = & -\frac{1}{n} \sum\_x \left(
+  \frac{\partial C}{\partial w_j} & = & -\frac{1}{n} \sum_x \left(
     \frac{y }{\sigma(z)} -\frac{(1-y)}{1-\sigma(z)} \right)
-  \frac{\partial \sigma}{\partial w\_j} \tag{58}\\\\
- & = & -\frac{1}{n} \sum\_x \left( 
+  \frac{\partial \sigma}{\partial w_j} \tag{58}\\\\
+ & = & -\frac{1}{n} \sum_x \left( 
     \frac{y}{\sigma(z)} 
-    -\frac{(1-y)}{1-\sigma(z)} \right)\sigma'(z) x\_j.
+    -\frac{(1-y)}{1-\sigma(z)} \right)\sigma'(z) x_j.
 \tag{59}\end{eqnarray}
 $$
 化简上式并将 $\sigma(z)=\frac{1}{1+e^{-z}}$ 代入后得到：
 $$
-\frac{\partial C}{\partial w\_j}=\frac{1}{n}\sum\_x {x\_j(\sigma(z)-y)}  \tag{61}
+\frac{\partial C}{\partial w_j}=\frac{1}{n}\sum_x {x_j(\sigma(z)-y)}  \tag{61}
 $$
 这个表达式正是我们想要的！它表明，学习速率由 $\sigma(z)-y$ 控制，也就是说，当误差越大时，学习速率越快。而且避免了 $\sigma'()$ 导致的学习速率下降的问题。
 
 类似地，我们可以计算出：
 $$
-\frac{\partial C}{\partial b}=\frac{1}{n}\sum\_x{(\sigma(z)-y)} \tag{62}
+\frac{\partial C}{\partial b}=\frac{1}{n}\sum_x{(\sigma(z)-y)} \tag{62}
 $$
 现在，我们将交叉熵应用到之前的例子中，看看神经元的训练有什么变化。
 
@@ -114,9 +114,9 @@ $$
 
 这两次实验中，采用的学习率是 0.005。事实上，对于不同的代价函数，学习率要作出相应的调整。
 
-上面对交叉熵函数的讨论都只针对一个神经元，其实很容易将它延伸到多层神经元的网络结构。假设 $y=y\_1, y\_2, \dots$ 是想要的网络输出，而 $a\_1^L, a\_2^L, \dots$ 是网络的实际输出，则 cross-entropy 函数可以定义为：
+上面对交叉熵函数的讨论都只针对一个神经元，其实很容易将它延伸到多层神经元的网络结构。假设 $y=y_1, y_2, \dots$ 是想要的网络输出，而 $a_1^L, a_2^L, \dots$ 是网络的实际输出，则 cross-entropy 函数可以定义为：
 $$
-C=-\frac{1}{n}\sum\_x \sum\_y {[y\_j \ln a\_j^L + (1-y\_j) \ln(1-a\_j^L)]}  \tag{63}
+C=-\frac{1}{n}\sum_x \sum_y {[y_j \ln a_j^L + (1-y_j) \ln(1-a_j^L)]}  \tag{63}
 $$
 好了，介绍了这么多，那我们什么时候用平方差函数，什么时候用交叉熵呢？作者给出的意见是，交叉熵几乎总是更好的选择，而原因也跟上文提到的一样，平方差函数容易在开始的时候遇到训练速率较慢的问题，而交叉熵则没有这种困扰。当然，这个问题出现的前提是平方差函数中用了 sigmoid 函数。
 
@@ -126,7 +126,7 @@ $$
 
 假设我们发现了学习速率下降的根源在于 $\sigma'(z)$ 函数，我们要如何解决这个问题呢？当然，方法有很多，这里我们考虑这样的思路：是否能找一个新的代价函数，将 $\sigma'(z)$ 这个项消掉？假如我们希望最终的偏导数满足下面的形式：
 $$
-\frac{\partial C}{\partial w\_j}=x\_j (a-y) \tag{71}
+\frac{\partial C}{\partial w_j}=x_j (a-y) \tag{71}
 $$
 
 $$
@@ -149,7 +149,7 @@ $$
 $$
 对 (75) 进行积分后，便得到：
 $$
-C=-\frac{1}{n}\sum\_x{[y\ln a+(1-y)\ln(1-a)]}+constant \tag{77}
+C=-\frac{1}{n}\sum_x{[y\ln a+(1-y)\ln(1-a)]}+constant \tag{77}
 $$
 至此，我们已经推出了交叉熵函数的形式。
 
@@ -161,7 +161,7 @@ $$
 
 Softmax 的功能和 sigmoid 类似，只不过前者的函数形式是这样的：
 $$
-a\_j^L=\frac{e^{z\_j^L}}{\sum\_k{e^{z\_k^L}}} \tag{78}
+a_j^L=\frac{e^{z_j^L}}{\sum_k{e^{z_k^L}}} \tag{78}
 $$
 ⚠️分母是所有输出神经元的总和。这意味着，经过 Softmax 函数后，所有神经元的输出会呈现出概率分布的样式。
 
@@ -177,17 +177,17 @@ $$
 
 **log-likelihood** 的函数形式为：
 $$
-C \equiv -\ln a\_y^L \tag{80}
+C \equiv -\ln a_y^L \tag{80}
 $$
-先解释一下 $a\_y^L$，比方说，在 MNIST 数据集中，我们要判断一张图片属于 10 类中的哪一类，那么，输出结果应该是一个 10 维的向量 $a^L$，而真实结果则是数字 $y$，比如 7。那么，$a\_y^L$ 则表示 $a\_7^L$ 这个项对应的概率值有多高。如果概率值（靠近 1）越高，证明猜测结果越正确，那么 $C$ 的值就越小，反之越大。
+先解释一下 $a_y^L$，比方说，在 MNIST 数据集中，我们要判断一张图片属于 10 类中的哪一类，那么，输出结果应该是一个 10 维的向量 $a^L$，而真实结果则是数字 $y$，比如 7。那么，$a_y^L$ 则表示 $a_7^L$ 这个项对应的概率值有多高。如果概率值（靠近 1）越高，证明猜测结果越正确，那么 $C$ 的值就越小，反之越大。
 
 有了代价函数后，我们照样求出偏导数：
 $$
-\frac{\partial C}{\partial b\_j^L}=a\_j^L-y\_j \tag{81}
+\frac{\partial C}{\partial b_j^L}=a_j^L-y_j \tag{81}
 $$
 
 $$
-\frac{\partial C}{\partial w\_{jk}^L}=a\_k^{L-1}(a\_j^L-y\_j)  \tag{82}
+\frac{\partial C}{\partial w_{jk}^L}=a_k^{L-1}(a_j^L-y_j)  \tag{82}
 $$
 
 这里不存在类似 sigmoid 导数那样使学习速率下降的情况。
