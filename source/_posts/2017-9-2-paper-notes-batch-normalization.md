@@ -6,7 +6,7 @@ categories: 深度学习
 mathjax: true
 ---
 
-在神经网络的训练过程中，总会遇到一个很蛋疼的问题：梯度消失（梯度爆炸同理）。关于这个问题的根源，我在上一篇文章的[读书笔记](https://jermmy.github.io/2017/08/26/2017-8-26-reading-notes-neuralnetworkanddeeplearning-5)里也稍微提了一下。原因之一在于我们的输入数据（网络中任意层的输入）分布在激活函数收敛的区域，拿 sigmoid 函数举例：
+在神经网络的训练过程中，总会遇到一个很蛋疼的问题：梯度消失/爆炸。关于这个问题的根源，我在上一篇文章的[读书笔记](https://jermmy.github.io/2017/08/26/2017-8-26-reading-notes-neuralnetworkanddeeplearning-5)里也稍微提了一下。原因之一在于我们的输入数据（网络中任意层的输入）分布在激活函数收敛的区域，拿 sigmoid 函数举例：
 
 ![sigmoid](/images/2017-7-20/sigmoid.jpg)
 
