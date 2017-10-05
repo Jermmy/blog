@@ -1,7 +1,7 @@
 ---
 title: 论文笔记：Deep Residual Learning
 date: 2017-09-25 16:41:35
-tags: [深度学习]
+tags: [深度学习, 论文]
 categories: 深度学习
 mathjax: true
 ---
@@ -31,6 +31,19 @@ mathjax: true
 上面所说的 $F(x)=H(x)-x$ 就是所谓的残差 (residual)，而式子内的 $x$ 在论文中被称为 **Identity Mapping**，因为 x 可以看作是由自己到自己的映射函数。基于此，我们可以得到一个新的网络结构，如同开篇的图片所示，这个网络结构跟普通的网络结构类似，但在输出那里多加了一个 Identity Mapping，相当于在网络原有输出的基础上加一个 x，这样便得到我们想要的函数 $H(x)$。作者将这种相加称为 **shortcut connection**，意思就是说，$x$ 没有经过中间的变换操作，像「短路」一样直接跳到输出那里和 $F(x)$ 相加。需要注意的是，这个网络结构的输入并不一定是原始的数据，它可以是前面一层网络的输出结果。同理，网络的输出也可以继续输入到后面层的网络中。
 
 我们用一个式子来表示这个网络：$y=F(x,{W_i})+x$，其中 $F(x,{W_i})=W_2 \sigma(W_1x)$ （这里忽略了 bias）。在论文中，这里的 $\sigma$ 函数采用的是 ReLu。得到 $y$ 后，作者又对其做了一次 ReLu 操作，然后再进入下一层网络。
+
+Talk is cheap，show you the code（这里用 tensorflow 表示一下上图那个网络结构）：
+
+```python
+# 假设 x 是该网络结构的输入
+c1 = tf.layers.conv2d(x, kernel, [w, h], strides=[s,s])
+b1 = tf.layers.batch_normalization(c1, training=is_training)
+h1 = tf.nn.relu(b1)
+c2 = tf.layers.conv2d(h1, kernel, [w, h], strides=[s,s])
+b2 = tf.layers.batch_normalization(c2, training=is_training)
+r = b2 + x
+y = tf.nn.relu(r)
+```
 
 因为 $x$ 和 $F(x)$ 是直接相加的，所以它们的维度必须相同，不同的情况下，需要对 $x$ 的维度进行调整。可以通过做一次线性变换将它投影到所需的维度空间，也可以用其他简单粗暴的方法。比如，当维度太高时，可以用 pooling 的方法降低维度。而维度较低时，作者在实验中则是直接补 0 来扩展维度。
 
