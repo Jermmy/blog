@@ -128,7 +128,7 @@ $$
 $$
 \begin{eqnarray} 
   \frac{\partial C}{\partial w} & = & \frac{\partial C_0}{\partial w} + 
-  \frac{\lambda}{n} w \tag{88}\\\\
+  \frac{\lambda}{n} w \tag{88}\\
   \frac{\partial C}{\partial b} & = & \frac{\partial C_0}{\partial b}.
 \tag{89}\end{eqnarray}
 $$
@@ -136,7 +136,7 @@ $$
 $$
 \begin{eqnarray} 
   w & \rightarrow & w-\eta \frac{\partial C_0}{\partial
-    w}-\frac{\eta \lambda}{n} w \tag{91}\\\\
+    w}-\frac{\eta \lambda}{n} w \tag{91}\\
   & = & \left(1-\frac{\eta \lambda}{n}\right) w -\eta \frac{\partial
     C_0}{\partial w}. 
 \tag{92}\end{eqnarray} \\
