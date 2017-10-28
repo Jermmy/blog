@@ -1,8 +1,8 @@
 ---
 title: Bilateral Filter
 date: 2017-01-07
-tags: 计算机视觉
-categories: 计算机视觉
+tags: 图像处理
+categories: 图像处理
 mathjax: true
 ---
 
@@ -109,29 +109,5 @@ Bilateral Filter 的思想是：在位置信息的基础上加上颜色信息，
 
 ### 参考
 
-[图像处理之双边滤波效果(Bilateral Filtering for Gray and Color Image)](http://blog.csdn.net/jia20003/article/details/7740683)
-
-[双边滤波器](https://zh.wikipedia.org/wiki/%E9%9B%99%E9%82%8A%E6%BF%BE%E6%B3%A2%E5%99%A8)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-​                          
-
++ [图像处理之双边滤波效果(Bilateral Filtering for Gray and Color Image)](http://blog.csdn.net/jia20003/article/details/7740683)
++ [双边滤波器](https://zh.wikipedia.org/wiki/%E9%9B%99%E9%82%8A%E6%BF%BE%E6%B3%A2%E5%99%A8)

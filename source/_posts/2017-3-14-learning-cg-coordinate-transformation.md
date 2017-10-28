@@ -85,7 +85,7 @@ OpenGL 的坐标系统有六种：
 而 OpenGL 中坐标系统转换的原理，其实就是上面所讲的那些，只不过在使用时，我们可以使用一些 API 来简化不少工作。
 
 ### 参考
-Interactive Computer Graphics - A Top-Down Approach 6e By Edward Angel and Dave Shreiner (Pearson, 2012)
++ Interactive Computer Graphics - A Top-Down Approach 6e By Edward Angel and Dave Shreiner (Pearson, 2012)
 
 
 
