@@ -75,6 +75,28 @@ exp[-\frac{1}{2}(\overline x-\overline u)^T\Sigma^{-1}(\overline x-\overline u)]
 $$
 展开到最后，发现推出了公式 (4)。说明原公式 $N(\overline x | \overline u, \Sigma)=\frac{1}{(2\pi)^{D/2}}\frac{1}{|\Sigma|^{1/2}}exp[-\frac{1}{2}(\overline x-\overline u)^T\Sigma^{-1}(\overline x-\overline u)]$ 是成立的。你也可以将上面展开的过程逆着推回去，一样可以从例子中的公式 (4) 推出多维高斯公式。
 
+### 函数图像
+
+知道多维的公式后，下面再简单比较一下一维和二维的图像区别。
+
+<center>
+
+<img src="/images/2017-10-28/360px-Normal_Distribution_PDF.png" width="300px" >
+
+</center>
+
+上图展示的是 4 个一维高斯函数的图像。高斯函数是一个对称的山峰状，山峰的中心是均值 $u$，山峰的「胖瘦」由标准差 $\sigma$ 决定，如果 $\sigma$ 越大，证明数据分布越广，那么山峰越「矮胖」，反之，则数据分布比较集中，因此很大比例的数据集中在均值附近，山峰越「瘦高」。在偏离均值 $u$ 三个 $\sigma$ 的范围外，数据出现的概率几乎接近 0，因此这一部分的函数图像几乎与 x 轴重合。
+
+下面看二维的例子：
+
+<center>
+
+<img src="/images/2017-10-28/Gaussian_2d.png" width="300px">
+
+</center>
+
+有了一维图像的例子，二维图像就可以类比出来了。如果说，一维只是山峰的一个横截面，那么二维则是一个完整的有立体感的山峰。山峰的「中心」和「胖瘦」和一维的情况是一致的，而且，对于偏离中心较远的位置，数据出现的概率几乎为 0，因此，函数图像在这些地方就逐渐退化成「平原」了。
+
 ### 总结
 
 本文只是从一个简单的二维例子出发，来说明多维高斯公式的来源。在 PRML 的书中，推导的过程更加全面，也复杂了许多，想深入学习多维高斯模型的还是参考教材为准。
@@ -93,3 +115,4 @@ $$
 ### 参考
 
 + [协方差矩阵](https://jermmy.github.io/2017/03/19/2017-3-19-covariance-matrix/)
++ [Gaussian function](https://en.wikipedia.org/wiki/Gaussian_function)
