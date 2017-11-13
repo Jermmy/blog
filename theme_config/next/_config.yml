@@ -95,7 +95,7 @@ font:
   enable: true
 
   # Uri of fonts host. E.g. //fonts.googleapis.com (Default)
-  host:
+  host: //fonts.proxy.ustclug.org
 
   # Global font settings used on <body> element.
   global:
@@ -257,16 +257,10 @@ post_wordcount:
 links_title: Links
 links:
   阮一峰: http://www.ruanyifeng.com/blog/
-  唐巧: http://blog.devtang.com/
-  胡凯: http://hukai.me/
-  codeKK: http://p.codekk.com/
-  Trinea: http://www.trinea.cn/
-  技术小黑屋: http://droidyue.com/
-  安卓官方博客: http://android-developers.blogspot.com/
 
 # Declare license on posts
 post_copyright:
-  enable: false
+  enable: true
   license: CC BY-NC-SA 3.0
   license_url: https://creativecommons.org/licenses/by-nc-sa/3.0/
 
@@ -303,10 +297,11 @@ mathjax:
   enable: true
   per_page: false
   cdn: //cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+  # cdn: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?...
 
 
 # Han Support docs: https://hanzi.pro/
-han: false
+han: true
 
 # Swiftype Search API Key
 #swiftype_key:
@@ -315,7 +310,7 @@ han: false
 #baidu_analytics:
 
 # Duoshuo ShortName
-duoshuo_shortname: jermmyxu
+# duoshuo_shortname: jermmyxu
 
 # Disqus
 disqus:
@@ -331,7 +326,7 @@ disqus:
 
 # changyan
 changyan:
-  enable: true
+  enable: false
   appid: cysYmfmny
   appkey: a46a7a8938f6ffb802e7ee26df5b43fb
 
