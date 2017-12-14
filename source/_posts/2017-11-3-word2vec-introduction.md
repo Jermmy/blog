@@ -2,7 +2,7 @@
 title: word2vec概述
 date: 2017-11-03 16:28:37
 tags: [深度学习, NLP]
-categories: 深度学习
+categories: 机器学习
 mathjax: true
 ---
 

@@ -2,7 +2,7 @@
 title: 读书笔记：neuralnetworksanddeeplearning chapter3（1）
 date: 2017-07-20 22:49:21
 tags: [深度学习]
-categories: 深度学习
+categories: 机器学习
 mathjax: true
 ---
 

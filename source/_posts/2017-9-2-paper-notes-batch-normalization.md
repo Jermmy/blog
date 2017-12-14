@@ -2,7 +2,7 @@
 title: 论文笔记：Batch Normalization
 date: 2017-09-02 22:06:20
 tags: [深度学习, 论文]
-categories: 深度学习
+categories: 机器学习
 mathjax: true
 ---
 

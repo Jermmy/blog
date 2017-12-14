@@ -2,7 +2,7 @@
 title: 拉格朗日乘子法
 date: 2017-07-27 22:50:27
 tags: [机器学习, 优化理论]
-categories: 优化理论
+categories: 机器学习
 mathjax: true
 ---
 

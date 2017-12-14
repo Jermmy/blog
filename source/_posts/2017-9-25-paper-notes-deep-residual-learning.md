@@ -2,11 +2,9 @@
 title: 论文笔记：Deep Residual Learning
 date: 2017-09-25 16:41:35
 tags: [深度学习, 论文]
-categories: 深度学习
+categories: 机器学习
 mathjax: true
 ---
-
-上一篇文章说要介绍一下深度残差学习，结果一拖就是三个星期(囧)。开学这几周虽然事多，但人也比之前颓废了。想想能专心读书的时间已经不多了，以后还是尽量做到每周出一篇文章。
 
 之前提到，深度神经网络在训练中容易遇到梯度**消失/爆炸**的问题，这个问题产生的根源详见之前的[读书笔记]((https://jermmy.github.io/2017/08/26/2017-8-26-reading-notes-neuralnetworkanddeeplearning-5))。在 Batch Normalization 中，我们将输入数据由激活函数的收敛区调整到梯度较大的区域，在一定程度上缓解了这种问题。不过，当网络的层数急剧增加时，BP 算法中导数的累乘效应还是很容易让梯度慢慢减小直至消失。这篇文章中介绍的深度残差 (Deep Residual) 学习网络可以说根治了这种问题。下面我按照自己的理解浅浅地水一下 Deep Residual Learning 的基本思想，并简单介绍一下深度残差网络的结构。
 
@@ -138,5 +136,5 @@ y = tf.nn.relu(r)
 ### 参考
 
 + [何恺明的tutorial](http://icml.cc/2016/tutorials/icml2016_tutorial_deep_residual_networks_kaiminghe.pdf)
-+  [Identity Mappings in Deep Residual Networks](https://arxiv.org/abs/1603.05027)
++ [Identity Mappings in Deep Residual Networks](https://arxiv.org/abs/1603.05027)
 + [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
