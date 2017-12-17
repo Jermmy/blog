@@ -39,7 +39,7 @@ $$
 $$
 a^l=\sigma(W^la^{l-1}+b^l)                   \tag{25}
 $$
-注意，这里我们对 $\sigma()$ 函数做了点延伸，当输入参数是向量时，$sigma()$ 会逐个作用到向量的每个元素上（elementwise）。
+注意，这里我们对 $\sigma()$ 函数做了点延伸，当输入参数是向量时，$\sigma()$ 会逐个作用到向量的每个元素上（elementwise）。
 
 在 (25) 式中，有时为了书写的方便，我们会用 $z^l$ 来表示 $W^la^{l-1}+b^l$。下文中，$z^l$ 将会频繁出现。
 
@@ -155,8 +155,8 @@ BP2 需要用到后一层计算出来的 $\delta^{l+1}$，因此，我们先根�
 由 $\delta_k^{l}=\frac{\partial C}{\partial z_k^l}$ 和 $C=f(\sigma(z_0^L), \sigma(z_1^L), \cdots, \sigma(z_n^L))$ 可以得到：
 $$
 \begin{eqnarray}
-\delta_j^{l} & = & \frac{\partial C}{\partial z_0^{l+1}}\frac{\partial z_0^{l+1}}{\partial z_j^{l}}+\cdots+\frac{\partial C}{\partial z_n^{l+1}}\frac{\partial z_n^{l+1}}{\partial z_j^{l}} \\\\
-& = & \sum_k{\frac{\partial C}{\partial z_k^{l+1}}\frac{\partial z_k^{l+1}}{\partial z_j^j}} \\\\
+\delta_j^{l} & = & \frac{\partial C}{\partial z_0^{l+1}}\frac{\partial z_0^{l+1}}{\partial z_j^{l}}+\cdots+\frac{\partial C}{\partial z_n^{l+1}}\frac{\partial z_n^{l+1}}{\partial z_j^{l}}  \notag \\
+& = & \sum_k{\frac{\partial C}{\partial z_k^{l+1}}\frac{\partial z_k^{l+1}}{\partial z_j^j}} \notag \\
 & = & \sum_k \delta_k^{l+1}\frac{\partial z_k^{l+1}}{\partial z_j^{l}}   \tag{42}
 \end{eqnarray}
 $$
@@ -213,7 +213,7 @@ $$
 
 > 1. **Input** x: Set the corresponding activation $a^1$ for the input layer.
 > 2. **Feedforward: ** For each l = 2, 3, …, L compute $z^l=w^la^{l-1}+b^l$ and $a^l=\sigma(z^l)$.
-> 3. **Output error **$\delta^L$: Compute the vector $\delta^L=\nabla\_a C \odot \sigma'(z^L)$.
+> 3. **Output error **$\delta^L$: Compute the vector $\delta^L=\nabla_a C \odot \sigma'(z^L)$.
 > 4. **Backpropagate the error: **For each l = L-1, L-2, …, 2 compute $\delta^l=((W^{l+1})^T \delta^{l+1}) \odot \sigma'(z^l)$.
 > 5. **Output: **The gradient of the cost function is given by $\frac{\partial C}{\partial w_{jk}^l}=a_k^{l-1}\delta_j^{l}$ and $\frac{\partial C}{\partial b_j^l}=\delta_j^l$.
 

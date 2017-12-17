@@ -132,12 +132,36 @@ G(\mathbf{W}, \mathbf{\phi}; D)
 \end{align}
 $$
 
+公式中的 $D$ 表示训练的样本对。
 
 #### 训练细节优化
 
-值得注意的是，(13) 式是一种 sample-pair-based 的表示，每次计算目标函数的时候，我们需要生成很多的样本对，时间和空间的开销都比较大。所以，下一步是将它表示成 sample-based 的形式，这样我们可以用普通的 SGD 算法来优化目标函数。
+值得注意的是，(13) 式是一种 sample-pair-based 的表示，每次计算目标函数的时候，我们需要生成很多的样本对，而且，由于同一张图片可能出现在多个 pair 中，这样就容易造成很多重复计算（例如，计算 $\tilde{x_1}$ 时需要一次前向传播，如果 $x_1$ 这张图片又出现在同一个 batch 的其他 pair 中，那我们又需要计算一次前向传播，而这个计算结果其实是可以复用的）。所以，下一步是将它表示成 sample-based 的形式，以减少这种重复计算。
 
-对于$D$中的每一个样本对$\{\mathbf{x_i}, \mathbf{y_i}\}$，我们假设 $\mathbf{z}^{j_{i,1}}=\mathbf{x_i}$，$\mathbf{z}^{j_{i,2}}=\mathbf{y_i}$，其中，$1 \le j_{i,1} \le M_x$，$M_x+1 \le j_{i,2} \le M_z(=M_x+M_y)$，$M_x$ 是样本 $\mathbf{x}$ 的数量，$M_y$ 是样本 $\mathbf{y}$ 的数量。同理，$\tilde{\mathbf{z}}^{j_{i,1}}=\tilde{\mathbf{x_i}}$，$\tilde{\mathbf{z}}^{j_{i,2}}=\tilde{\mathbf{y_i}}$。
+sample-based 的基本想法是，在每次 batch 训练时，我们不是用一个个 pair 计算，而是针对每张图片，把与该图片相关的操作都放在一起计算。
+具体点说，假设一个 batch 中的数据为 $\{\{x_1,y_1\},\dots,\{x_n,y_n\}\}$，在原始的 sample-pair-based 的算法中，我们会针对网络的两个输入计算两个导数。
+
+对 $\tilde{x_i}$ 而言：
+$$
+\begin{align}
+\frac{\partial G(\Omega_x; D)}{\partial \Omega_x}=\sum_{i=1}^n{-\frac{\partial (\ell_i \tilde{S}(x_i,y_i))}{\partial \tilde{x_i}}\frac{\partial \tilde{x_i}}{\partial \Omega_x} + \frac{\partial \Psi}{\partial \Omega_x} } \notag
+\end{align}
+$$
+对 $\tilde{y_i}$ 而言：
+$$
+\begin{align}
+\frac{\partial G(\Omega_y; D)}{\partial \Omega_y}=\sum_{i=1}^n{-\frac{\partial (\ell_i \tilde{S}(x_i,y_i))}{\partial \tilde{y_i}}\frac{\partial \tilde{y_i}}{\partial \Omega_y} + \frac{\partial \Psi}{\partial \Omega_y} } \notag
+\end{align}
+$$
+在上面两个公式中，$\Omega=\{W,\phi\}$。不难发现，$\frac{\partial \tilde{x_i}}{\partial \Omega_x}$ 和 $\frac{\partial \tilde{y_i}}{\partial \Omega_y}$ 都只跟各自的输入图片有关，跟样本对中的另一张图片无关，而这一项也是重复计算的根源，所以，sample-based 的计算过程是把这两项单独提取出来，重复利用。以 $\tilde{x_i}$ 为例：
+$$
+\begin{align}
+\frac{\partial G(\Omega_x; D)}{\partial \Omega_x}=\sum_{i=1}^n{\{ \frac{\partial \tilde{x_i}}{\partial \Omega_x} \sum_{j}(-\frac{\partial (\ell_i \tilde{S}(x_i,y_j))}{\partial \tilde{x_i}})\} + \frac{\partial \Psi}{\partial \Omega_x} } \notag
+\end{align}
+$$
+上式中的 $y_j$ 表示与 $x_i$ 组成一个 pair 的另一张图片。
+
+基于上述思想，论文给出了如下更加符号化的表述。对于 $D$ 中的每一个样本对 $\{\mathbf{x_i}，\mathbf{y_i}\}$，我们假设 $\mathbf{z}^{j_{i,1}}=\mathbf{x_i}$，$\mathbf{z}^{j_{i,2}}=\mathbf{y_i}$，其中，$1 \le j_{i,1} \le M_x$，$M_x+1 \le j_{i,2} \le M_z(=M_x+M_y)$，$M_x$ 是样本 $\mathbf{x}$ 的数量，$M_y$ 是样本 $\mathbf{y}$ 的数量。同理，$\tilde{\mathbf{z}}^{j_{i,1}}=\tilde{\mathbf{x_i}}$，$\tilde{\mathbf{z}}^{j_{i,2}}=\tilde{\mathbf{y_i}}$。
 然后，我们可以将 (13) 式改写成 sample-based 的形式：
 $$
 \begin{align}
@@ -172,7 +196,32 @@ $$
 $$
 对于另一个分支，我们可以用同样的方法计算 $\frac{\partial L}{\partial \tilde{\mathbf{z}}^{j_{i,y}}}$。
 
+最后，把 (18) 式代回到 (17) 式，就可以得到 sample-based 的梯度公式。
 
+论文给出了计算公式 (18) 的具体执行算法：
+
+<center>
+
+<img src="/images/2017-12-12/algo1.png" width="500px">
+
+</center>
+
+这个算法总结起来就是，对于每张输入图片 $\mathbf{z}^j$，收集跟它组成 pair 的所有图片，按照公式 (18) 计算 $\frac{\partial L}{\partial \tilde{\mathbf{z}}^j}$。
+
+下面给出的是完整的梯度下降算法：
+
+<center>
+
+<img src="/images/2017-12-12/algo2.png" width="500px">
+
+</center>
+
+注意到，对于每次迭代训练的 batc h数据，算法中会将每张图片前向传播和后向传播的计算结果都保存下来，然后再针对之前提及的 sample-based 的方法计算梯度。因此，相比 sample-pair-based 的形式，我们实际上只需要对每张图片计算一次前向和后向即可，节省了大量重复计算。
+
+#### 样本生成
+
+最后，在训练样本对的生成上，论文采用如下方法：
+每次迭代时，先随机挑选 K 个目录（每个目录都包含两个不同的域），然后从每个目录的两个域中，分别随机挑选 $O_1$ 和 $O_2$ 张图片。接着，对第一个域中的每张图片 $A$，从第二个域中随机挑选若干图片和它组成样本对，注意，从第二个域中挑选的图片，有一半和 $A$ 属于同一目录，另一半与 $A$ 属于不同目录。
 
 ### 参考
 
