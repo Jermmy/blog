@@ -38,7 +38,11 @@ $$
 S(\mathbf{x}, \mathbf{y})=\begin{bmatrix}\mathbf{x}^T & \mathbf{y}^T & 1  \end{bmatrix} \begin{bmatrix} \mathbf{A} & \mathbf{C} & \mathbf{d} \\ \mathbf{C}^T & \mathbf{B} & \mathbf{e} \\ \mathbf{d}^T & \mathbf{e}^T & f \end{bmatrix} \begin{bmatrix} \mathbf{x} \\ \mathbf{y} \\ 1 \end{bmatrix}  \tag{1}
 \end{align}
 $$
-其中，我们限制 $\mathbf{A}$、$\mathbf{B}$ 为半正定矩阵，表示同域内的自相关性，$\mathbf{C}$ 为两个域之间的协方差矩阵。根据半正定矩阵的性质以及 $\mathbf(C)$ 的对称性，我们可以将 $\mathbf{A}$、$\mathbf{B}$、$\mathbf{C}$ 表示为：
+（$\mathbf{A}$、$\mathbf{B}$、$\mathbf{C}$ 是矩阵，$\mathbf{d}$ 和 $\mathbf{e}$ 是两个向量，$\mathbf{x}$ 和 $\mathbf{y}$ 分别表示两个待匹配的向量）
+
+举个例子，如果 $\mathbf{A}$=$\mathbf{B} = \mathbf{I}$，$\mathbf{C}=-\mathbf{I}$，$\mathbf{d}=\mathbf{e}=\mathbf{0}$，$f=0$，则该模型退化为欧式距离：$S(x,y)=\mathbf{x}^T\mathbf{x}-2\mathbf{x}\mathbf{y}+\mathbf{y}^T\mathbf{y}=||\mathbf{x}-\mathbf{y}||^2$。
+
+同时，论文还限制 $\mathbf{A}$、$\mathbf{B}$ 为半正定矩阵，表示同域内的自相关性，$\mathbf{C}$ 为两个域之间的相关性矩阵。根据半正定矩阵的性质以及 $\mathbf(C)$ 的对称性，我们可以将 $\mathbf{A}$、$\mathbf{B}$、$\mathbf{C}$ 表示为：
 $$
 \begin{align}
 \mathbf{A}=\mathbf{L_A}^T \mathbf{L_A} \notag \\
