@@ -157,13 +157,13 @@ $$
 \frac{\partial G(\Omega_y; D)}{\partial \Omega_y}=\sum_{i=1}^n{-\frac{\partial (\ell_i \tilde{S}(x_i,y_i))}{\partial \tilde{y_i}}\frac{\partial \tilde{y_i}}{\partial \Omega_y} + \frac{\partial \Psi}{\partial \Omega_y} } \notag
 \end{align}
 $$
-在上面两个公式中，$\Omega=\{W,\phi\}$。不难发现，$\frac{\partial \tilde{x_i}}{\partial \Omega_x}$ 和 $\frac{\partial \tilde{y_i}}{\partial \Omega_y}$ 都只跟各自的输入图片有关，跟样本对中的另一张图片无关，而这一项也是重复计算的根源，所以，sample-based 的计算过程是把这两项单独提取出来，重复利用。以 $\tilde{x_i}$ 为例：
+在上面两个公式中，$\Omega=\{W,\phi\}$，$n$表示sample的数量。不难发现，$\frac{\partial \tilde{x_i}}{\partial \Omega_x}$ 和 $\frac{\partial \tilde{y_i}}{\partial \Omega_y}$ 都只跟各自的输入图片有关，跟样本对中的另一张图片无关，而这一项也是重复计算的根源，所以，sample-based 的计算过程是把这两项单独提取出来，重复利用。以 $\tilde{x_i}$ 为例：
 $$
 \begin{align}
-\frac{\partial G(\Omega_x; D)}{\partial \Omega_x}=\sum_{i=1}^n{\{ \frac{\partial \tilde{x_i}}{\partial \Omega_x} \sum_{j}(-\frac{\partial (\ell_i \tilde{S}(x_i,y_j))}{\partial \tilde{x_i}})\} + \frac{\partial \Psi}{\partial \Omega_x} } \notag
+\frac{\partial G(\Omega_x; D)}{\partial \Omega_x}=\sum_{i=1}^m{\{ \frac{\partial \tilde{x_i}}{\partial \Omega_x} \sum_{j}(-\frac{\partial (\ell_i \tilde{S}(x_i,y_j))}{\partial \tilde{x_i}})\} + \frac{\partial \Psi}{\partial \Omega_x} } \notag
 \end{align}
 $$
-上式中的 $y_j$ 表示与 $x_i$ 组成一个 pair 的另一张图片。
+上式中的 $y_j$ 表示与 $x_i$ 组成一个 pair 的另一张图片。注意这里我们用$m$替换$n$，因为现在只需要针对$m$张不同的图片（$n$个样本对中可能只有$m$张$x_i$是不同的）计算导数平均值即可。
 
 基于上述思想，论文给出了如下更加符号化的表述。对于 $D$ 中的每一个样本对 $\{\mathbf{x_i}，\mathbf{y_i}\}$，我们假设 $\mathbf{z}^{j_{i,1}}=\mathbf{x_i}$，$\mathbf{z}^{j_{i,2}}=\mathbf{y_i}$，其中，$1 \le j_{i,1} \le M_x$，$M_x+1 \le j_{i,2} \le M_z(=M_x+M_y)$，$M_x$ 是样本 $\mathbf{x}$ 的数量，$M_y$ 是样本 $\mathbf{y}$ 的数量。同理，$\tilde{\mathbf{z}}^{j_{i,1}}=\tilde{\mathbf{x_i}}$，$\tilde{\mathbf{z}}^{j_{i,2}}=\tilde{\mathbf{y_i}}$。
 然后，我们可以将 (13) 式改写成 sample-based 的形式：

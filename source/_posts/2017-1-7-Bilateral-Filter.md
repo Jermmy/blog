@@ -1,7 +1,7 @@
 ---
 title: Bilateral Filter
 date: 2017-01-07
-tags: 图像处理
+tags: [图像处理, NPR]
 categories: 图像处理
 mathjax: true
 ---
