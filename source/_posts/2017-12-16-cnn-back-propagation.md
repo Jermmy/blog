@@ -150,9 +150,17 @@ $$
 
 这里的重点是要计算 $\frac{\partial z^l}{\partial a^{l-1}}$，这也是卷积层区别于全联接层的地方。根据前面展开的卷积操作的等式，这个导数其实比全联接层更容易求。以 $a_{11}^{l-1}$ 和 $a_{12}^{l-1}$ 为例（简洁起见，下面去掉右上角的层数符号 $l$）：
 $$
-\nabla a_{11} = \frac{\partial C}{\partial z_{11}} \frac{\partial z_{11}}{\partial a_{11}}+  \frac{\partial C}{\partial z_{12}}\frac{\partial z_{12}}{\partial a_{11}}+ \frac{\partial C}{\partial z_{21}}\frac{\partial z_{21}}{\partial a_{11}} + \frac{\partial C}{\partial z_{22}}\frac{\partial z_{22}}{\partial a_{11}} = \delta_{11}w_{11} \\
-\nabla a_{12} = \frac{\partial C}{\partial z_{11}}\frac{\partial z_{11}}{\partial a_{12}} + \frac{\partial C}{\partial z_{12}}\frac{\partial z_{12}}{\partial a_{12}} + \frac{\partial C}{\partial z_{21}}\frac{\partial z_{21}}{\partial a_{12}} + \frac{\partial C}{\partial z_{22}}\frac{\partial z_{22}}{\partial a_{12}} =\delta_{11}w_{12} + \delta_{12}w_{11}
+\begin{align}
+\nabla a_{11} = & \frac{\partial C}{\partial z_{11}} \frac{\partial z_{11}}{\partial a_{11}}+  \frac{\partial C}{\partial z_{12}}\frac{\partial z_{12}}{\partial a_{11}}+ \frac{\partial C}{\partial z_{21}}\frac{\partial z_{21}}{\partial a_{11}} + \frac{\partial C}{\partial z_{22}}\frac{\partial z_{22}}{\partial a_{11}} \notag \\
+=& \delta_{11}w_{11} \notag \end{align}
 $$
+$$
+\begin{align}
+\nabla a_{12} =& \frac{\partial C}{\partial z_{11}}\frac{\partial z_{11}}{\partial a_{12}} + \frac{\partial C}{\partial z_{12}}\frac{\partial z_{12}}{\partial a_{12}} + \frac{\partial C}{\partial z_{21}}\frac{\partial z_{21}}{\partial a_{12}} + \frac{\partial C}{\partial z_{22}}\frac{\partial z_{22}}{\partial a_{12}} \notag \\
+=&\delta_{11}w_{12} + \delta_{12}w_{11} \notag
+\end{align}
+$$
+
 （$\nabla a_{ij}$ 表示 $\frac{\partial C}{\partial a_{ij}}$。如果这两个例子看不懂，证明对之前 BP 例子中的（1）式理解不够，请先复习普通的 BP 算法。）
 
 其他 $\nabla a_{ij}$ 的计算，道理相同。
