@@ -1,5 +1,5 @@
 ---
-title: SVM小白教程（一）
+title: SVM小白教程（1）：目标函数
 date: 2017-12-23 19:56:35
 tags: [机器学习]
 categories: 机器学习
@@ -122,9 +122,9 @@ $$
 
 综合考虑 (2) (3)，我们得到 SVM 最终的目标函数：
 $$
-\underset{(\mathbf{w},b)}{\operatorname{min}} ||\mathbf{w}|| \ \ \ \ \operatorname{s.t.} \ y_i(\mathbf{w}^T\mathbf{x_i}+b) \ge \delta
+\underset{(\mathbf{w},b)}{\operatorname{min}} ||\mathbf{w}|| \ \ \ \ \operatorname{s.t.} \ y_i(\mathbf{w}^T\mathbf{x_i}+b) \ge \delta, \ \ i=1,...,m
 $$
-找出使这个函数最小的 $\mathbf{w}$ 和 $b$，就找到了最合适的超平面。
+找出使这个函数最小的 $\mathbf{w}$ 和 $b$，就找到了最合适的超平面。注意，由于我们有 $m$ 个样本，所以总共有 $m$ 个限制条件。
 
 ## 参考
 

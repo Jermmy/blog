@@ -34,7 +34,11 @@ $$
 
 首先我们画出 $f(x, y)$ 的图像，这个图像应该是 3 维的，但为了方便讲解，这里给出它的 2 维投影：
 
-![lagrange1](/images/2017-7-27/lagrange1.png)
+<center>
+
+<img src="/images/2017-7-27/lagrange1.png">
+
+</center>
 
 图中的红色圆表示 $f(x, y)$，越靠近原点的部分，值越小（表示“谷底”），这些圆又称为「等高线」，因为同一个圆代表的函数值相同。
 
@@ -66,11 +70,19 @@ $$
 
 现在，我们来感性地认识一下，为什么拉格朗日认为相切才能找到最低点（只是感性认识，不添加任何数学推导）。
 
-![orange-gradient](/images/2017-7-27/orange-gradient.png)
+<center>
+
+<img src="/images/2017-7-27/orange-gradient.png" >
+
+</center>
 
 在橙点这个位置，由于两条曲线不相切，所以橙线的梯度（上图橙色箭头）和蓝线的切线（蓝色虚线）肯定不垂直。在这种情况下，蓝线的两个切线方向，必定有一个往函数高处走（与梯度的夹角小于 90 度），有一个往函数低处走（与梯度的夹角大于 90 度）。所以，在两条曲线相交时，我们肯定不在最低点或最高点的位置。
 
-![black-gradient](/images/2017-7-27/black-gradient.png)
+<center>
+
+<img src="/images/2017-7-27/black-gradient.png" >
+
+</center>
 
 那么，反过来想，如果两条曲线相切（上图），那么在切点这个位置，蓝线的切线和橙线的梯度是垂直的，这个时候，蓝线的切线方向都指向橙线的等高线方向。换句话说，在切点的位置沿蓝线移动很小的一步，都相当于在橙线的等高线上移动，这个时候，可以认为函数值已经趋于稳定了。所以，我们认为这个点的值“可能”是最低（高）的（之后解释为什么是“可能“。另外，个人觉得拉格朗日乘子法最好用反证法从不相切的点入手思考，从相切的点思考总有点别扭）。
 
@@ -98,7 +110,11 @@ $$
 
 多个约束条件和单个约束条件是一样的。如果是多个约束条件，那么这些约束函数肯定是相交的，否则无解。多个约束条件一般会把变量约束到一个更低维的空间，例如，下图中，紫色球面和黄色平面将变量约束到黑色线的位置。
 
-![LagrangeConstraints](/images/2017-7-27/LagrangeConstraints.jpg)
+<center>
+
+<img src="/images/2017-7-27/LagrangeConstraints.jpg" >
+
+</center>
 
 求解过程和单个约束条件是一样的，我们定义一个新的拉格朗日函数：
 $$
@@ -110,7 +126,11 @@ $$
 
 根据拉格朗日乘子法的定义，这是一种寻找极值的策略，换句话说，该方法并不能保证找到的一定是最低点或者最高点。事实上，它只是一种寻找极值点的过程，而且，拉格朗日乘子法找到的切点可能不只一个（也就是上面的方程组可能找到多个解），例如下图：
 
-![multiple-solution](/images/2017-7-27/multiple-solution.jpg)
+<center>
+
+<img src="/images/2017-7-27/multiple-solution.jpg">
+
+</center>
 
 图中相切的点有两个，而红点的函数值明显比黑点小。事实上，要想判断找到的点是极低点还是极高点，我们需要将切点代入原函数再进行判断。
 
@@ -122,6 +142,7 @@ $$
 + [An Introduction to Lagrange Multipliers](http://www.slimy.com/~steuard/teaching/tutorials/Lagrange.html)
 + [Understanding Lagrange Multipliers](https://danstronger.wordpress.com/2015/08/08/lagrange-multipliers/)
 + [拉格朗日乘子法如何理解？](https://www.zhihu.com/question/38586401/answer/134473412)
++ [SVM - Understanding the math - Duality and Lagrange multipliers](https://www.svm-tutorial.com/2016/09/duality-lagrange-multipliers/)
 
 
 
