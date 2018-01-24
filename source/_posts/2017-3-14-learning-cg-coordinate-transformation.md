@@ -33,7 +33,7 @@ $$
 
 用矩阵方程的形式表示为：
 
-$$\mathbf u = \mathbf M \mathbf v$$。
+$$\mathbf u = \mathbf M \mathbf v$$
 由于 $\mathbf u$,  $\mathbf v$ 都是三维空间的基，因此，对于三维空间内任意一个向量 $\mathbf w$，$\mathbf u$、$\mathbf v$都可以通过线性组合的方式表示出 $\mathbf w$：
 $\mathbf w = \mathbf a^T \mathbf v = \mathbf b^T \mathbf u$（这里的$\mathbf a^T$, $\mathbf b^T$分别表示不同坐标空间的标量）。
 结合前面 $\mathbf u = \mathbf M \mathbf v$，进一步得到：$\mathbf w = \mathbf b^T \mathbf u = \mathbf b^T \mathbf M \mathbf v=\mathbf a^T \mathbf v$，

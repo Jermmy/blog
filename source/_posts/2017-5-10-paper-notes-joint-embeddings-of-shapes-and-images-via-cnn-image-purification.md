@@ -58,7 +58,9 @@ mathjax: true
 
 因此，论文提出一个新的空间 $D_{n\*n}$，代表一个距离矩阵：$D(i, j) = d_{i, j}$。由于 $F$ 是原特征向量组成的空间，而 $D$ 则是一个距离矩阵，因此，对 $D$ 降维后，仍然可以很好地表达相似性和不相似性（这一点暂时不是很理解）。降维方面，作者比较了多种方法，最后发现，使用 non-linear Multi-Dimensional Scaling(MDS) 方法效果上最好。该方法的提出是在 1964 年，听起来相当的有格调又很有历史感，我暂时没有去了解，所以先姑且把它当作一个黑盒子吧。总之，我们通过这个方法，将距离矩阵 $D_{n\*n}$ 降维成 $D^{-}$，维度同样保持 128 维（见下图）。然后，将降维后的矩阵 $D^{-}$ 的行向量当作形状的特征向量。这种用距离来表示特征的方法我是第一次遇到，还不是很理解。作者在论文的 PPT 中这样解释：如果两个形状跟其他所有形状之间的 distance 差不多，也就是说它们在 $D^{-}$ 的行向量很相似，那么这两个形状也应该是类似的。
 
-![embedding space](/images/2017-5-10/embedding space.png)
+<center>
+<img src=“/images/2017-5-10/embedding space.png” width=“500px”>
+</center>
 
 ### CNN for Image Embedding
 
@@ -76,9 +78,11 @@ mathjax: true
 
 论文中直接采用了 AlexNet 的架构，唯一不同的只是将网络最后一层 fc8 的输出改为 128 维的向量（原 AlexNet 是将 fc8 输入到 softmax 层），同时将 Softmax Loss Layer 换成 Euclidean Loss Layer。这个损失函数具体为：
 
-$L(\theta)=\sum_{i,r}{||f(R_{i,r}; \theta) - P_{S_{i}}||\_{2}^{2}}$
+$L(\theta)=\sum_{i,r}{||f(R_{i,r}; \theta) - P_{S_{i}}||_{2}^{2}}$
 
-![network](/images/2017-5-10/network.png)
+<center>
+<img src=“/images/2017-5-10/network.png” width=“500px”>
+</center>
 
 上图中，左图为原来的 AlexNet，右图为论文中采用的 CNN。
 
@@ -100,7 +104,9 @@ $L(\theta)=\sum_{i,r}{||f(R_{i,r}; \theta) - P_{S_{i}}||\_{2}^{2}}$
 
 论文还提到另一种好玩的应用 **Shape-Guided Image Editing**。
 
-![Shape-Guided Image Editing](/images/2017-5-10/Shape-Guided Image Editing.png)
+<center>
+<img src=“/images/2017-5-10/Shape-Guided Image Editing.png” width=“500px”>
+</center>
 
 比如，我们想在图片中为椅子增加一个台灯照射下的阴影效果，这个时候，直接基于图像处理的方法是比较难做到的，而换个角度，可以先用一个类似的 3D 模型投射出这个阴影后，再把阴影加入到原图中。
 

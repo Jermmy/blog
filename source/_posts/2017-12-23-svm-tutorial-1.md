@@ -1,7 +1,7 @@
 ---
 title: SVM小白教程（1）：目标函数
 date: 2017-12-23 19:56:35
-tags: [机器学习]
+tags: [机器学习, 优化理论]
 categories: 机器学习
 mathjax: true
 ---

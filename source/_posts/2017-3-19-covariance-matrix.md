@@ -100,10 +100,10 @@ $\Sigma_{11}=\frac{(第1列-第1列的均值)^T*(第1列-第1列的均值)}{样�
 
 求出期望：
 $$
-\begin{eqnarray} E(XY) & = &\sum_x \sum_y {x*y*p(x,y)} \\
-& = &\sum_x \sum_y x*y*p_x(x)*p_y(y) \\
-& = &\sum_x{x*p_x(x)}\sum_y{y*p_y(y)} \\
-& = &E(X)E(Y)
+\begin{eqnarray} E(XY) & = &\sum_x \sum_y {x*y*p(x,y)} \notag \\
+& = &\sum_x \sum_y x*y*p_x(x)*p_y(y) \notag \\
+& = &\sum_x{x*p_x(x)}\sum_y{y*p_y(y)} \notag \\
+& = &E(X)E(Y) \notag
 \end{eqnarray}
 $$
 利用协方差的另一个公式：$Cov(X,Y)=E(X,Y)-E(X)E(Y)$，可以推出，当 $X, Y$ 相互独立时，$Cov(X, Y)=0$。

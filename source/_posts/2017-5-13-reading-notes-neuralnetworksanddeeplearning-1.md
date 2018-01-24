@@ -55,7 +55,7 @@ $$
 
 为了克服这个问题，我们引入一种新的感知器 **sigmoid neuron**。它跟 Perceptrons 的结构一模一样，只是在输出结果时加上了一层 **sigmoid 函数**：$\sigma(z)=\frac{1}{1+e^{(-z)}}$。这样，网络的输出就变成了：
 $$
-output=\frac{1}{1+exp(WX+b)}
+output=\frac{1}{1+exp(-(WX+b))}
 $$
 sigmoid 函数的图像如下：
 

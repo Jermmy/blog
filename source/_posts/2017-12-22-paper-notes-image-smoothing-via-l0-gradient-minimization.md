@@ -1,7 +1,7 @@
 ---
 title: 论文笔记：Image Smoothing via L0 Gradient Minimization
 date: 2017-12-22 10:05:17
-tags: [图像处理, NPR]
+tags: [图像处理, NPR, 论文]
 categories: 图像处理
 mathjax: true
 ---

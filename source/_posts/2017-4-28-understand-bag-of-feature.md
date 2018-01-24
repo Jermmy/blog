@@ -8,7 +8,11 @@ mathjax: true
 
 Bag of Feature 是一种图像特征提取方法，它借鉴了文本分类的思路（Bag of Words），从图像抽象出很多具有代表性的「关键词」，形成一个字典，再统计每张图片中出现的「关键词」数量，得到图片的特征向量。
 
-![bag-of-feature](/images/2017-4-29/bag-of-feature.png)
+<center>
+
+<img src="/images/2017-4-29/bag-of-feature.png" width="600px">
+
+</center>
 
 <!--more-->
 
@@ -16,7 +20,9 @@ Bag of Feature 是一种图像特征提取方法，它借鉴了文本分类的�
 
 要了解「Bag of Feature」，首先要知道「Bag of Words」。
 
-「Bag of Words」 是文本分类中一种通俗易懂的策略。一般来讲，如果我们要了解一段文本的主要内容，最行之有效的策略是抓取文本中的关键词，根据关键词出现的频率确定这段文本的中心思想。比如：如果一则新闻中经常出现「iraq」、「terrorists」，那么，我们可以认为这则新闻应该跟伊拉克的恐怖主义有关。而如果一则新闻中出现较多的关键词是「soviet」、「cuba」，我们又可以猜测这则新闻是关于冷战的（见下图）。![bag-of-words](/images/2017-4-29/bag-of-words.png)
+「Bag of Words」 是文本分类中一种通俗易懂的策略。一般来讲，如果我们要了解一段文本的主要内容，最行之有效的策略是抓取文本中的关键词，根据关键词出现的频率确定这段文本的中心思想。比如：如果一则新闻中经常出现「iraq」、「terrorists」，那么，我们可以认为这则新闻应该跟伊拉克的恐怖主义有关。而如果一则新闻中出现较多的关键词是「soviet」、「cuba」，我们又可以猜测这则新闻是关于冷战的（见下图）。
+
+![bag-of-words](/images/2017-4-29/bag-of-words.png)
 
 这里所说的关键词，就是**「Bag of words」**中的 **words** ，它们是区分度较高的单词。根据这些 words ，我们可以很快地识别出文章的内容，并快速地对文章进行分类。
 

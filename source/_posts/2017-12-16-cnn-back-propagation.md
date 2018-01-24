@@ -12,7 +12,7 @@ mathjax: true
 
 ## 原始的 BP 算法
 
-首先，用两个例子回顾一下原始的 BP 算法。（不熟悉 BP 可以参考[How the backpropagation algorithm works](http://neuralnetworksanddeeplearning.com/chap2.html)，不介意的话可以看我的[读书笔记](http://jermmy.github.io/2017/06/25/2017-6-25-reading-notes-neuralnetworksanddeeplearning-2/)）
+首先，用两个例子回顾一下原始的 BP 算法。（不熟悉 BP 可以参考[How the backpropagation algorithm works](http://neuralnetworksanddeeplearning.com/chap2.html)，不介意的话可以看我的[读书笔记](https://jermmy.github.io/2017/06/25/2017-6-25-reading-notes-neuralnetworksanddeeplearning-2/)）
 
 ### 最简单的例子
 

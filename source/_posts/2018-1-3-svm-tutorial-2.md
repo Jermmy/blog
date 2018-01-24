@@ -1,7 +1,7 @@
 ---
 title: SVM小白教程（2）：拉格朗日对偶
 data: 2018-01-03
-tags: [机器学习]
+tags: [机器学习, 优化理论]
 categories: 机器学习
 mathjax: true
 ---

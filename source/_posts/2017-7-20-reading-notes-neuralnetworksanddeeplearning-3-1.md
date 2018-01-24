@@ -44,16 +44,16 @@ mathjax: true
 $$
 C=\frac{(y-a)^2}{2}    \tag{54}
 $$
-（其中，$a=\sigma(z)$，$z=wx+b$），我们可以求出：
+（其中，$a=\sigma(z)$，$z=wx+b$），我们可以求出（下面两个式子中，已经将 x 和 y 的值替换为 1 和 0）：
 $$
 \frac{\partial C}{\partial w} = (a-y)\sigma'(z)x=a\sigma'(z)   \tag{55}  
 $$
 
 $$
-\frac{\partial C}{\partial b} = (a-y)\sigma'(z)x=a\sigma'(z)   \tag{56}
+\frac{\partial C}{\partial b} = (a-y)\sigma'(z)=a\sigma'(z)   \tag{56}
 $$
 
-（上面两个式子中，已经将 x 和 y 的值替换为 1 和 0）。要想深入理解这两个式子，我们需要回顾一下 sigmoid 函数的内容，如下图：
+要想深入理解这两个式子，我们需要回顾一下 sigmoid 函数的内容，如下图：
 
 ![sigmoid](/images/2017-7-20/sigmoid.jpg)
 
@@ -82,7 +82,7 @@ $$
 \begin{eqnarray}
   \frac{\partial C}{\partial w_j} & = & -\frac{1}{n} \sum_x \left(
     \frac{y }{\sigma(z)} -\frac{(1-y)}{1-\sigma(z)} \right)
-  \frac{\partial \sigma}{\partial w_j} \tag{58}\\\\
+  \frac{\partial \sigma}{\partial w_j} \tag{58}\\
  & = & -\frac{1}{n} \sum_x \left( 
     \frac{y}{\sigma(z)} 
     -\frac{(1-y)}{1-\sigma(z)} \right)\sigma'(z) x_j.
