@@ -17,13 +17,52 @@ $$
 \end{align}
 $$
 现在，我们要开始着手来解这个函数。
-这篇文章想谈一谈拉格朗日对偶的问题，这也是求解 SVM 最经典的方法（考虑到我不是数学专业出身，所以很多问题只能「肤浅」着讲了）。
 <!--more-->
 
-## 拉格朗日对偶
-对于（1）式中的问题，如果限制条件是等号的话，我们是可以用[拉格朗日乘子法](https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/)求解的，然而这里的不等号却让问题变得复杂了一点。而拉格朗日对偶就是为了将复杂的问题简单化。
+## 拉格朗日乘子法
+对于（1）式中的问题，如果限制条件是等号的话，我们是可以直接用[拉格朗日乘子法](https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/)求解的。而为了应对不等号的情况，研究人员提出了 KKT 条件下的拉格朗日乘子法。所谓 KKT 条件，我们可以简单地把它当作拉格朗日乘子法的进阶版，只要原优化问题满足几个特定的条件，就可以仿照拉格朗日乘子法来求解问题。（关于 KKT 条件的具体内容，博主没有仔细研究过）。
+
+而 SVM 原问题，刚好满足这些条件。因此可以直接套用拉格朗日乘子法的流程，首先列出拉格朗日函数：
+$$
+L(\mathbf w, b, \mathbf \alpha)=\frac{1}{2}||\mathbf w||^2-\sum_{i=1}^n\alpha_i(y_i(\mathbf w^T \mathbf x_i + b)-1) \\
+s.t. \alpha_i \ge 0   \tag{2}
+$$
+（注意，在 KKT 条件下，需要满足 $\alpha_i \ge 0$）
+
+然后，令 $\frac{\partial L}{\partial \mathbf w}=0$，$\frac{\partial L}{\partial b}=0$，可以得到方程组：
+$$
+\frac{\partial L}{\partial \mathbf w}=\mathbf w-\sum_{i=1}^n\alpha_i y_i \mathbf x_i=0   \tag{3}
+$$
+
+$$
+\frac{\partial L}{\partial b}=\sum_{i=1}^n \alpha_i y_i=0   \tag{4}
+$$
+
+在约束条件是等式的情况中，我们还会根据 $\frac{\partial L}{\partial \mathbf \alpha}=0$ 得到另外几组方程，然后可以解出 $\mathbf w$ 和 $b$。
+
+不过，由于现在约束条件是不等式，所以 $\frac{\partial L}{\partial \mathbf \alpha}$ 得到的是一堆不等式：
+$$
+y_i (\mathbf w \mathbf x_i+b)-1 \ge 0 \ \ i=1,2,\dots,N
+$$
+这样是没法直接解出 $\mathbf w$ 和 $b$ 的。
+
+为了让方程组的形式更加简单，我们可以联立 (2)(3)(4) 把 $\mathbf w$ 和 $b$ 消掉（后文有详细的推导过程）：
+$$
+L(\mathbf w,b, \mathbf \alpha)=\sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j \mathbf x_j^T \mathbf x_i   \tag{5}
+$$
+到这一步，熟悉优化的同学应该发现，我们已经把原问题转化为拉格朗日对偶问题。换句话说，我们接下来要优化的问题就变为：
+$$
+\underset{\alpha}{\operatorname{max}} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j \mathbf x_j^T \mathbf x_i  \tag{6}  \\
+s.t. \ a_i \ge 0, i=1,\dots,m \\
+\sum_{i=1}^m\alpha_i y_i=0
+$$
+
+## 拉格朗日对偶问题
+
+博主刚开始接触拉格朗日对偶的时候，一直搞不懂为什么一个**最小化**的问题可以转换为一个**最大化**问题。直到看了这篇[博文](http://www.hanlongfei.com/convex/2015/11/05/duality/)后，才对它有了形象的理解。所以，下面我就根据这篇博文，谈谈我对拉格朗日对偶的理解。
 
 ### 对偶问题
+
 先看一个简单的线性规划问题：
 $$
 \underset{x,y}{\operatorname{min}} x+3y \\
@@ -39,9 +78,9 @@ $$
 
 如果将问题泛化：
 $$
-\underset{x,y}{\operatorname{min}} px+qy \tag{2} \\
+\underset{x,y}{\operatorname{min}} px+qy \tag{7} \\
 s.t. \ x+y \ge 2  \\
-x,y \ge 0 
+x,y \ge 0
 $$
 同样地，通过这种拼凑的方法，我们可以将问题变换为：
 $$
@@ -49,25 +88,25 @@ $$
 a(x+y) &\ge 2a  \notag \\
 bx &\ge 0 \notag\\
 cy &\ge 0 \notag\\
-a(x+y)+bx+cy&=(a+b)x+(a+c)y \ge 2a \tag{3}
+a(x+y)+bx+cy&=(a+b)x+(a+c)y \ge 2a \tag{8}
 \end{align}
 $$
 其中，$a,b,c > 0$。
 
-（3）式对 $\forall a,b,c > 0$ 均成立。不管 $a+b$、$a+c$ 的值是多少，$(a+b)x+(a+c)y$ 的最小值都是 $2a$。因此，我们可以加上约束：$a+b=p$、$a+c=q$，这样就得到 $px+qy$ 的最小值为 $2a$。需要注意的是，$2a$ 是 $px+qy$ 的下界，即这个最小值对 $\forall a$ 都要成立，所以，需要在约束条件内求出 $a$ 的最大值，才能得出 $px+qy$ 的最小值。
+（8）式对 $\forall a,b,c > 0$ 均成立。不管 $a+b$、$a+c$ 的值是多少，$(a+b)x+(a+c)y$ 的最小值都是 $2a$。因此，我们可以加上约束：$a+b=p$、$a+c=q$，这样就得到 $px+qy$ 的最小值为 $2a$。需要注意的是，$2a$ 是 $px+qy$ 的下界，即这个最小值对 $\forall a$ 都要成立，所以，需要在约束条件内求出 $a$ 的最大值，才能得出 $px+qy$ 的最小值。
 
 这样一来，问题就转换为：
 $$
 \begin{eqnarray}
-\underset{a,b,c} {\operatorname {max}}\ {2a}   \tag{4} \\
+\underset{a,b,c} {\operatorname {max}}\ {2a}   \tag{9} \\
 s.t. \ p=a+b \notag\\
 q = a+c \notag\\ 
 a,b,c \ge 0 \notag
 \end{eqnarray}
 $$
-（4）式就是（2）式的对偶形式。
+（9）式就是（7）式的对偶形式。
 
-**对偶**和**对称**有异曲同工之妙。所谓对偶，就是把原来的最小化问题（2）转变为最大化问题（4）。这种转化对最终结果没有影响，但却使问题更加简单（问题（4）中的限制条件都是等号，而不等号只是针对单个变量 $a,b,c$，因此可以直接套用拉格朗日乘子法）。
+**对偶**和**对称**有异曲同工之妙。所谓对偶，就是把原来的最小化问题（7）转变为最大化问题（9）。这种转化对最终结果没有影响，但却使问题更加简单（问题（9）中的限制条件都是等号，而不等号只是针对单个变量 $a,b,c$，因此可以直接套用拉格朗日乘子法）。
 
 另外，对偶分**强对偶**和**弱对偶**两种。借用上面的例子，强对偶指的是 $px+qy$ 的最小值就等于 $2a$ 的最大值，而弱对偶则说明，$px+qy$ 的最小值大于 $2a$ 的最大值。SVM 属于强对偶问题。
 
@@ -76,7 +115,7 @@ $$
 现在，我们把问题再上升到一般的线性规划问题：
 $$
 \begin{eqnarray}
-\underset{x \in \mathbb{R}^n} {\operatorname{min}} c^Tx \tag{5} \\
+\underset{x \in \mathbb{R}^n} {\operatorname{min}} c^Tx \tag{10} \\
 s.t. \ Ax=b \notag \\
 Gx \le h \notag
 \end{eqnarray}
@@ -91,7 +130,7 @@ $$
 $$
 这样，可以得到该线性问题的对偶形式：
 $$
-\underset{u \in \mathbb{R}^m,v \in \mathbb{R}^r} {\operatorname{max}}   -b^Tu-h^Tu  \tag{6} \\
+\underset{u \in \mathbb{R}^m,v \in \mathbb{R}^r} {\operatorname{max}}   -b^Tu-h^Tu  \tag{11} \\
 s.t.  \  c=  -A^Tu-G^Tv  \\
 v  >  \ 0
 $$
@@ -111,7 +150,7 @@ $$
 L(x,u,v)&=(c^T+u^TA+v^TG)x-u^Tb-v^Th   \notag 
 \end{align}
 $$
-$\underset{x}{\operatorname{min}}{L(x,u,v)}$ 在 $x$ 没有任何限制的前提下，是不存在最小值。因此，我们要加上约束条件：$c^T+u^TA+v^TG=0$，这样，$\underset{x}{\operatorname{min}}{L(x,u,v)}=-u^Tb-v^Th$。如此一来，我们又把原问题转换到（6）中的对偶问题上了。
+$\underset{x}{\operatorname{min}}{L(x,u,v)}$ 在 $x$ 没有任何限制的前提下，是不存在最小值。因此，我们要加上约束条件：$c^T+u^TA+v^TG=0$，这样，$\underset{x}{\operatorname{min}}{L(x,u,v)}=-u^Tb-v^Th$。如此一来，我们又把原问题转换到（11）中的对偶问题上了。
 
 ### 二次规划问题的对偶问题
 
@@ -180,45 +219,45 @@ $$
 
 ## SVM的对偶问题
 
-现在终于可以扯回 SVM 了。我们将约束条件表述成 $y_i  (\mathbf{w}^T\mathbf{x_i}+b) -1 \ge 0, \ i=1, \dots ,m$，然后，按照上面的「套路」，表示出拉格朗日原始问题：
+现在看回 SVM。我们将约束条件表述成 $y_i  (\mathbf{w}^T\mathbf{x_i}+b) -1 \ge 0, \ i=1, \dots ,m$，然后，按照上面的「套路」，表示出拉格朗日原始问题：
 $$
 \begin{align}
-L(\mathbf{w},b,\alpha)= & \frac{1}{2}\mathbf{w}^2-\sum_{i=1}^m{\alpha_i}[y_i(\mathbf{w}^T\mathbf{x_i}+b)-1] \tag{7} \\
+L(\mathbf{w},b,\alpha)= & \frac{1}{2}\mathbf{w}^2-\sum_{i=1}^m{\alpha_i}[y_i(\mathbf{w}^T\mathbf{x_i}+b)-1] \tag{12} \\
 s.t. \ \alpha_i \ge &\ 0, \ i=1, \dots, m \notag
 \end{align}
 $$
-（乍一看，约束条件中的不等式也比较简单，直接用拉格朗日乘子法也可以解了，不过，这本[教程](http://localhost:4000/images/2017-12-23/support_vector_machines_succinctly.pdf)提到，只有样本量很少的时候才解得出来，所以我们还是转换成对偶问题求解）
-
 下面要求出 $L(\mathbf{w},b,\alpha)$ 关于 $\mathbf{w}$ 和 $b$ 的最小值，这里可以直接通过偏导求得：
 $$
-\nabla_\mathbf{w} L=\mathbf{w}-\sum_{i=1}^m \alpha_iy_i \mathbf{x}_i=0 \tag{8} 
+\nabla_\mathbf{w} L=\mathbf{w}-\sum_{i=1}^m \alpha_iy_i \mathbf{x}_i=0 \tag{13}
 $$
 
 $$
-\frac{\partial L}{\partial b}=-\sum_{i=1}^m\alpha_i y_i=0  \tag{9}
+\frac{\partial L}{\partial b}=-\sum_{i=1}^m\alpha_i y_i=0  \tag{14}
 $$
 
-由（8）式解得：
+由（13）式解得：
 $$
 \begin{align}
-\mathbf{w}=\sum_{i=1}^m \alpha_i y_i \mathbf{x}_i \tag{10}
+\mathbf{w}=\sum_{i=1}^m \alpha_i y_i \mathbf{x}_i \tag{15}
 \end{align}
 $$
-（10）式代入（7）式得到：
+（15）式代入（12）式得到：
 $$
-W(\alpha,b)=\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j \mathbf{x}_i \mathbf{x}_j-b\sum_{i=1}^m \alpha_i y_i \tag{11}
+W(\alpha,b)=\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j \mathbf{x}_i \mathbf{x}_j-b\sum_{i=1}^m \alpha_i y_i \tag{16}
 $$
-而（9）式已经表明：$\sum_{i=1}^m\alpha_i y_i=0$，所以（11）式化简为：
+而（14）式已经表明：$\sum_{i=1}^m\alpha_i y_i=0$，所以（16）式化简为：
 $$
-W(\alpha)=\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j \mathbf{x}_i \mathbf{x}_j \tag{12}
+W(\alpha)=\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\alpha_i \alpha_j y_i y_j \mathbf{x}_i \mathbf{x}_j \tag{17}
 $$
-（12）式就是最终版本的对偶形式了。自此，我们得出 SVM 的拉格朗日对偶问题：
+（17）式就是最终版本的对偶形式了（上文的 (6) 式其实也是这样推出来的）。自此，我们得出 SVM 的拉格朗日对偶问题：
 $$
 \underset{\alpha}{\operatorname{max}} W(\alpha)   \\
 s.t. \ a_i \ge 0, i=1,\dots,m \\
 \sum_{i=1}^m\alpha_i y_i=0
 $$
-求出 $W(\alpha)$ 的最大值，就相当于求出了我们需要的参数 $\mathbf{w}$。
+解出 $\mathbf \alpha$ 后，就可以根据 (15) 式解出 $\mathbf w$，然后根据超平面的间隔求出 $b$。
+
+当然，这个对偶形式的优化问题依然不是那么容易解的，研究人员提出了一种 [SMO 算法](https://en.wikipedia.org/wiki/Sequential_minimal_optimization)，可以快速地求解 $\mathbf \alpha$。不过算法的具体内容，本文就不继续展开了。
 
 ## 参考
 
@@ -226,3 +265,5 @@ $$
 + [拉格朗日乘子法](https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/)
 + [简易解说拉格朗日对偶（Lagrange duality）](http://www.cnblogs.com/90zeng/p/Lagrange_duality.html)
 + [支持向量机SVM（二）](http://www.cnblogs.com/jerrylead/archive/2011/03/13/1982684.html)
++ [第7课 支持向量机，为什么能理解SVM的人凤毛麟角？](https://www.youtube.com/watch?v=Cz144VkaRUQ)
+
