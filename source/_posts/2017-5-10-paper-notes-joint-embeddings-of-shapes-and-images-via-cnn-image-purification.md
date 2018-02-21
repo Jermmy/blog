@@ -37,7 +37,7 @@ mathjax: true
 
 假设我们有一个 3D 模型的集合（这里面可能包括椅子、桌子、飞机等，参考上图）：$S={\lbrace S_i \rbrace}_{i=1}^{n}$。这个集合里的模型形状要事先做好对齐。
 
-然后，我们从 k 个不同的视角（viewpoint）对各个模型进行投影，得到每个模型的投影图片集合：$I_i={\lbrace I_{i,v} \rbrace}_{v=1}^{k} \ \  for each \ \  S_i$。论文中 k 取 20。
+然后，我们从 k 个不同的视角（viewpoint）对各个模型进行投影，得到每个模型的投影图片集合：$I_i={\lbrace I_{i,v} \rbrace}_{v=1}^{k} \ \  for\ each \ \  S_i$。论文中 k 取 20。
 
 接着，对于每张投影图片 $I_i$，提取图片的 HoG 特征：$H_{i, v} \in R^{10188}$。这里提取的 HoG 特征由三个尺寸的图像特征组合而成：120x120，60x60，30x30。将每个尺寸下的 HoG 特征组合在一起，形成一个 10188 维的向量。由于 3D 形状事先已经对齐了，所以 HoG 在鲁棒性上得到了保证。
 
@@ -56,10 +56,12 @@ mathjax: true
 
 但这个降维后的空间存在一个问题：虽然 $F^{-}$ 能够表示形状之间的相似度，但却难以体现不相似度。换句话说，相似的形状之间的距离都很相近，但不相似的形状（比如：椅子和汽车）之间的距离则完全没有意义（可能很近也可能很远）。论文中的说法是：$F^{-}$ does not respect this distinction between the greater importance of the samll distances and the lesser one of the larger ones.  由于我英语水平有限，对这句顺口溜不是特别理解，但不管怎样，$F^{-}$ 是存在不足的。
 
-因此，论文提出一个新的空间 $D_{n\*n}$，代表一个距离矩阵：$D(i, j) = d_{i, j}$。由于 $F$ 是原特征向量组成的空间，而 $D$ 则是一个距离矩阵，因此，对 $D$ 降维后，仍然可以很好地表达相似性和不相似性（这一点暂时不是很理解）。降维方面，作者比较了多种方法，最后发现，使用 non-linear Multi-Dimensional Scaling(MDS) 方法效果上最好。该方法的提出是在 1964 年，听起来相当的有格调又很有历史感，我暂时没有去了解，所以先姑且把它当作一个黑盒子吧。总之，我们通过这个方法，将距离矩阵 $D_{n\*n}$ 降维成 $D^{-}$，维度同样保持 128 维（见下图）。然后，将降维后的矩阵 $D^{-}$ 的行向量当作形状的特征向量。这种用距离来表示特征的方法我是第一次遇到，还不是很理解。作者在论文的 PPT 中这样解释：如果两个形状跟其他所有形状之间的 distance 差不多，也就是说它们在 $D^{-}$ 的行向量很相似，那么这两个形状也应该是类似的。
+因此，论文提出一个新的空间 $D_{n*n}$，代表一个距离矩阵：$D(i, j) = d_{i, j}$。由于 $F$ 是原特征向量组成的空间，而 $D$ 则是一个距离矩阵，因此，对 $D$ 降维后，仍然可以很好地表达相似性和不相似性（这一点暂时不是很理解）。降维方面，作者比较了多种方法，最后发现，使用 non-linear Multi-Dimensional Scaling(MDS) 方法效果上最好。该方法的提出是在 1964 年，听起来相当的有格调又很有历史感，我暂时没有去了解，所以先姑且把它当作一个黑盒子吧。总之，我们通过这个方法，将距离矩阵 $D_{n*n}$ 降维成 $D^{-}$，维度同样保持 128 维（见下图）。然后，将降维后的矩阵 $D^{-}$ 的行向量当作形状的特征向量。这种用距离来表示特征的方法我是第一次遇到，还不是很理解。作者在论文的 PPT 中这样解释：如果两个形状跟其他所有形状之间的 distance 差不多，也就是说它们在 $D^{-}$ 的行向量很相似，那么这两个形状也应该是类似的。
 
 <center>
-<img src=“/images/2017-5-10/embedding space.png” width=“500px”>
+
+<img src="/images/2017-5-10/embedding space.png" width="500px">
+
 </center>
 
 ### CNN for Image Embedding
@@ -81,7 +83,9 @@ mathjax: true
 $L(\theta)=\sum_{i,r}{||f(R_{i,r}; \theta) - P_{S_{i}}||_{2}^{2}}$
 
 <center>
-<img src=“/images/2017-5-10/network.png” width=“500px”>
+
+<img src="/images/2017-5-10/network.png" width="500px">
+
 </center>
 
 上图中，左图为原来的 AlexNet，右图为论文中采用的 CNN。
@@ -105,7 +109,9 @@ $L(\theta)=\sum_{i,r}{||f(R_{i,r}; \theta) - P_{S_{i}}||_{2}^{2}}$
 论文还提到另一种好玩的应用 **Shape-Guided Image Editing**。
 
 <center>
-<img src=“/images/2017-5-10/Shape-Guided Image Editing.png” width=“500px”>
+
+<img src="/images/2017-5-10/Shape-Guided Image Editing.png" width="500px">
+
 </center>
 
 比如，我们想在图片中为椅子增加一个台灯照射下的阴影效果，这个时候，直接基于图像处理的方法是比较难做到的，而换个角度，可以先用一个类似的 3D 模型投射出这个阴影后，再把阴影加入到原图中。
