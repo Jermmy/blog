@@ -1,7 +1,7 @@
 ---
 title: Leetcode题解：98. validate binary search tree
 date: 2018-02-09 08:54:35
-tags: leetcode, 树
+tags: leetcode, 树, 算法
 categories: 算法
 ---
 
