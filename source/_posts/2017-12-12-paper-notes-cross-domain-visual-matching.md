@@ -104,7 +104,7 @@ $$
 $$
 \begin{align} 
 \tilde{x} \triangleq \begin{bmatrix} \mathbf{L_A f_1(x)} & \mathbf{L_C^x f_1(x)} & \mathbf{d}^T \mathbf{f_1(x)} \end{bmatrix}^T   \notag \\
-\tilde{y} \triangleq \begin{bmatrix} \mathbf{L_B f_2(x)} & \mathbf{L_C^y f_2(y)} & \mathbf{e}^T \mathbf{f_2(y)} \end{bmatrix}^T \notag 
+\tilde{y} \triangleq \begin{bmatrix} \mathbf{L_B f_2(y)} & \mathbf{L_C^y f_2(y)} & \mathbf{e}^T \mathbf{f_2(y)} \end{bmatrix}^T \notag 
 \end{align}
 $$
 为了将 $\tilde{x}$ 和 $\tilde{y}$ 代入 (3) 式，我们再引入三个辅助矩阵：

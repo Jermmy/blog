@@ -125,6 +125,37 @@ with tf.variable_scope("image_filters") as scope:
 
 到这一步，共享变量的工作就完成了。你甚至都不用在函数外定义变量，直接调用同一个函数并传入不同的域名，就可以让 TensorFlow 来帮你管理变量了。
 
+**==================== UPDATE 2018.3.8 ======================**
+
+官方的教程都是一些简单的例子，但在实际开发中，情况可能会复杂得多。比如，有一个网络，它的前半部分是要共享的，而后半部分则是不需要共享的，在这种情况下，如果还要自己去调用 `scope.reuse_variables()` 来决定共享的时机，无论如何都是办不到的，比如下面这个例子：
+
+```python
+def test(mode):
+    w = tf.get_variable(name=mode+"w", shape=[1,2])
+    u = tf.get_variable(name="u", shape=[1,2])
+    return w, u
+
+with tf.variable_scope("test") as scope:
+    w1, u1 = test("mode1")
+	# scope.reuse_variables()
+    w2, u2 = test("mode2")
+```
+
+这个例子中，我们要使用两个变量： `w` 和 `u`，其中 `w` 是不共享的，而 `u` 是共享的。在这种情况下，不管你加不加 `scope.reuse_variables()`，代码都会出错。因此，Tensorflow 提供另一种开启共享的方法：
+
+```python
+def test(mode):
+    w = tf.get_variable(name=mode+"w", shape=[1,2])
+    u = tf.get_variable(name="u", shape=[1,2])
+    return w, u
+
+with tf.variable_scope("test", reuse=tf.AUTO_REUSE) as scope:
+    w1, u1 = test("mode1")
+    w2, u2 = test("mode2")
+```
+
+这里只是加了一个参数 `reuse=tf.AUTO_REUSE`，但正如名字所示，这是一种自动共享的机制，当系统检测到我们用了一个之前已经定义的变量时，就开启共享，否则就重新创建变量。这几乎是「万金油」式的写法😈。
+
 ### 背后的工作方式
 
 #### 变量域的工作机理
