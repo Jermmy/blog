@@ -52,7 +52,7 @@ $$
 
 BN 的算法流程（简单起见去掉符号 (k)）：
 
-![BN algorithm](/images/2017-9-2/BN algorithm.png)
+![](/images/2017-9-2/BN algorithm.png)
 
 这里面的 $x_i$ 并不是网络的训练样本，而是指原网络中任意一个隐藏层的激活函数的输入，当然这些输入也是靠训练样本在网络中前向传播得来的。加了 BN 层后，激活函数的输入就替换为 $y_i$。
 
@@ -60,7 +60,7 @@ BN 的算法流程（简单起见去掉符号 (k)）：
 
 由于我们把 BP 当作是网络中的一个隐藏层，在梯度下降时，可以用 BP 算法求出 $\gamma$ 和 $\beta$ 的导数：
 
-![BN gradient](/images/2017-9-2/BN gradient.png)
+![](/images/2017-9-2/BN gradient.png)
 
 然后把它们也当作网络的参数进行训练即可。
 
@@ -85,7 +85,7 @@ $$
 
 #### BN 算法总体流程：
 
-![BN algorithm all](/images/2017-9-2/BN algorithm all.png)
+![](/images/2017-9-2/BN algorithm all.png)
 
 这个算法流程图中的细节在前面都做了详细的解释（当然是按照我自己的理解），所以这里就不展开讲了。
 
@@ -99,10 +99,37 @@ $$
 
 但要注意的一点是，由于 BN 只关注于激活函数收敛导致的梯度消失问题，因此，在实际使用中，梯度仍然可能消失（比如：链式求导中，导数的累乘效应可能也会导致梯度消失，具体可以看之前的[读书笔记](https://jermmy.github.io/2017/08/26/2017-8-26-reading-notes-neuralnetworkanddeeplearning-5)）。在之后的文章中，我将介绍另一种解决梯度消失的方法——深度残差学习 (deep residual learning)，这种方法效果上比 BN 更好。
 
+#### ================ UPDATE 2018.3.15 ================
+
+这篇文章刚开始写完时一直在思考一个问题：BN 提出来的时候，ReLu 函数已经大行其道了，而 ReLu 不存在 sigmoid 函数梯度消失的问题，那 BN 不是没什么卵用吗？
+
+今天看了李宏毅教授的[视频](https://www.youtube.com/watch?v=BZh1ltr5Rkg&t=21s)，发现 BN 其实是要解决另一个更严重的问题，而顺带把函数梯度消失的问题解决了，所以，我上面扯了这么多，居然一直没抓住重点～囧～
+
+BN 其实是要解决 **Internal Covariate Shift**，没错，这几个关键词就在论文题目里，居然给我省略了。。。这个问题我没有追根溯源去寻找其他文献，但李教授用了一张图让我明白了是怎么回事：
+
+<center>
+
+<img src="/images/2017-9-2/Internal Covariate Shift.png", width="600px">
+
+</center>
+
+这张图里，同一个特征的两个维度上 $x_1$、$x_2$ 的值的范围是不一样的，这种差别导致训练的时候会非常的缓慢，除非我们针对不同的维度设置不同的学习率，但这是很难办到的。其实，熟悉 Andrew NG 机器学习入门课的人也应该会回忆起 NG 提到的这个问题：
+
+<center>
+
+<img src="/images/2017-9-2/feature scaling.png">
+
+</center>
+
+这个问题和李教授图里的内容是一样的，当时 NG 是提到用 feature scaling 的方法解决它。
+
+BN 其实就是在做 feature scaling，而且它的目的也是为了在训练的时候避免这种 Internal Covariate Shift 的问题，只是刚好也解决了 sigmoid 函数梯度消失的问题。	
+
 ### 参考
 
 + [Batch Normalization导读](http://blog.csdn.net/malefactor/article/details/51476961)
 + [卷积神经网络CNN（2）—— BN(Batch Normalization) 原理与使用过程详解](http://blog.csdn.net/fate_fjh/article/details/53375881)
 + [莫烦PYTHON](https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/5-13-BN/)
 + [白化 (whiten)](http://blog.csdn.net/hjimce/article/details/50864602)
++ [李宏毅 Batch Normalization](https://www.youtube.com/watch?v=BZh1ltr5Rkg&t=21s)
 
