@@ -99,7 +99,7 @@ $$
 
 但要注意的一点是，由于 BN 只关注于激活函数收敛导致的梯度消失问题，因此，在实际使用中，梯度仍然可能消失（比如：链式求导中，导数的累乘效应可能也会导致梯度消失，具体可以看之前的[读书笔记](https://jermmy.github.io/2017/08/26/2017-8-26-reading-notes-neuralnetworkanddeeplearning-5)）。在之后的文章中，我将介绍另一种解决梯度消失的方法——深度残差学习 (deep residual learning)，这种方法效果上比 BN 更好。
 
-#### ================ UPDATE 2018.3.15 ================
+**================ UPDATE 2018.3.15 ================**
 
 这篇文章刚开始写完时一直在思考一个问题：BN 提出来的时候，ReLu 函数已经大行其道了，而 ReLu 不存在 sigmoid 函数梯度消失的问题，那 BN 不是没什么卵用吗？
 
@@ -109,7 +109,7 @@ BN 其实是要解决 **Internal Covariate Shift**，没错，这几个关键词
 
 <center>
 
-<img src="/images/2017-9-2/Internal Covariate Shift.png", width="600px">
+<img src="/images/2017-9-2/Internal Covariate Shift.png" width=“500px">
 
 </center>
 

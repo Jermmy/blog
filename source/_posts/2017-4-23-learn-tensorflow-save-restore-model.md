@@ -76,36 +76,38 @@ with tf.Session() as sess:
 首先，我们先定义一个图模型（只截选出变量部分）：
 
 ```python
-    graph = tf.Graph()
+graph = tf.Graph()
 
-    with graph.as_default():
-        # Input data
+with graph.as_default():
+    # Input data
+    # ....省略代码若干
+
+    # Variables
+    layer1_weights = tf.Variable(tf.truncated_normal(
+        [patch_size, patch_size, image_channels, depth], stddev=0.1), name="layer1_weights")
+    layer1_biases = tf.Variable(tf.zeros([depth]), name="layer1_biases")
+
+    layer2_weights = tf.Variable(tf.truncated_normal(
+        [image_size // 4 * image_size // 4 * depth, num_hidden], stddev=0.1, name="layer2_weights")
+    )
+    layer2_biases = tf.Variable(tf.constant(1.0, shape=[num_hidden]), name="layer2_biases")
+
+    layer3_weights = tf.Variable(tf.truncated_normal(
+        [num_hidden, num_labels], stddev=0.1, name="layer3_weights"),
+    )
+    layer3_biases = tf.Variable(tf.constant(1.0, shape=[num_labels]), name="layer3_biases")
+
+
+    def model(data):
         # ....省略代码若干
+        return tf.matmul(fc1, layer3_weights) + layer3_biases
 
-        # Variables
-        layer1_weights = tf.Variable(tf.truncated_normal(
-            [patch_size, patch_size, image_channels, depth], stddev=0.1), name="layer1_weights")
-        layer1_biases = tf.Variable(tf.zeros([depth]), name="layer1_biases")
 
-        layer2_weights = tf.Variable(tf.truncated_normal(
-            [image_size // 4 * image_size // 4 * depth, num_hidden], stddev=0.1, name="layer2_weights")
-        )
-        layer2_biases = tf.Variable(tf.constant(1.0, shape=[num_hidden]), name="layer2_biases")
+    # Training computation
+    # ....省略代码若干
 
-        layer3_weights = tf.Variable(tf.truncated_normal(
-            [num_hidden, num_labels], stddev=0.1, name="layer3_weights"),
-        )
-        layer3_biases = tf.Variable(tf.constant(1.0, shape=[num_labels]), name="layer3_biases")
-
-        def model(data):
-            #....省略代码若干
-            return tf.matmul(fc1, layer3_weights) + layer3_biases
-
-        # Training computation
-        #....省略代码若干
-
-        # Optimizer
-        optimizer = tf.train.GradientDescentOptimizer(0.05).minimize(loss) 
+    # Optimizer
+    optimizer = tf.train.GradientDescentOptimizer(0.05).minimize(loss) 
 ```
 
 这个模型里的变量其实只有三个网络层的参数：`layer1_weights`，`layer1_biases`，`layer2_weights`，`layer2_biases`，`layer3_weights`，`layer3_biases`。
@@ -113,25 +115,25 @@ with tf.Session() as sess:
 然后就是启动会话进行训练：
 
 ```python
-    with tf.Session(graph=graph) as session:
-        saver = tf.train.Saver()
+with tf.Session(graph=graph) as session:
+    saver = tf.train.Saver()
 
-        if loading_model:
-            saver.restore(session, model_folder + "/" + model_file)
-            print("Model restored")
-        else:
-            tf.global_variables_initializer().run()
-            print("Initialized")
+    if loading_model:
+        saver.restore(session, model_folder + "/" + model_file)
+        print("Model restored")
+    else:
+        tf.global_variables_initializer().run()
+        print("Initialized")
 
-        for step in range(num_steps):
-            # ....省略训练模型的代码
+    for step in range(num_steps):
+        # ....省略训练模型的代码
 
-        print('Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels))
-        save_path = saver.save(session, model_folder + "/" + model_file)
-        print("Model saved in file: ", save_path)
+    print('Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels))
+    save_path = saver.save(session, model_folder + "/" + model_file)
+    print("Model saved in file: ", save_path)
 ```
 
-这段代码是本文的关键，我们先通过 `tf.train.Saver()` 构造一个 `Saver` 对象，注意，这一步要在 `Session` 启动之后执行，否则会抛异常 `ValueError("No variables to save")`，至少 v1.0 是这样。
+这段代码是本文的关键，我们先通过 `tf.train.Saver()` 构造一个 `Saver` 对象。注意，这一步执行前要保证我们已经定义好了变量（例如：例子中的用 `tf.Variable` 定义的 `layer1_weights` 等），否则会抛异常 `ValueError("No variables to save")`。
 
 通过 `Saver`，我们可以在模型训练完之后，将参数保存下来。`Saver` 保存数据的方法十分简单，只要将 `session` 和文件路径传入 `save` 函数即可：`saver.save(session, model_folder + "/" + model_file)`。
 
