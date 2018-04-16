@@ -109,7 +109,7 @@ BN 其实是要解决 **Internal Covariate Shift**，没错，这几个关键词
 
 <center>
 
-<img src="/images/2017-9-2/Internal Covariate Shift.png" width=“500px">
+<img src="/images/2017-9-2/Internal Covariate Shift.png" width="500px">
 
 </center>
 

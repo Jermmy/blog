@@ -1,5 +1,5 @@
 ---
-title: 读书笔记：neuralnetworksanddeeplearning chapter1
+title: 读书笔记：敲开神经网络的大门
 date: 2017-05-13 14:41:53
 tags: [深度学习]
 categories: 机器学习

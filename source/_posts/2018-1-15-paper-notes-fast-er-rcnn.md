@@ -97,7 +97,7 @@ Faster RCNN 提出了一种 Region Proposal Network（RPN），看名字就知�
 
 上面就是 RPN 的基本思想了。总的来说，可以认为 RPN 就是在滑动窗口上，接着的一个小网络，这个网络会判断窗口内是否有物体，以及会对原图的窗口进行粗调整（原图的窗口是 feature map 上的窗口按比例换算得到的）。
 
-不过，直接根据滑动窗口换算回原图存在一个 bug。试想一下，如果 ground truth 只占这个窗口的一部分，而且这部分刚好是物体的重要部位，那我们应该认为这个窗口有物体还是没物体呢？
+不过，直接根据滑动窗口换算回原图存在一个 bug。试想一下，如果 ground truth 只占这个滑动窗口的一部分（也就是说二者的 IoU 不满足筛选条件），但这一部分又刚好是物体的重要部位，那我们应该认为这个窗口有物体还是没物体呢？
 
 <center>
 
@@ -113,9 +113,9 @@ L({p_i}, {t_i})=\frac{1}{N_{cls}}\sum_i L_{cls}(p_i, p_i^*)+\lambda \frac{1}{N_{
 $$
 其中，
 
-$L_{cls}$ 是一个二分类函数，_
+$L_{cls}$ 是一个二分类函数，
 
-$L_{reg}$ 则是bounding box regression 函数（具体的跟 Fast RCNN 一样），
+$L_{reg}$ 则是 bounding box regression 函数（具体的跟 Fast RCNN 一样），
 
 $p_i$ 表示网络找到的 Anchor 区域中存在物体的概率（1 代表前景，0 代表背景），而 $t_i$ 则是每个 Anchor 的矩形框位置和大小参数，
 

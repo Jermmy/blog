@@ -1,5 +1,5 @@
 ---
-title: 读书笔记：neuralnetworkanddeeplearning chapter5
+title: 读书笔记：梯度是怎么消失的
 date: 2017-08-26 11:06:11
 tags: [深度学习]
 categories: 机器学习
@@ -89,7 +89,7 @@ net = network2.Network([784, 30, 30, 30, 30, 10])
 
 ![tikz37](/images/2017-8-26/tikz37.png)
 
-$b$ 和 $w$ 表示参数，$C$ 是代价函数，激活函数采用 sigmoid，每层网络的输出为 $a_j=\sigma(z_j)$，$z_j=w_ja_{j-1}+b_j$。
+$b$ 和 $w$ 表示参数，$C$ 是损失函数，激活函数采用 sigmoid，每层网络的输出为 $a_j=\sigma(z_j)$，$z_j=w_ja_{j-1}+b_j$。
 
 下面，我们要求出 $\partial C/\partial b_1$，看看是什么原因导致这个值很小。
 
