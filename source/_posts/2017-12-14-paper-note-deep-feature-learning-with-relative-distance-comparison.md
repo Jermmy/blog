@@ -9,7 +9,6 @@ mathjax: true
 这篇论文是要解决 person re-identification 的问题。所谓 person re-identification，指的是在不同的场景下识别同一个人（如下图所示）。这里的难点是，由于不同场景下的角度、背景亮度等等因素的差异，同一个人的图像变化非常大，因而不能使用一般的图像分类的方法。论文采用了一种相似性度量的方法来促使神经网络学习出图像的特征，并根据特征向量的欧式距离来确定相似性。除此之外，论文通过对网络的训练过程进行分析，提出了一种计算效率更高的模型训练方法。
 
 <center>
-
 <img src="/images/2017-12-14/person re-identification.png" width="400px">
 
 </center>

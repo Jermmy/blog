@@ -1,8 +1,8 @@
 ---
 title: 如何在手机上跑深度神经网络
 date: 2018-08-04 13:20:37
-tags: [机器学习]
-categories: 机器学习, 深度学习
+tags: [机器学习, 深度学习]
+categories: 机器学习
 mathjax: true
 ---
 
