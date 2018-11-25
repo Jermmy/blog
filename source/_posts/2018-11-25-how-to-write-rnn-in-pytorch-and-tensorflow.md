@@ -11,7 +11,7 @@ mathjax: true
 至于 tf 怎么写 RNN，之后有闲再补上 (我现在是真的不想回去碰那颗烫手的山芋😩)
 
 <center>
-    <img src="images/2018-11-25/rnn.png">
+    <img src="/images/2018-11-25/rnn.png">
 </center>
 
 
@@ -48,9 +48,36 @@ for i in range(seq_len):
     hidden_state = rnn(x[:, i, :], hidden_state)
 ```
 
-一定要看懂上面的代码再往下读呀。
+> 过来人血泪教训：一定要看懂上面的代码再往下读呀。
 
 ## pytorch 中的 RNN
+
+好了，现在可以进入本文正题了。我们分**数据处理**和**模型搭建**两部分来介绍。
+
+### 数据处理
+
+pytorch 的数据读取框架方便易用，比 tf 的 [Dataset](https://www.tensorflow.org/guide/datasets?hl=zh-cn) 更有亲和力。另外，tf 的数据队列底层是用 C++ 的多线程实现的，因此数据读取和处理都要使用 tf 内部提供的 API，否则就失去多线程的能力，这一点实在是令人脑壳疼。再者，过来人血泪教训，tf 1.4 版本的 Dataset api 有线程死锁的[bug](https://github.com/tensorflow/tensorflow/issues/10369)，谁用谁知道😈。而 pytorch 基于多进程的数据读取机制，避免 python GIL 的问题，同时代码编写上更加灵活，可以随意使用 opencv、PIL 进行处理，爽到飞起。
+
+pytorch 的数据读取队列主要靠 `torch.utils.data.Dataset` 和 `torch.utils.data.DataLoader` 实现，具体用法这里略过，主要讲一下在 RNN 模型中，数据处理有哪些需要注意的地方。
+
+在一般的数据读取任务中，我们只需要在 `Dataset` 的 `__getitem__` 方法中返回一个样本即可，pytorch 会自动帮我们把一个 batch 的样本组装起来，因此，在 RNN 相关的任务中，`__getitem__` 通常返回的是一个维度为 $[seq\_len \times input\_size]$ 的数据。这时，我们会遇到第一个问题，那就是不同样本的 $seq\_len$ 是否相同。如果相同的话，那之后就省事太多了，但如果不同，这个地方就会成为初学者第一道坎。因此，下面就针对 $seq\_len$ 不同的情况介绍一下通用的处理方法。
+
+首先需要明确的是，如果 $seq\_len$ 不同，那么 pytorch 在组装 batch 的时候会首先报错，因为一个 batch 必须是一个 n-dimensional 的 tensor，$seq\_len$ 不同的话，证明有一个维度的长度是不固定的，那就没法组装成一个方方正正的 tensor 了。因此，在数据预处理时，需要记录下每个样本的 $seq\_len$，然后统计出一个均值或者最大值，之后，每次取数据的时候，都必须把数据的 $seq\_len$ 填充 (补0) 或者裁剪到这个固定的长度，而且要记得把该样本真实的 $seq\_len$ 也一起取出来 (后面有大用)。例如下面的代码：
+
+```python
+def __getitem__(self, idx):
+    # data: seq_len * input_size
+    data, label, seq_len = self.train_data[idx]
+    # pad_data: max_seq_len * input_size
+    pad_data = np.zeros(shape=(self.max_seq_len, data.shape[1]))
+    pad_sketch[0:data.shape[0]] = data
+    sample = {'data': pad_data, 'label': label, 'seq_len': seq_len}
+    return sample
+```
+
+
+
+### 模型搭建
 
 
 
