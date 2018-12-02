@@ -1,8 +1,8 @@
 ---
 title: 翻译：什么是当下最有价值的编程技能？
 date: 2017-04-04
-tags: [杂谈, 翻译]
-categories: [杂谈]
+tags: [杂感, 翻译]
+categories: [杂感]
 ---
 
 本文翻译自 [What is the most valuable programming skill at the moment?](https://www.quora.com/What-is-the-most-valuable-programming-skill-at-the-moment/answer/Ken-Mazaika?srid=XThw&from=timeline&isappinstalled=0) 中的一个回答，其中谈及的对编程能力的看法很有借鉴意义，希望自己未来的时间能够静下心来，不忘初心，持续积累。由于这是我第一次翻译英文文章，其中难免有翻译不恰当的地方，还望指正😁。
@@ -44,9 +44,9 @@ categories: [杂谈]
 
 为什么？
 
-市场变了。没人能够确切地知道编程领域下一个重大事物实际上会是什么。
+因为时代变了。没人能够确切地知道编程领域下一个重大事件会是什么。
 
-不变的是，市场总是对那些人群有需求，那些：
+不变的是，时代总是对那些人群有需求，那些：
 
 + 能有效地使用 Google 搜索的人
 + 能解决他们遇到的问题的人
