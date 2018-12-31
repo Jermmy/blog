@@ -31,7 +31,7 @@ RNN 其实也是一个普通的神经网络，只不过多了一个 hidden state
 ```python
 # 这里要啰嗦一句，karpathy在RNN的前向中还计算了一个输出向量output vector，
 # 但根据RNN的原始公式，它的输出只有一个hidden state，至于整个网络最后的output vector，
-# 在hidden state之后再接一个全连接层得到的，所以并不属于RNN的内容。
+# 是在hidden state之后再接一个全连接层得到的，所以并不属于RNN的内容。
 # 包括pytorch和tf框架中，RNN的输出也只有hidden state。理解这一点很重要。
 class RNN:
   # ...
