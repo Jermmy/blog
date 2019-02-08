@@ -178,12 +178,21 @@
 .swiper-container{
     width:1080px;
     height:1920px;
+    top: 0px;
+    left: 0px;
     overflow: hidden;
 }
 
 .swiper-container .snow-container{
     width: 1080px;
     height: 1920px;
+}
+
+.swiper-container .swiper-wrapper{
+    width: 1080px;
+    height: 1920px;
+    top: 0px;
+    left: 0px;
 }
 
 
