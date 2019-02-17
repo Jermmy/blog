@@ -11,7 +11,9 @@ categories: [杂感]
 
 **最具价值的技能，你可能都不会想到**
 
-![image](https://qph.ec.quoracdn.net/main-qimg-2935deaa6e09f6dc1ada13980a267786-p)
+<center>
+    <img src="/images/2017-4-4/matt-damon-the-martian-slice.jpg">
+</center>
 
 （图片来自 [collider.com](http://collider.com/matt-damon-on-the-martian-his-break-from-acting-and-more/)）
 
@@ -36,7 +38,7 @@ categories: [杂感]
 
 编程一直都跟一项主要的技能有关：
 
-**你需要十分擅长快速掌握要领。**（译者注：原文是 **You need to be really good at figuring things out on the fly.**）
+**你需要擅长于快速掌握要领。**（译者注：原文是 **You need to be really good at figuring things out on the fly.**）
 
 技术会不断革新。新的编程语言和框架将会一直出现。你不需要花费时间追逐新潮流。
 
