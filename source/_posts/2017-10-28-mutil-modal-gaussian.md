@@ -22,11 +22,11 @@ $$
 
 ### 二维的情况
 
-为了简单起见，本文假设所有变量都是相互独立的。即对于概率分布函数 $f(x_0,x_1,…,x_n)$ 而言，有 $f(x_0,x_1,…,x_n)=f(x_0)f(x_1)f(x_n)$ 成立。
+为了简单起见，本文假设所有变量都是相互独立的。即对于概率分布函数 $f(x_0,x_1,…,x_n)​$ 而言，有 $f(x_0,x_1,…,x_n)=f(x_0)f(x_1)f(x_n)​$ 成立。
 
 现在，我们用一个二维的例子推出上面的公式。
 
-假设有很多变量 $\overline x=\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}$，它们的均值为 $\overline u=\begin{bmatrix} u_1 \\ u_2 \end{bmatrix}$，方差为 $\overline \sigma=\begin{bmatrix} \sigma_1 \\ \sigma_2 \end{bmatrix}$。
+假设有很多变量 $\overline x=\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}​$，它们的均值为 $\overline u=\begin{bmatrix} u_1 \\ u_2 \end{bmatrix}​$，方差为 $\overline \sigma=\begin{bmatrix} \sigma_1 \\ \sigma_2 \end{bmatrix}​$。
 
 由于 $x_1$，$x_2$ 是相互独立的，所以，$\overline x$ 的高斯分布函数可以表示为：
 $$
@@ -103,29 +103,29 @@ $$
 
 当然，估计模型参数的方法有很多，最常用的就是极大似然估计。
 
-简单起见，拿一维的高斯模型举例。假设我们有很多数据点：$(x_1, x_2, x_3, \dots, x_m)$。一维高斯函数是：$p(x|\mu, \sigma^2)=\frac{1}{\sqrt{2\pi}\sigma}exp(-\frac{(x-\mu)^2}{2\sigma^2})$
+简单起见，拿一维的高斯模型举例。假设我们有很多数据点：$(x_1, x_2, x_3, \dots, x_m)$，它们的均值是$\tilde u$。一维高斯函数是：$p(x|\mu, \sigma^2)=\frac{1}{\sqrt{2\pi}\sigma}exp(-\frac{(x-\mu)^2}{2\sigma^2})$
 
 首先，我们先写出似然函数：
 $$
 \begin{eqnarray}
-f(x_1, x_2, \dots, x_m)&=&\prod_{i=1}^{m}\frac{1}{\sqrt{2\pi}\sigma}exp(-\frac{(x_i-\mu)^2}{2\sigma^2}) \\
-&=&(2\pi \sigma^2)^{-\frac{m}{2}}exp(-\frac{\sum_{i=1}^n{(x_i-\mu)^2}}{2\sigma^2})
+f(x_1, x_2, \dots, x_m)&=&\prod_{i=1}^{m}\frac{1}{\sqrt{2\pi}\sigma}exp(-\frac{(x_i-\tilde \mu)^2}{2\sigma^2}) \\
+&=&(2\pi \sigma^2)^{-\frac{m}{2}}exp(-\frac{\sum_{i=1}^n{(x_i-\tilde \mu)^2}}{2\sigma^2})
 \end{eqnarray}
 $$
 然后取对数：
 $$
-\ln{f(x_1, x_2, \dots, x_m)}=-\frac{m}{2}\ln{(2\pi \sigma^2)}-\frac{1}{2\sigma^2}\sum_{i=1}^n{(x_i-\mu)^2}
+\ln{f(x_1, x_2, \dots, x_m)}=-\frac{m}{2}\ln{(2\pi \sigma^2)}-\frac{1}{2\sigma^2}\sum_{i=1}^n{(x_i-\tilde \mu)^2}
 $$
 求出导数，令导数为 0 得到似然方程：
 $$
-\frac{\partial \ln f}{\partial \mu}=\frac{1}{\sigma^2}\sum_{i=1}^{n}{(x_i-\mu)}=0
+\frac{\partial \ln f}{\partial \overline \mu}=\frac{1}{\sigma^2}\sum_{i=1}^{n}{(x_i-\tilde \mu)}=0
 $$
 
 $$
-\frac{\partial \ln{f}}{\partial \sigma}=-\frac{m}{\sigma}+\frac{1}{\sigma^3}\sum_{i=1}^n{(x_i-\mu)}=0
+\frac{\partial \ln{f}}{\partial \sigma}=-\frac{m}{\sigma}+\frac{1}{\sigma^3}\sum_{i=1}^n{(x_i-\tilde \mu)}=0
 $$
 
-我们可以求出：$\mu=\frac{1}{m}\sum_{i=1}^m{(x_i-\mu)}$，$\sigma=\sqrt{\frac{1}{m}\sum_{i=1}^m{(x_i-\mu)^2}}$，可以看到，这其实就是高斯函数中平均值和标准差的定义。
+我们可以求出：$\mu=\frac{1}{m}\sum_{i=1}^m{(x_i-\tilde \mu)}$，$\sigma=\sqrt{\frac{1}{m}\sum_{i=1}^m{(x_i-\tilde \mu)^2}}$，可以看到，这其实就是高斯函数中平均值和标准差的定义。
 
 对于高维的情况，平均值和协方差矩阵也可以用类似的方法计算出来。
 
