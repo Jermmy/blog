@@ -32,9 +32,7 @@ mathjax: true
 Fast RCNN 的改进可以用下面两幅图概括。其中，左图是原 RCNN 的做法，而右图则是 Fast RCNN 的做法。
 
 <center>
-
-<img src="/images/2018-1-15/rcnn-to-fast-rcnn.png" >
-
+  <img src="/images/2018-1-15/rcnn-to-fast-rcnn.png" >
 </center>
 
 以上两点基本就是 Fast RCNN 所做的改进了。替换 SVM 这一步是很容易实现的，整合线性模型的操作也可以借助 [multi-task CNN](https://zhuanlan.zhihu.com/p/22190532) 的思想实现，但共享卷积操作却会遇到一个严重的问题。因为卷积得到的特征，最后都需要送入全联接层进行降维等操作，而全联接层输入向量的维度必须是固定。由于我们现在是在 feature map 上，根据 SS 提取的候选区域，截取了一小块区域的特征作为该区域的图片特征，因此肯定不符合全联接层的要求（原本的全联接层是针对整个 feature map 的维度进行计算的）。所以下面重点分析一下论文是怎么处理的。
