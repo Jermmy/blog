@@ -79,6 +79,8 @@ RoI Align 之后打算新开一篇文章针对代码细讲，本文只稍微提�
 
 ### Loss 的设计
 
+在损失函数的设计方面，除了原本 Faster RCNN 中的分类损失和 bounding box 回归损失外，我们还需要针对 mask 分支设计一个分割任务的损失函数。最容易想到的函数自然是 FCN 和 UNet 中用到的 Softmax + Log 的多分类损失。不过，直接采用这个损失函数会出现所谓的 **class competition** 的问题。
+
 ### 几个小问题
 
 #### 
