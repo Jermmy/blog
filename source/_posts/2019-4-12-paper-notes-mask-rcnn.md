@@ -65,9 +65,17 @@ RoI Align 之后打算新开一篇文章针对代码细讲，本文只稍微提�
 
 原图中的小男孩有两个 bounding box 框住他，我们用卷积操作对图像进行 downsample，然后根据 feature map 和原图的比例，推算出这两个 bounding box 对应在 feature map 上的位置和大小。结果，很不幸这两个框的位置四舍五入后刚好对应同一块 feature map。接着，RoI Pooling 和 FCN 会对这块 feature map 进行处理得到 mask，再根据 ground truth 计算 Loss。两个框对应的 ground truth 当然是不一样的。这个时候，网络就左右为难，同样一个 feature map，居然要拟合两个不同的结果，它左右为难一脸懵逼，直接导致模型无法收敛。
 
-这就是所谓的 **misalignment**。问题的根源在于 bounding box 缩放时的取整。
+这就是所谓的 **misalignment**。问题的根源在于 bounding box 缩放时的取整。当然，RoI Pooling 本身在 pooling 的时候也是存在取整误差的。
 
+既然问题出在取整上，那么，很自然想到的解决思路就是放弃取整，直接根据推算得到的浮点数来处理 bounding box。如此一来，bounding box 对应到的 feature map 上就会有一些点的坐标不是整数，于是，我们需要重新确定这些点的特征值。而这一步也是 **RoI Align** 的主要工作。其具体的做法是采样双线性插值，根据相邻 feature map 上的点来插值一个新的特征向量。如下图所示：
 
+<center>
+<img src="/images/2019-4-12/roi-align.jpg" width="600px">
+</center>
+
+图中，我们现在 bounding box 中采样出几个点，然后用双线性插值计算出这几个点的向量，之后，再按照一般的 Pooling 操作得到一个固定大小的 feature map。具体的细节，之后开一篇新的文章介绍。
+
+论文中通过 RoI Align 和 FCN 将 RoI 内对应的 feature map 处理成固定大小的 mask（$K \times m \times m$，$K$ 表示分割物体的种类数），然后将该 mask 还原回原图后，就可以得到对应的分割掩码了。
 
 ### Loss 的设计
 
