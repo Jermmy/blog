@@ -10,8 +10,8 @@ author: Jermmy
 language: zh-Hans
 #language:
 timezone:
-avatar: https://avatars2.githubusercontent.com/u/7380327?v=3&u=00ca25dac0efb33afc8eb5a84eae545c398f0c00&s=140
-
+# avatar: https://avatars2.githubusercontent.com/u/7380327?v=3&u=00ca25dac0efb33afc8eb5a84eae545c398f0c00&s=140
+avatar: /images/avatar.png
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://jermmy.github.io/

@@ -46,9 +46,7 @@ Fast RCNN 的改进可以用下面两幅图概括。其中，左图是原 RCNN �
 下图显示的，是在一张 feature map 上，对一个 5 * 7 的 ROI 区域进行 ROI Pooling 的结果，最后得到 2 * 2 的特征。
 
 <center>
-
-<img src="/images/2018-1-15/roi pooling.gif" width="500px">
-
+  <img src="/images/2018-1-15/roi pooling.gif" width="500px">
 </center>
 
 这时，可能有人会问，如果 ROI 区域太小怎么办？比如，拿 VGG16 来说，它要求 Pooling 后的特征为 7 * 7 * 512，如果碰巧 ROI 区域只有 6 * 6 大小怎么办？还是同样的办法，每个网格的大小取 $\frac{6}{7} * \frac{6}{7} = 0.85 * 0.85$，然后，以宽为例，按照这样的间隔取网格：
@@ -98,9 +96,7 @@ Faster RCNN 提出了一种 Region Proposal Network（RPN），看名字就知�
 不过，直接根据滑动窗口换算回原图存在一个 bug。试想一下，如果 ground truth 只占这个滑动窗口的一部分（也就是说二者的 IoU 不满足筛选条件），但这一部分又刚好是物体的重要部位，那我们应该认为这个窗口有物体还是没物体呢？
 
 <center>
-
-<img src="/images/2018-1-15/sliding window.png" width="400px">
-
+  <img src="/images/2018-1-15/sliding window.png" width="400px">
 </center>
 
 所以，为了防止这种尴尬的事情发生，或者说，为了防止有些窗口被漏捡，我们在换算回原图的窗口时，要尝试不同的窗口尺寸，而不是规规矩矩按照固定的缩放比例。比如，我们可以稍微将原图的窗口调大一些，或调小一些，或将长宽的比例做调整，总之，就是尽可能 match 到窗口内的 ground truth。论文一共试了 k 种组合（实验中，取了 9 种组合，窗口面积为 {128, 256, 512} x 长宽比为 {1:1, 1:2, 2:1}）。feature map 上的一个点对应一个窗口，这个窗口内的特征输入 RPN 网络后，最终输出 $k * 2$ 个分类结果（表示 k 个窗口分别对应前景还是后景）以及 $k * 4$ 个窗口粗调整的结果（表示 k 个窗口应该怎样调整）。论文中，这些原图上的窗口又被称为 **Anchor**，以便和 feature map 上的滑动窗口区分开。注意，feature map 上的滑动窗口尺寸始终是 $3 * 3$，而且每次都只移动一步。有人可能会问，如果滑动窗口对应的 Anchor 中，存在多个物体怎么办？不影响的，因为 RPN 只判断前景跟后景，不做细致分类，而且，RPN 的输出中，k 个窗口会对应 k 个输出。如果有两个 Anchor 对应两个物体，那么，RPN 会将这两个 Anchor 都标记为 前景，并且根据它们各自的输出，微调这两个 Anchor 的位置。
@@ -124,9 +120,7 @@ $p_i^*$ 和 $t_i^*$ 则是 ground truth 对应的前后景概率以及窗口位�
 总的来说，RPN 可以用下面这幅图表示：
 
 <center>
-
-<img src="/images/2018-1-15/RPN.png">
-
+  <img src="/images/2018-1-15/RPN.png">
 </center>
 
 ### RPN + Fast RCNN
@@ -136,9 +130,7 @@ RPN 训练完成后，我们相当于得到一个神经网络版本的 Selective
 不过，这其中有很多可以优化的细节。比如，在 RPN 网络之前，我们需要先对图像做卷积操作，而这一部分操作和 Fast RCNN 是可以共享的。这里借用[参考博文](http://shartoo.github.io/RCNN-series/)的一张图来介绍一下整个网络架构。
 
 <center>
-
-<img src="/images/2018-1-15/rcnn13.png">
-
+  <img src="/images/2018-1-15/rcnn13.png">
 </center>
 
 首先，原始图片会经过一个共享的卷积层，得到 feature map。之后，RPN 在这个 feature map 上按照之前的描述提取 proposal，而 Fast RCNN 部分会继续输入到它的卷积层中，得到更高层的 feature map，然后在这个 feature map 上，根据提取到的 proposal，按照 Fast RCNN 的流程判断物体，以及做 bounding box regression。

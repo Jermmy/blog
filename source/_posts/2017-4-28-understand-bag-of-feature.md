@@ -20,7 +20,9 @@ Bag of Feature 是一种图像特征提取方法，它借鉴了文本分类的�
 
 「Bag of Words」 是文本分类中一种通俗易懂的策略。一般来讲，如果我们要了解一段文本的主要内容，最行之有效的策略是抓取文本中的关键词，根据关键词出现的频率确定这段文本的中心思想。比如：如果一则新闻中经常出现「iraq」、「terrorists」，那么，我们可以认为这则新闻应该跟伊拉克的恐怖主义有关。而如果一则新闻中出现较多的关键词是「soviet」、「cuba」，我们又可以猜测这则新闻是关于冷战的（见下图）。
 
-![bag-of-words](/images/2017-4-29/bag-of-words.png)
+<center>
+  <img src="/images/2017-4-29/bag-of-words.png" width="400px" >
+</center>
 
 这里所说的关键词，就是**「Bag of words」**中的 **words** ，它们是区分度较高的单词。根据这些 words ，我们可以很快地识别出文章的内容，并快速地对文章进行分类。
 
@@ -55,7 +57,9 @@ Bag of Feature 是一种图像特征提取方法，它借鉴了文本分类的�
 
 提取完特征后，我们会采用一些聚类算法对这些特征向量进行聚类。最常用的聚类算法是 **k-means**。至于 k-means 中的 k 如何取，要根据具体情况来确定。另外，由于特征的数量可能非常庞大，这个聚类的过程也会非常漫长。
 
-![visual vocabulary](/images/2017-4-29/visual vocabulary.png)
+<center>
+  <img src="/images/2017-4-29/visual vocabulary.png" width="400px"
+</center>
 
 聚类完成后，我们就得到了这 k 个向量组成的字典，这 k 个向量有一个通用的表达，叫 **visual word**。
 
@@ -65,7 +69,9 @@ Bag of Feature 是一种图像特征提取方法，它借鉴了文本分类的�
 
 具体做法是，对于图像中的每一个「SIFT」特征，都可以在字典中找到一个最相似的 visual word，这样，我们可以统计一个 k 维的直方图，代表该图像的「SIFT」特征在字典中的相似度频率。
 
-![code-word](/images/2017-4-29/code-word.png)
+<center>
+  <img src="/images/2017-4-29/code-word.png" width="400px">
+</center>
 
 例如：对于上图这辆车的图片，我们匹配图片的「SIFT」向量与字典中的 visual word，统计出最相似的向量出现的次数，最后得到这幅图片的直方图向量。
 
