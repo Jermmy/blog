@@ -41,15 +41,15 @@ Fast RCNN 的改进可以用下面两幅图概括。其中，左图是原 RCNN �
 
 为了让全联接层能够接收 Conv-Pooling 后的特征，我们要么是重新调整 pooling 后的特征维度，使它适应全联接层，要么是改变全联接层的结构，使它可以接收任意维度的特征。后者一个有效的解决方案是 FCN（全卷积网络），不过 Fast RCNN 出来之时还没有 FCN，因此它采用的是前一种思路。
 
-那要如何调整 pooling 后的特征呢？论文提出了一种 ROI Pooling Layer 的方法（ROI 指的是 Region of Interest）。事实上，这种方法并不是 Fast RCNN 的原创，而是借鉴了 [SPPNet](https://arxiv.org/abs/1406.4729) 的思路。关于 SPPNet，网上资料很多，就不再赘述了，所以我开门见山讲一下 ROI Pooling Layer 是怎么处理的。假设首个全联接层接收的特征维度是 $H * W * D$，例如 VGG16 的第一个 FC 层的输入是 7 * 7 * 512，其中 512 表示 feature map 的层数。那么，ROI Pooling Layer 的目标，就是让 feature map 上的 ROI 区域，在经过 pooling 操作后，其特征输出维度满足 $H * W$。具体做法是，对原本 max pooling 的单位网格进行调整，使得 pooling 的每个网格大小动态调整为 $\frac{h}{H} * \frac{w}{W}$（假设 ROI 区域的长宽为 $h * w$）。这样，一个 ROI 区域可以得到 $H * W$ 个网格。然后，每个网格内依然采用 max pooling 操作。如此一来，不管 ROI 区域大小如何，最终得到的特征维度都是 $H * W * D$。
+那要如何调整 pooling 后的特征呢？论文提出了一种 ROI Pooling Layer 的方法（ROI 指的是 Region of Interest）。事实上，这种方法并不是 Fast RCNN 的原创，而是借鉴了 [SPPNet](https://arxiv.org/abs/1406.4729) 的思路。关于 SPPNet，网上资料很多，就不再赘述了，所以我开门见山讲一下 ROI Pooling Layer 是怎么处理的。假设首个全联接层接收的特征维度是 $H \times W \times D$，例如 VGG16 的第一个 FC 层的输入是 $7 \times 7 \times 512$，其中 512 表示 feature map 的层数。那么，ROI Pooling Layer 的目标，就是让 feature map 上的 ROI 区域，在经过 pooling 操作后，其特征输出维度满足 $H \times W$。具体做法是，对原本 max pooling 的单位网格进行调整，使得 pooling 的每个网格大小动态调整为 $\frac{h}{H} \times \frac{w}{W}$（假设 ROI 区域的长宽为 $h \times w$）。这样，一个 ROI 区域可以得到 $H \times W$ 个网格。然后，每个网格内依然采用 max pooling 操作。如此一来，不管 ROI 区域大小如何，最终得到的特征维度都是 $H \times W \times  D$。
 
-下图显示的，是在一张 feature map 上，对一个 5 * 7 的 ROI 区域进行 ROI Pooling 的结果，最后得到 2 * 2 的特征。
+下图显示的，是在一张 feature map 上，对一个 $5 \times 7$ 的 ROI 区域进行 ROI Pooling 的结果，最后得到 $2 \times 2$ 的特征。
 
 <center>
   <img src="/images/2018-1-15/roi pooling.gif" width="500px">
 </center>
 
-这时，可能有人会问，如果 ROI 区域太小怎么办？比如，拿 VGG16 来说，它要求 Pooling 后的特征为 7 * 7 * 512，如果碰巧 ROI 区域只有 6 * 6 大小怎么办？还是同样的办法，每个网格的大小取 $\frac{6}{7} * \frac{6}{7} = 0.85 * 0.85$，然后，以宽为例，按照这样的间隔取网格：
+这时，可能有人会问，如果 ROI 区域太小怎么办？比如，拿 VGG16 来说，它要求 Pooling 后的特征为 $7 \times 7 \times  512$，如果碰巧 ROI 区域只有 $6 \times 6$ 大小怎么办？还是同样的办法，每个网格的大小取 $\frac{6}{7} \times \frac{6}{7} = 0.85 \times 0.85$，然后，以宽为例，按照这样的间隔取网格：
 
 $[0, 0.85, 1.7, 2.55, 3.4, 4.25, 5.1, 5.95]$，
 
@@ -81,7 +81,7 @@ $$
 $$
 L(p,u,t^u,v)=L_{cls}(p,u)+\lambda[u \ge 1]L_{loc}(t^u,v)
 $$
-$L_{cls}$ 是 softmax 对应的 log 函数，$\lambda$ 是一个权重，文中取 1，$[u \ge 1]$ 表示只有矩形框中检测到物体才会执行 $L_{loc}$ 函数。
+$L_{cls}$ 是 softmax 对应的分类损失函数，$\lambda$ 是一个权重，文中取 1，$[u \ge 1]$ 表示只有矩形框中检测到物体才会执行 $L_{loc}$ 函数。
 
 ## Faster RCNN的进击
 
@@ -89,7 +89,7 @@ Faster RCNN，顾名思义，就是比 Fast RCNN 更快。那 Fast RCNN 中，�
 
 ### Region Proposal Network
 
-Faster RCNN 提出了一种 Region Proposal Network（RPN），看名字就知道，这个网络是用来提取 region 的。在传统的物体检测算法中，我们一般是用滑动窗口来扫描原图，然后针对每个窗口提取特征。RPN 的思路与之类似，不过，为了共享卷积层的运算，它是在卷积网络的 feature map 上，以每个特征点为中心，用一个 $n * n$ 的矩形窗口进行扫描。论文中，n 被设为 3。那我们该如何判断窗口内是否有物体呢？由于卷积网络得到的 feature map 在尺寸上和原图存在一定的比例关系，所以，我们可以把滑动窗口按比例换算回原图，然后对比原图的 ground truth，根据某种事先定好的规则，来判断这个窗口是否包含物体（比如，跟 ground truth 的矩形的 IoU 大于某个阈值就认为包含物体）。在 $n * n$ 的窗口之上，论文又用一个 $n * n$ 的卷积层，对窗口范围内的 feature map 进行卷积，然后用全联接网络输出二分类的结果（前景还是背景）以及对矩形窗口的粗调整（类似 Fast RCNN 中的 bounding box regression，不过这一步的调整相对粗糙一些）。
+Faster RCNN 提出了一种 Region Proposal Network（RPN），看名字就知道，这个网络是用来提取 region 的。在传统的物体检测算法中，我们一般是用滑动窗口来扫描原图，然后针对每个窗口提取特征。RPN 的思路与之类似，不过，为了共享卷积层的运算，它是在卷积网络的 feature map 上，以每个特征点为中心，用一个 $n \times n$ 的矩形窗口进行扫描。论文中，n 被设为 3。那我们该如何判断窗口内是否有物体呢？由于卷积网络得到的 feature map 在尺寸上和原图存在一定的比例关系，所以，我们可以把滑动窗口按比例换算回原图，然后对比原图的 ground truth，根据某种事先定好的规则，来判断这个窗口是否包含物体（比如，跟 ground truth 的矩形的 IoU 大于某个阈值就认为包含物体）。在 $n \times n$ 的窗口之上，论文又用一个 $n \times  n$ 的卷积层，对窗口范围内的 feature map 进行卷积，然后用全联接网络输出二分类的结果（前景还是背景）以及对矩形窗口的粗调整（类似 Fast RCNN 中的 bounding box regression，不过这一步的调整相对粗糙一些）。
 
 上面就是 RPN 的基本思想了。总的来说，可以认为 RPN 就是在滑动窗口上，接着的一个小网络，这个网络会判断窗口内是否有物体，以及会对原图的窗口进行粗调整（原图的窗口是 feature map 上的窗口按比例换算得到的）。
 
@@ -99,7 +99,7 @@ Faster RCNN 提出了一种 Region Proposal Network（RPN），看名字就知�
   <img src="/images/2018-1-15/sliding window.png" width="400px">
 </center>
 
-所以，为了防止这种尴尬的事情发生，或者说，为了防止有些窗口被漏捡，我们在换算回原图的窗口时，要尝试不同的窗口尺寸，而不是规规矩矩按照固定的缩放比例。比如，我们可以稍微将原图的窗口调大一些，或调小一些，或将长宽的比例做调整，总之，就是尽可能 match 到窗口内的 ground truth。论文一共试了 k 种组合（实验中，取了 9 种组合，窗口面积为 {128, 256, 512} x 长宽比为 {1:1, 1:2, 2:1}）。feature map 上的一个点对应一个窗口，这个窗口内的特征输入 RPN 网络后，最终输出 $k * 2$ 个分类结果（表示 k 个窗口分别对应前景还是后景）以及 $k * 4$ 个窗口粗调整的结果（表示 k 个窗口应该怎样调整）。论文中，这些原图上的窗口又被称为 **Anchor**，以便和 feature map 上的滑动窗口区分开。注意，feature map 上的滑动窗口尺寸始终是 $3 * 3$，而且每次都只移动一步。有人可能会问，如果滑动窗口对应的 Anchor 中，存在多个物体怎么办？不影响的，因为 RPN 只判断前景跟后景，不做细致分类，而且，RPN 的输出中，k 个窗口会对应 k 个输出。如果有两个 Anchor 对应两个物体，那么，RPN 会将这两个 Anchor 都标记为 前景，并且根据它们各自的输出，微调这两个 Anchor 的位置。
+所以，为了防止这种尴尬的事情发生，或者说，为了防止有些窗口被漏捡，我们在换算回原图的窗口时，要尝试不同的窗口尺寸，而不是规规矩矩按照固定的缩放比例。比如，我们可以稍微将原图的窗口调大一些，或调小一些，或将长宽的比例做调整，总之，就是尽可能 match 到窗口内的 ground truth。论文一共试了 k 种组合（实验中，取了 9 种组合，窗口面积为 {128, 256, 512} x 长宽比为 {1:1, 1:2, 2:1}）。feature map 上的一个点对应一个窗口，这个窗口内的特征输入 RPN 网络后，最终输出 $k \times 2$ 个分类结果（表示 k 个窗口分别对应前景还是后景）以及 $k \times 4$ 个窗口粗调整的结果（表示 k 个窗口应该怎样调整）。论文中，这些原图上的窗口又被称为 **Anchor**，以便和 feature map 上的滑动窗口区分开。注意，feature map 上的滑动窗口尺寸始终是 $3 \times 3$，而且每次都只移动一步。有人可能会问，如果滑动窗口对应的 Anchor 中，存在多个物体怎么办？不影响的，因为 RPN 只判断前景跟后景，不做细致分类，而且，RPN 的输出中，k 个窗口会对应 k 个输出。如果有两个 Anchor 对应两个物体，那么，RPN 会将这两个 Anchor 都标记为 前景，并且根据它们各自的输出，微调这两个 Anchor 的位置。
 
 训练的时候，作者随机挑选两张图片，并从每张图片上总共挑出 256 个 ground truth 作为 proposals（包括前景和后景），然后，再根据滑动窗口，挑选出大约 2400 个 Anchors。RPN 的 loss 函数包括两部分：
 $$

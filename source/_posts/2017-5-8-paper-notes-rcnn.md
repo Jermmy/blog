@@ -10,7 +10,9 @@ mathjax: true
 
 这篇文章打算浅浅地分析一下 R-CNN。
 
-![rcnn](/images/2017-5-8/rcnn.png)
+<center>
+  <img src="/images/2017-5-8/rcnn.png">
+</center>
 
 <!--more-->
 
@@ -34,7 +36,9 @@ R-CNN 中的 R 指的是 Region，所以，R-CNN 其实就是用 CNN 来定位 R
 
 CNN 模型直接采用了 Krizhevsky 等人在 2012 年的分类网络模型
 
-![cnn](/images/2017-5-8/cnn.jpg)
+<center>
+  <img src="/images/2017-5-8/cnn.jpg">
+</center>
 
 这个网络的参数比较多（超过一百万），因此需要大量的训练数据。作者直接将 Krizhevsky 在 ILSVRC 2012 上训练好的参数复制过来，有人称这种做法为「迁移学习」，因为 CNN 的本质就是提取图片的特征（类似于 SIFT ），因此，尽管训练集不同，训练出来的参数其实是可以通用的。当然啦，对于一些更具体的任务（如手写体识别），个人觉得最好还是单独训练一下。
 
@@ -46,7 +50,9 @@ CNN 模型直接采用了 Krizhevsky 等人在 2012 年的分类网络模型
 
 关于 IoU，这里简单提一下。IoU 指的是 intersection-over-union，是一个定位精度的评价标准。因为算法的结果不可能百分之百跟人工标定的矩形数据吻合，因此就需要有一个标准判断结果的准确性。
 
-![IoU](/images/2017-5-8/IoU.jpg)
+<center>
+  <img src="/images/2017-5-8/IoU.jpg">
+</center>
 
 上面这幅图摘自文末[链接](http://blog.csdn.net/u011534057/article/details/51218250)。IoU 的计算方法为：$IOU=(A \bigcap B) / (A \bigcup B)$。
 
@@ -82,7 +88,9 @@ CNN 模型直接采用了 Krizhevsky 等人在 2012 年的分类网络模型
 
 CNN 中包含很多层，具体要选用哪一层的输出作为特征呢？为此，作者进行了多次对比试验：
 
-![cnn feature](/images/2017-5-8/cnn feature.png)
+<center>
+  <img src="/images/2017-5-8/cnn feature.png">
+</center>
 
 实验结果显示，如果没有进行 fine-tuning，那么 pool5、fc6 以及 fc7 的结果都相差无几，而如果进行 fine-tuning 后，fc6 和 fc7 的结果有了显著提升。
 

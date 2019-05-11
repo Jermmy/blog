@@ -14,7 +14,9 @@ mathjax: true
 
 Selective Search，说的简单点，就是从图片中找出物体可能存在的区域。
 
-![result](/images/2017-5-4/result.png)
+<center>
+  <img src="/images/2017-5-4/result.png" width="400px">
+</center>
 
 上面这幅宇航员的图片中，那些红色的框就是 Selective Search 找出来的可能存在物体的区域。
 
@@ -22,7 +24,9 @@ Selective Search，说的简单点，就是从图片中找出物体可能存在�
 
 在进一步探讨它的原理之前，我们分析一下，如何判别哪些 region 属于一个物体？
 
-![image seg](/images/2017-5-4/image seg.png)
+<center>
+  <img src="/images/2017-5-4/image seg.png" width="400px">
+</center>
 
 作者在论文中用以上四幅图，分别描述了四种可能的情况：
 
@@ -35,7 +39,7 @@ Selective Search，说的简单点，就是从图片中找出物体可能存在�
 
 ### 需要考虑的问题
 
-在学习 Selective Search 算法之前，我曾在计算机视觉课上学到过关于物体（主要是人脸）检测的方法。通常来说，最常规也是最简单粗暴的方法，就是用不同尺寸的矩形框，一行一行地扫描整张图像，通过提取矩形框内的特征判断是否是待检测物体。这种方法的复杂度极高，所以又被称为 **exhaustive search**。在人脸识别中，由于使用了 Haar 特征，因此可以借助 **Paul Viola** 和 **Michael Jones** 两位大牛提出的积分图，使检测在常规时间内完成。但并不是每种特征都适用于积分图，尤其在神经网络中，积分图这种动态规划的思路就没什么作用了。
+在学习 Selective Search 算法之前，我曾在计算机视觉课上学到过关于物体（主要是人脸）检测的方法。通常来说，最常规也是最简单粗暴的方法，就是用不同尺寸的矩形框，一行一行地扫描整张图像，通过提取矩形框内的特征判断是否是待检测物体。这种方法的复杂度极高，所以又被称为 **exhaustive search**。在人脸识别中，由于使用了 Haar 特征，因此可以借助 **Paul Viola** 和 **Michael Jones** 提出的积分图，使检测在常规时间内完成。但并不是每种特征都适用于积分图，尤其在神经网络中，积分图这种动态规划的思路就没什么作用了。
 
 针对传统方法的不足，Selective Search 从三个角度提出了改进：
 
@@ -45,7 +49,9 @@ Selective Search，说的简单点，就是从图片中找出物体可能存在�
 
 ### 算法框架
 
-![algorithm](/images/2017-5-4/algorithm.png)
+<center>
+  <img src="/images/2017-5-4/algorithm.png" width="400px">
+</center>
 
 论文中给出的这个算法框架还是很详细的，这里再简单翻译一下。
 
