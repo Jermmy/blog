@@ -2,6 +2,7 @@
 title: 论文笔记：Mask R-CNN
 date: 2019-04-12 23:41:11
 tags: [论文, 计算机视觉, 深度学习]
+categories: 计算机视觉
 mathjax: true
 ---
 
