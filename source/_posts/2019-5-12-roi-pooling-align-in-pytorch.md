@@ -20,9 +20,15 @@ mathjax: true
 
 本文主要介绍 C++（以及 CUDA）的扩展方法。
 
+首先，介绍一下基本流程。
+
 
 
 ## ROI Pooling实现
+
+现在可以进入正题了：如何实现 ROI Pooling 和 ROI Align。下面我会根据 Facebook 官方的[代码](https://github.com/facebookresearch/maskrcnn-benchmark)进行讲解。
+
+
 
 ## ROI Align实现
 
