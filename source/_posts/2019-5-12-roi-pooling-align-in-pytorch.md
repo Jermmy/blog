@@ -20,7 +20,11 @@ mathjax: true
 
 本文主要介绍 C++（以及 CUDA）的扩展方法。
 
-首先，介绍一下基本流程。
+首先，介绍一下基本流程。在 PyTorch 中扩展 C++ 主要分为几步：
+
+1. 安装好 pybind 模块，这个模块会负责 python 和 C++ 之间的绑定；
+2. 用 C++ 写好自定义层的功能，包括前向传播 `forward` 和反向传播 `backward`；
+3. 写好 `setup.py`，并用 python 提供的 `setuptools` 来编译并加载 C++ 代码。当然，如果 `setup.py` 比较简单，我们可以直接启用 JIT 功能将 C++ 代码编程成动态链接库，这样就不用维护一份冗余的 `setup.py` 文件了。
 
 
 
