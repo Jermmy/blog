@@ -24,11 +24,76 @@ mathjax: true
 
 首先，介绍一下基本流程。在 PyTorch 中扩展 C++/CUDA 主要分为几步：
 
-1. 安装好 pybind 模块，这个模块会负责 python 和 C++ 之间的绑定；
+1. 安装好 pybind11 模块（通过 pip 或者 conda 等安装），这个模块会负责 python 和 C++ 之间的绑定；
 2. 用 C++ 写好自定义层的功能，包括前向传播 `forward` 和反向传播 `backward`；
 3. 写好 `setup.py`，并用 python 提供的 `setuptools` 来编译并加载 C++ 代码。当然，如果 `setup.py` 比较简单，我们可以直接启用 JIT 功能将 C++ 代码编程成动态链接库，这样就不用维护一份冗余的 `setup.py` 文件了。
 
-接下来，我们就用一个简单的例子来演示这几个步骤。
+接下来，我们就用一个简单的例子（两个 `Tensor` 相加）来演示这几个步骤。
+
+#### 第一步
+
+安装 `pybind11` 比较简单，直接略过。我们先写好 C++ 相关的文件：
+
+头文件 `test.h`
+
+```C++
+#include <torch/extension.h>
+#include <iostream>
+
+# 前向传播
+torch::Tensor Test_forward_cpu(const torch::Tensor& inputA,
+                            const torch::Tensor& inputB);
+# 反向传播
+torch::Tensor Test_backward_cpu(const torch::Tensor& output,
+                            const torch::Tensor& input);
+```
+
+源文件 `test.cpp`
+
+```c++
+#include "test.h"
+
+torch::Tensor Test_forward_cpu(const torch::Tensor& inputA,
+                            const torch::Tensor& inputB) {
+    AT_ASSERTM(inputA.sizes() == inputB.sizes(), "inputA must be the same size as inputB");
+    torch::Tensor output = torch::zeros(inputA.sizes());
+    output = inputA + inputB;
+    return output;
+}
+
+torch::Tensor Test_backward_cpu(const torch::Tensor& input) {
+    torch::Tensor gradOutput = torch::ones(input.sizes());
+    return gradOutput;
+}
+
+# pybind11 绑定
+PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+  m.def("forward", &Test_forward_cpu, "TEST forward");
+  m.def("backward", &Test_backward_cpu, "TEST backward");
+}
+
+```
+
+#### 第二步
+
+写一个编译安装的配置文件 `setup.py`：
+
+```python
+from setuptools import setup
+from torch.utils.cpp_extension import BuildExtension, CppExtension
+
+setup(
+    name='test_cpp',
+    ext_modules=[
+        CppExtension('test_cpp', ['test.cpp']),
+    ],
+    cmdclass={
+        'build_ext': BuildExtension
+    }
+)
+```
+
+
 
 ### CUDA扩展
 
@@ -38,7 +103,7 @@ mathjax: true
 
 ## ROI Pooling实现
 
-现在可以进入正题了：如何实现 ROI Pooling 和 ROI Align。下面我会根据 Facebook 官方的[代码](https://github.com/facebookresearch/maskrcnn-benchmark)进行讲解。
+了解 PyTorch 如何进行扩展 C++/CUDA 扩展后，现在可以进入正题了：如何实现 ROI Pooling 和 ROI Align。下面我会根据 Facebook 官方的[代码](https://github.com/facebookresearch/maskrcnn-benchmark)进行讲解。
 
 
 
