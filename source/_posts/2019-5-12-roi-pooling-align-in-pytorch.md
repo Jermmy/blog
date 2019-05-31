@@ -26,7 +26,8 @@ mathjax: true
 
 1. 安装好 pybind11 模块（通过 pip 或者 conda 等安装），这个模块会负责 python 和 C++ 之间的绑定；
 2. 用 C++ 写好自定义层的功能，包括前向传播 `forward` 和反向传播 `backward`；
-3. 写好 `setup.py`，并用 python 提供的 `setuptools` 来编译并加载 C++ 代码。当然，如果 `setup.py` 比较简单，我们可以直接启用 JIT 功能将 C++ 代码编程成动态链接库，这样就不用维护一份冗余的 `setup.py` 文件了。
+3. 写好 `setup.py`，并用 python 提供的 `setuptools` 来编译并加载 C++ 代码。
+4. 编译安装。
 
 接下来，我们就用一个简单的例子（两个 `Tensor` 相加）来演示这几个步骤。
 
@@ -53,6 +54,7 @@ torch::Tensor Test_backward_cpu(const torch::Tensor& output,
 ```c++
 #include "test.h"
 
+// 前向传播，两个 Tensor 相加。这里只关注 C++ 扩展的流程，具体实现不深入探讨。
 torch::Tensor Test_forward_cpu(const torch::Tensor& inputA,
                             const torch::Tensor& inputB) {
     AT_ASSERTM(inputA.sizes() == inputB.sizes(), "inputA must be the same size as inputB");
@@ -61,12 +63,13 @@ torch::Tensor Test_forward_cpu(const torch::Tensor& inputA,
     return output;
 }
 
+// 反向传播，导数为 1
 torch::Tensor Test_backward_cpu(const torch::Tensor& input) {
     torch::Tensor gradOutput = torch::ones(input.sizes());
     return gradOutput;
 }
 
-# pybind11 绑定
+// pybind11 绑定
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("forward", &Test_forward_cpu, "TEST forward");
   m.def("backward", &Test_backward_cpu, "TEST backward");
@@ -93,7 +96,71 @@ setup(
 )
 ```
 
+注意，这个 C++ 扩展被命名为 `test_cpp`，意思是说，在 python 中可以通过 `test_cpp` 模块来调用 C++ 函数。
 
+#### 第三步
+
+我们把上面三个文件放到如下目录中：
+
+```shell
+└── csrc
+    └── cpu
+        ├── setup.py
+        ├── test.cpp
+        └── test.h
+```
+
+在 `cpu` 这个目录下，执行下面的命令编译安装 C++ 代码：
+
+```shell
+python setup.py install
+```
+
+之后，可以看到一堆输出，该 C++ 模块会被安装在 python 的 site-packages 中。
+
+完成上面几步后，就可以在 python 中调用 C++ 代码了。在 pytorch 中，按照惯例需要先把 C++ 中的前向传播和反向传播封装成一个函数 `op`（以下代码放在 `test.py` 文件中）：
+
+```python
+from torch.autograd import Function
+import test_cpp
+
+class TestFunction(Function):
+
+    @staticmethod
+    def forward(ctx, inputA, inputB):
+        return test_cpp.forward(inputA, inputB)
+
+    @staticmethod
+    def backward(ctx, grad):
+        return test_cpp.backward(grad)
+```
+
+这样一来，我们相当于把 C++ 扩展的函数嵌入到 pytorch 自己的框架内。然后，就可以在 `Module` 中使用这个自定义 `op` 了：
+
+```python
+import torch
+
+class Test(torch.nn.Module):
+
+    def __init__(self):
+        super(Test, self).__init__()
+
+    def forward(self, inputA, inputB):
+        return TestFunction.apply(inputA, inputB)
+```
+
+现在，我们的文件目录变成：
+
+```shell
+└── csrc
+    └── cpu
+        ├── setup.py
+        ├── test.cpp
+        ├── test.h
+        └── test.py
+```
+
+之后，我们就可以将 `test.py` 当作一般的 pytorch 模块进行调用了。
 
 ### CUDA扩展
 
