@@ -6,11 +6,11 @@ categories: PyTorch
 mathjax: true
 ---
 
-今天要聊聊在 PyTorch 进行 C++ 扩展。
+今天要聊聊用 PyTorch 进行 C++ 扩展。
 
-在正式开始前，我们需要了解 PyTorch 如何自定义 `module`。这其中，最常见的就是在 `python` 中继承 `torch.nn.Module`，用 PyTorch 中已有的 operator 来组装成自己的模块。这种方式实现简单，但是，计算效率却未必最佳，另外，如果我们想实现的功能过于复杂，可能 PyTorch 中那些已有的函数也没法实现我们的要求。这时，用 C、C++、CUDA 来扩展 PyTorch 的模块就是最佳的选择了。
+在正式开始前，我们需要了解 PyTorch 如何自定义 `module`。这其中，最常见的就是在 python 中继承 `torch.nn.Module`，用 PyTorch 中已有的 operator 来组装成自己的模块。这种方式实现简单，但是，计算效率却未必最佳，另外，如果我们想实现的功能过于复杂，可能 PyTorch 中那些已有的函数也没法满足我们的要求。这时，用 C、C++、CUDA 来扩展 PyTorch 的模块就是最佳的选择了。
 
-由于目前市面上大部分深度学习系统（TensorFlow、PyTorch等）都是基于 C、C++ 构建的后端，因此这些系统基本都存在 C、C++ 的扩展接口。PyTorch 是基于 Torch 构建的，而 Torch 底层采用的是 C 语言，因此 PyTorch 天生就和 C 兼容，因此用 C 来扩展 PyTorch 并非难事。而随着 PyTorch1.0 的发布，官方已经开始考虑将 PyTorch 的底层代码用 caffe2 替换，因此他们也在逐步重构 ATen，后者是目前 PyTorch 使用的 C++ 扩展库。总的来说，C++ 是未来的趋势。至于 CUDA，这是几乎所有深度学习系统在构建之初就采用的工具，因此 CUDA 的扩展接口是标配。
+由于目前市面上大部分深度学习系统（TensorFlow、PyTorch 等）都是基于 C、C++ 构建的后端，因此这些系统基本都存在 C、C++ 的扩展接口。PyTorch 是基于 Torch 构建的，而 Torch 底层采用的是 C 语言，因此 PyTorch 天生就和 C 兼容，因此用 C 来扩展 PyTorch 并非难事。而随着 PyTorch1.0 的发布，官方已经开始考虑将 PyTorch 的底层代码用 caffe2 替换，因此他们也在逐步重构 ATen，后者是目前 PyTorch 使用的 C++ 扩展库。总的来说，C++ 是未来的趋势。至于 CUDA，这是几乎所有深度学习系统在构建之初就采用的工具，因此 CUDA 的扩展接口是标配。
 
 本文用一个简单的例子，梳理一下进行 C++ 扩展的步骤，至于一些具体的实现，不做深入探讨。
 
@@ -28,25 +28,25 @@ mathjax: true
 
 1. 安装好 pybind11 模块（通过 pip 或者 conda 等安装），这个模块会负责 python 和 C++ 之间的绑定；
 2. 用 C++ 写好自定义层的功能，包括前向传播 `forward` 和反向传播 `backward`；
-3. 写好 `setup.py`，并用 python 提供的 `setuptools` 来编译并加载 C++ 代码。
+3. 写好 **setup.py**，并用 python 提供的 `setuptools` 来编译并加载 C++ 代码。
 4. 编译安装，在 python 中调用 C++ 扩展接口。
 
-接下来，我们就用一个简单的例子（`z=2x+y`）来演示这几个步骤。
+接下来，我们就用一个简单的例子（**z=2x+y**）来演示这几个步骤。
 
 #### 第一步
 
-安装 `pybind11` 比较简单，直接略过。我们先写好 C++ 相关的文件：
+安装 **pybind11** 比较简单，直接略过。我们先写好 C++ 相关的文件：
 
-头文件 `test.h`
+头文件 **test.h**
 
 ```C++
 #include <torch/extension.h>
 #include <vector>
 
-# 前向传播
+// 前向传播
 torch::Tensor Test_forward_cpu(const torch::Tensor& inputA,
                             const torch::Tensor& inputB);
-# 反向传播
+// 反向传播
 std::vector<torch::Tensor> Test_backward_cpu(const torch::Tensor& gradOutput);
 ```
 
@@ -56,7 +56,7 @@ std::vector<torch::Tensor> Test_backward_cpu(const torch::Tensor& gradOutput);
 + ATen，包含 Tensor 等重要的函数和类；
 + 一些辅助的头文件，用于实现 ATen 和 pybind11 之间的交互。
 
-源文件 `test.cpp` 如下：
+源文件 **test.cpp** 如下：
 
 ```c++
 #include "test.h"
@@ -89,7 +89,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 
 #### 第二步
 
-新建一个编译安装的配置文件 `setup.py`，文件目录安排如下：
+新建一个编译安装的配置文件 **setup.py**，文件目录安排如下：
 
 ```shell
 └── csrc
@@ -99,7 +99,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     └── setup.py
 ```
 
-以下是 `setup.py` 中的内容：
+以下是 **setup.py** 中的内容：
 
 ```python
 from setuptools import setup
@@ -128,7 +128,7 @@ setup(
 
 #### 第三步
 
-在 `cpu` 这个目录下，执行下面的命令编译安装 C++ 代码：
+在 **cpu** 这个目录下，执行下面的命令编译安装 C++ 代码：
 
 ```shell
 python setup.py install
@@ -136,7 +136,7 @@ python setup.py install
 
 之后，可以看到一堆输出，该 C++ 模块会被安装在 python 的 site-packages 中。
 
-完成上面几步后，就可以在 python 中调用 C++ 代码了。在 pytorch 中，按照惯例需要先把 C++ 中的前向传播和反向传播封装成一个函数 `op`（以下代码放在 `test.py` 文件中）：
+完成上面几步后，就可以在 python 中调用 C++ 代码了。在 PyTorch 中，按照惯例需要先把 C++ 中的前向传播和反向传播封装成一个函数 `op`（以下代码放在 **test.py** 文件中）：
 
 ```python
 from torch.autograd import Function
@@ -155,7 +155,7 @@ class TestFunction(Function):
         return gradX, gradY
 ```
 
-这样一来，我们相当于把 C++ 扩展的函数嵌入到 pytorch 自己的框架内。
+这样一来，我们相当于把 C++ 扩展的函数嵌入到 PyTorch 自己的框架内。
 
 我查看了这个 `Function` 类的代码，发现是个挺有意思的东西：
 
@@ -200,7 +200,7 @@ class Function(with_metaclass(FunctionMeta, _C._FunctionBase, _ContextMethodMixi
         raise NotImplementedError
 ```
 
-这里需要注意一下 `backward` 的实现规则。该接口包含两个参数：`ctx` 是一个辅助的环境变量，`grad_outputs` 则是来自前一层网络的梯度列表，而且这个梯度列表的数量与 `forward` 函数返回的参数数量相同，这也符合链式法则的原理，因为链式法则中就需要把前一层中所有相关的梯度与当前层进行相乘或相加。同时，我们需要返回的 `forward` 中输入参数的梯度，如果 `forward` 中包括 n 个参数，就需要一一返回 n 个梯度。所以，在上面这个例子中，我们的 `backward` 函数接收一个参数作为输入（`forward` 只输出一个变量），并返回两个梯度（`forward` 接收上一层两个输入变量）。
+这里需要注意一下 `backward` 的实现规则。该接口包含两个参数：`ctx` 是一个辅助的环境变量，`grad_outputs` 则是来自前一层网络的梯度列表，而且这个梯度列表的数量与 `forward` 函数返回的参数数量相同，这也符合链式法则的原理，因为链式法则就需要把前一层中所有相关的梯度与当前层进行相乘或相加。同时，`backward` 需要返回 `forward` 中每个输入参数的梯度，如果 `forward` 中包括 n 个参数，就需要一一返回 n 个梯度。所以，在上面这个例子中，我们的 `backward` 函数接收一个参数作为输入（`forward` 只输出一个变量），并返回两个梯度（`forward` 接收上一层两个输入变量）。
 
 定义完 `Function` 后，就可以在 `Module` 中使用这个自定义 `op` 了：
 
@@ -227,7 +227,7 @@ class Test(torch.nn.Module):
 └── test.py
 ```
 
-之后，我们就可以将 `test.py` 当作一般的 pytorch 模块进行调用了。
+之后，我们就可以将 **test.py** 当作一般的 PyTorch 模块进行调用了。
 
 #### 测试
 
@@ -261,7 +261,7 @@ x.grad:  tensor([2., 2., 2.])
 y.grad:  tensor([1., 1., 1.])
 ```
 
-可以看出，前向传播满足 `z=2x+y`，而反向传播的结果也在意料之中。
+可以看出，前向传播满足 **z=2x+y**，而反向传播的结果也在意料之中。
 
 ### CUDA扩展
 
