@@ -20,3 +20,13 @@ mathjax: true
 与之类似的另一个课题叫图像质量评估 (image quality assessment)。我的理解是，前者偏向于主观感受，后者偏向于客观感受 (比如噪声、饱和度等客观因素)。前者的评价指标一般是跟数据集中已有的评分进行比较，而后者会有一些客观的评价标准 (如 [PSNR]([https://zh.wikipedia.org/zh-hans/%E5%B3%B0%E5%80%BC%E4%BF%A1%E5%99%AA%E6%AF%94](https://zh.wikipedia.org/zh-hans/峰值信噪比))，[SSIM]([https://zh.wikipedia.org/wiki/%E7%B5%90%E6%A7%8B%E7%9B%B8%E4%BC%BC%E6%80%A7](https://zh.wikipedia.org/wiki/結構相似性)))。
 
 这篇文章只关注计算机美学。
+
+## 研究思路
+
+由于美的定义模糊不清，且因人而异，因此要想做出令人信服的研究 (或水文)，就需要在一些大家都认可的数据集上刷分。目前常用的几个数据集包括 [CUHK-PQ](http://personal.ie.cuhk.edu.hk/~dy015/ImageAesthetics/Image_Aesthetic_Assessment.html)、[AVA](http://academictorrents.com/details/71631f83b11d3d79d8f84efe0a7e12f0ac001460)、[AADB](https://github.com/aimerykong/deepImageAestheticsAnalysis) 等，其中被用得比较广的当属 AVA 了，因为这个数据集的图片数量异常庞大，且标签也比较丰富，因此可以挖的点更多。
+
+在看了最近几年的论文后，我发现这个领域的研究方法主要集中在两个方向：1. 在模型 (包括 loss) 上面改进；2. 在数据方面创新。
+
+## 计算机美学可以做什么
+
+## 参考
