@@ -160,7 +160,7 @@ print(order_x)
 
 # 经过以上处理后，长序列的样本调整到短序列样本之前了
 # pack it
-pack = pack_padded_sequence(order_tensor, order_seq, batch_first=True)
+pack = pack_padded_sequence(order_x, order_seq, batch_first=True)
 print(pack)
 
 >>>PackedSequence(data=tensor([[ 1.],
@@ -183,7 +183,7 @@ print(pack)
 
 #### RNN的输出
 
-从文档中可以看出，`RNN` 输出两个东西：`output` 和 `h_n`。其中，`h_n` 是跑完整个时间序列后所有 hidden state 的数值，其中 `num_layers` 表示这个 RNN 有多少层神经元，比如，一个由两层 500 维的全连接层组成的 RNN，其 `num_layers` 就是 2。但 `output` 又是什么呢？之前不是说过原始的 `RNN` 只输出 hidden state 吗，为什么这里又会有一个 `output`？其实，这个 `output` 并不是我们理解的网络最后的 output vector，而是每次 forward 后计算得到的 hidden state。毕竟 `h_n` 只保留了最后一步的 hidden state，但中间的 hidden state 也有可能会参与计算，所以 pytorch 把中间每一步输出的 hidden state 都放到 `output` 中（当然，只保留了 hidden state 最后一层的输出），因此，你可以发现这个 `output` 的维度是 ` (seq_len, batch, num_directions * hidden_size)`。
+从文档中可以看出，`RNN` 输出两个东西：`output` 和 `h_n`。其中，`h_n` 是跑完整个时间序列后 hidden state 的数值，其中 `num_layers` 表示这个 RNN 有多少层神经元，比如，一个由两层 500 维的全连接层组成的 RNN，其 `num_layers` 就是 2。但 `output` 又是什么呢？之前不是说过原始的 `RNN` 只输出 hidden state 吗，为什么这里又会有一个 `output`？其实，这个 `output` 并不是我们理解的网络最后的 output vector，而是每次 forward 后计算得到的 hidden state。毕竟 `h_n` 只保留了最后一步的 hidden state，但中间的 hidden state 也有可能会参与计算，所以 pytorch 把中间每一步输出的 hidden state 都放到 `output` 中（当然，只保留了 hidden state 最后一层的输出），因此，你可以发现这个 `output` 的维度是 ` (seq_len, batch, num_directions * hidden_size)`。
 
 不过，如果你之前用 `pack_padded_sequence` 打包过数据，那么为了保证输入输出的一致性，pytorch 也会把 `output` 打包成一个 `PackedSequence` 对象，我们将上面例子的数据输入 `RNN` ，看看输出是什么样子的：
 
