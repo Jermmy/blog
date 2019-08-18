@@ -48,21 +48,79 @@ mathjax: true
 
 ### 2. Deep multi-patch aggregation network for image style, aesthetics, and quality estimation (ICCV 2015)
 
-还是上一篇论文的作者，他们在之前的尝试中，估计发现 patch 对这种美学评分的任务效果很好，因此又专门针对 patch 做了一次研究。这一次，他们只尝试了用 patch 作为输入，并设计了几种方法来融合这些 patch 的信息：
+还是上一篇论文的作者，估计他们在之前的尝试中，发现 patch 对这种美学评分的任务效果很好，因此又专门针对 patch 做了一次研究，提出了 DMA 网络。这一次，他们只尝试了用 patch 作为输入，并设计了几种方法来融合这些 patch 的信息：
 
 <center>
   <img src="/images/2019-8-6/DMA-net.png" width="400px">
 </center>
 
-
+融合 patch 的方法与 [MVCNN](http://vis-www.cs.umass.edu/mvcnn/docs/su15mvcnn.pdf) 很类似，从实验效果来看，将多个 patch 的特征进行融合，比单独输入 patch 的方式，效果提升十分明显。
 
 ### 3. A-Lamp: Adaptive Layout-Aware Multi-Patch Deep Convolutional Neural (CVPR 2017)
 
+这篇论文咋一看标题和摘要，感觉能给很多的 insight，但实际看下去，发现有点 engineering。它是在 DMA-Net (也就是上一篇论文) 的基础上进一步改进的。
+
+在 DMA-Net 中，作者探究了 patch 融合的威力，但他们默认这些 patch 是从图片中随机扣出来的，这样就没法保证 patch 之间不会重叠以及它们能覆盖住图中的关键信息。而这篇论文最大的改进之处就在于，它先用一个显著性检测模型抽取出一些更有代表性的 patch，然后再输入网络中提取特征。
+
+<center>
+  <img src="/images/2019-8-6/A-Lamp.png" width="400px">
+</center>
+
+显著性模型抽取到的 patch 可能很多，所以作者设计了几条原则，让程序可以自动筛选出需要的 patch，保证 patch 之间的重叠尽可能小，并尽可能覆盖整幅图的信息。
+
+从实验效果来看，选择合适的 patch，对效果会有显著地提升 (图中 **New-MP-Net** 就是论文的方法)：
+
+<center>
+  <img src="/images/2019-8-6/A-Lamp-exp.png" width="250px">
+</center>
+
+不过，这种方法需要用另一个显著性模型来抽取 patch，在模型方法上不是特别创新，在实际工程中由于计算量太大，也比较难接受。
+
+另外，作者认为图片中物体之间的位置关系会影响图片的布局，而布局又进一步影响审美，所以他们又用另一个显著性模型找出图中的显著性物体，再手工提取出这些物体的位置信息，作为图片的 layout 属性。不过，我感觉这一步并不是很说得通，而且提取特征的步骤也非常的工程 (虽然论文包装得很好)，所以这一步就不展开讲了。
+
 ### 4. Attention-based Multi-Patch Aggregation for Image Aesthetic Assessment (ACM MM 2018)
 
-### 5. Deep Aesthetic Quality Assessment with Semantic Information (TIP 2017)
+这篇文章同样是针对 patch 的融合方法进行改进。它的 idea 非常简单直接，之前的 patch 融合操作都是采用了 max、min 或者 sort 等操作进行融合，而这篇论文则采用了喜闻乐见的 Attention 机制来计算每个特征对应的 weight，然后根据 weight 把所有特征融合起来。感兴趣的读者可以细看一下原文。
 
-不同的场景往往会有不同的拍照方式和审美标准，因此，把场景的语义信息也融合到网络中，对结果会不会有提升呢？这篇论文在 AVA 中挑了一些常见的场景标签，并用 MTCNN 网络做了一番尝试：
+实验方面，也延续了一代更比一代强的传统，在 AVA 数据集上的准确率一举超过了以往的方法：
+
+<center>
+  <img src="/images/2019-8-6/Attention-MP-exp.png" width="250px">
+</center>
+
+### 5. Composition-preserving Deep Photo Aesthetics Assessment (CVPR 2016)
+
+前面说了这么多篇，都是 patch 相关的，现在来看看其他不一样的思路。
+
+在 CNN 中，我们需要将图片调整到固定尺寸后才能输入网络，但这样就破坏了图片的布局。所以，为了保证图片的布局没有变化，就需要将最原始的图片输入到网络中，同时又要让网络能够处理这种变化的尺寸。
+
+为此，这篇论文提出了一种 Adaptive Spatial Pooling 的操作：
+
+<center>
+  <img src="/images/2019-8-6/MNA-1.png" width="300px">
+</center>
+
+这种操作根据动态地将不同 size 的 feature map 处理成指定的 size 大小。这个操作本质上就是 [SPPNet](https://arxiv.org/abs/1406.4729)，唯一的区别是 SPPNet 是用一个网络处理图片，并结合多个 Adaptive Spatial Pooling 得到多个 size 的 feature map，而这篇论文则是多个网络结合各自的 Adaptive Spatial Pooling，相当于每个网络提取的 low level 特征会略有差别。
+
+另外，可能作者觉得自己直接拿别人的东西来改网络，工作量不太够，所以他们把场景信息 (scene) 也加入网络中学习。具体地，他们用一个场景分类网络提取图片的场景信息，再融合前面得到的特征作为图片总的特征：
+
+<center>
+  <img src="/images/2019-8-6/MNA-2.png" width="300px">
+</center>
+
+从实验结果来看，保持图片的尺寸，可以让网络学出更好的美学特征 (下图中 VGG-Crop 等实验是将原图进行 crop 等操作后再输入网络)：
+
+<center>
+  <img src="/images/2019-8-6/MNA-exp.png" width="300px">
+</center>
+
+至于场景信息，从实验结果来看，加成作用并不明显。
+
+### 6. Deep Aesthetic Quality Assessment with Semantic Information (TIP 2017)
+
+不同的场景往往会有不同的拍照方式和审美标准，因此，把场景的语义信息也融合到网络中，对结果或多或少会有提升作用。上一篇论文虽然也考虑了场景信息，但它用了两个网络来分别提取美学特征和场景特征，因此特征融合的效果未必很好。
+
+这篇论文同样考虑了场景信息，但它用 MTCNN 网络做了一番尝试：
 
 <center>
   <img src="/images/2019-8-6/semantic-net.png" width="500px">
@@ -71,14 +129,20 @@ mathjax: true
 从实验结果也可以看出，这种场景的语义信息可以提高美学分类的准确性 (注：$\delta$ 表示对好图和坏图的容忍度，具体请参考原论文。STCNN 表示没有加入场景语义信息)：
 
 <center>
-  <img src="/images/2019-8-6/semantic-exp-1.png" width="500px">
+  <img src="/images/2019-8-6/semantic-exp-1.png" width="550px">
 </center>
 
-另外，这篇文章真对多任务学习提出了一种 Multi-Task Relationship Learning(MTRL) 的优化框架，分类准确率提高了 0.5 个点左右。
+另外，这篇文章针对多任务学习提出了一种 Multi-Task Relationship Learning(MTRL) 的优化框架，分类准确率提高了 0.5 个点左右。
 
 <center>
-  <img src="/images/2019-8-6/semantic-exp-2.png" width="500px">
+  <img src="/images/2019-8-6/semantic-exp-2.png" width="450px">
 </center>
+
+### 7. Photo Aesthetics Ranking Network with Attributes and Content Adaptation (ECCV 2016)
+
+
+
+### 8. NIMA: Neural Image Assessment (TIP 2018)
 
 
 
