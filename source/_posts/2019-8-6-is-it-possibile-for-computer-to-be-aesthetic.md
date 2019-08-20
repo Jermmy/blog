@@ -140,9 +140,11 @@ mathjax: true
 
 ### 7. Photo Aesthetics Ranking Network with Attributes and Content Adaptation (ECCV 2016)
 
-在之前的论文中，有研究人员已经发现场景信息可以辅助网络学出更好的特征，这篇论文的作者也意识到这一点，不过，他们进一步挖掘出更多的属性特征，包括三分线、内容是否有趣等，为此，他们还特意构建了一个数据集 AADB。这个数据集有一个很有意思的点，就是它记录了每个标注员的 id，这样
+在之前的论文中，有研究人员已经发现场景信息可以辅助网络学出更好的特征，这篇论文的作者也意识到这一点，不过，他们进一步挖掘出更多的属性特征，包括三分线、内容是否有趣等，为此，他们还特意构建了一个数据集 AADB。这个数据集有一个很有意思的点，就是它记录了每个标注员的 id。对于美学标注这种十分主观的任务来说，不同人的评价标准是不一致的。对于 A、B 两张图片，第一个人可能觉得 A 的分数更高，而另一个人可能相反。这样的标注结果对模型的训练是有害的，尤其是在一些 ranking 相关的任务中。
 
 ### 8. NIMA: Neural Image Assessment (TIP 2018)
+
+### 9. Predicting Aesthetic Score Distribution through Cumulative Jensen-Shannon Divergence (AAAI2018)
 
 
 
@@ -151,6 +153,8 @@ mathjax: true
 
 
 ## 自动裁剪
+
+
 
 ## 自动构图
 
