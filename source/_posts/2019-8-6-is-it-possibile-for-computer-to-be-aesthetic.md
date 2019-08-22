@@ -152,6 +152,8 @@ mathjax: true
 
 ### 9. Predicting Aesthetic Score Distribution through Cumulative Jensen-Shannon Divergence (AAAI2018)
 
+这篇论文同样是在损失函数上做文章
+
 
 
 ## 图片美化
@@ -170,12 +172,6 @@ mathjax: true
 
 总的来说，一流的研究提出一个新的研究方向 (也就是常说的**坑**)，伴随而来的是一个 (或者一类) 新的数据集。二流的研究则在别人提出的研究方向上改进模型。三流的研究在模型上打补丁。
 
-## 应用
 
-### 图片筛选
-
-### 图像增强
-
-### 自动扣图
 
 ## 参考
