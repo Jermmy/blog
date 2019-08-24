@@ -180,6 +180,10 @@ mathjax: true
 
 前一节讲的美学评分其实是计算机美学里的关键问题，即让计算机理解什么图片是美的。这是众多美学任务中的基本任务。让计算机学会给图片打分，其实就是让计算机
 
+### 1. Aesthetic-Driven Image Enhancement by Adversarial Learning (ACM MM 2018)
+
+### 2. Creatism: A deep-learning photographer capable of creating professional work (arXiv 2017)
+
 ## 自动裁剪
 
 
