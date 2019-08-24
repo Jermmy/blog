@@ -168,7 +168,7 @@ mathjax: true
   <img src="/images/2019-8-6/NIMA-exp.png">
 </center>
 
-这篇文章来自 Google。相比起前面提到的论文，它最大的优势在于整个框架非常简单直接，在工程上应用性更强，体现了 Google 一贯的作风。
+这篇文章来自 Google。相比起前面提到的论文，它最大的优势在于整个框架非常简单直接，效果不错，在工程上应用性更强。这也是 Google 一贯的作风。
 
 ### 9. Predicting Aesthetic Score Distribution through Cumulative Jensen-Shannon Divergence (AAAI2018)
 
@@ -178,7 +178,7 @@ mathjax: true
 
 ## 图片美化
 
-
+前一节讲的美学评分其实是计算机美学里的关键问题，即让计算机理解什么图片是美的。这是众多美学任务中的基本任务。让计算机学会给图片打分，其实就是让计算机
 
 ## 自动裁剪
 
