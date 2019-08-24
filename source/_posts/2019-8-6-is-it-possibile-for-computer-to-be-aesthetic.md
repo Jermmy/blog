@@ -186,15 +186,31 @@ mathjax: true
 
 ## 自动裁剪
 
+### 1. Learning the Change for Automatic Image Cropping  (CVPR2013)
 
+### 2. Deep Cropping via Attention Box Prediction and Aesthetics Assessment  (ICCV 2017)
+
+### 3. Automatic Image Cropping for Visual Aesthetic Enhancement Using Deep Neural Networks and Cascaded Regression  (TMM 2017)
+
+### 4. A2-RL: Aesthetics Aware Reinforcement Learning for Image Cropping  (CVPR 2018)
+
+### 5. Reliable and Efficient Image Cropping: A Grid Anchor based Approach  (CVPR 2019)
 
 ## 自动构图
+
+### 1. Learning to Compose with Professional Photographs on the Web  (ACM MM 2017)
+
+### 2. Good View Hunting: Learning Photo Composition from Dense View Pairs  (CVPR 2018)
 
 ## 美学评价
 
 要是有一种技术，可以告诉我们一副图像拍的如何就好了。随着计算机美学和看图说话技术的发展，这项技术或许将出现在我们日常生活中。
 
+### 1. Aesthetic Critiques Generation for Photos  (ICCV 2017)
+
 开启这项工作 (坑) 的是台湾大学的。。。，
+
+### 2. Aesthetic Attributes Assessment of Images  (ACM MM 2019)
 
 由于这个课题有一定应用前景，跟自然语言处理的联系也比较紧密，算是一个跨模态任务，可以挖的点很多，可以预见，未来会有更多的工作填这个坑。
 
