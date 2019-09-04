@@ -180,7 +180,7 @@ mathjax: true
 因此，为了利用上这部分信息，这篇论文在损失函数上进行了改进。作者让网络输出这 10 档分数的直方图分布：
 
 <center>
-  <img src="/images/2019-8-6/NIMA-net.png">
+  <img src="/images/2019-8-6/NIMA-net.png" width="400px">
 </center>
 
 再采用 Earth Move Distance 来衡量网络输出与真实的直方图之间的距离，以这个距离作为损失函数进行训练。Earth Move Distance 可以理解为 Wasserstein Distance 的离散版，可以用来衡量两个分布 (直方图) 的距离。具体计算方法请参考论文。
@@ -188,7 +188,7 @@ mathjax: true
 在实验效果上，也基本超过了当时最好的方法：
 
 <center>
-  <img src="/images/2019-8-6/NIMA-exp.png">
+  <img src="/images/2019-8-6/NIMA-exp.png" width="400px">
 </center>
 
 这篇文章来自 Google。相比起前面提到的论文，它最大的优势在于整个框架非常简单直接，效果不错，在工程上应用性更强。这也是 Google 一贯的作风。
@@ -203,7 +203,15 @@ mathjax: true
 
 ### 1. Aesthetic-Driven Image Enhancement by Adversarial Learning (ACM MM 2018)
 
-这篇论文，顾名思义，就是从美学的角度对图像进行增强。在一望大多数的研究中，图像增强一般需要成对的样本 (即需要 ground) 进行训练，但这需要大量的标注工作 (比如让专业人员用 PS 将低质量的图片处理成高质量的图片) 
+这篇论文，顾名思义，就是从美学的角度对图像进行增强。在以往大多数的研究中，图像增强一般需要成对的样本 (即需要 ground) 进行训练，但这需要大量的标注工作 (比如让专业人员用 PS 将低质量的图片处理成高质量的图片，当然有一种 trick，即反过来，我们先搜集大量高质量的图片，再用软件随机加噪声或者降低饱和度等等，从而批量制造低质量的图片)。图像增强的本质就是将一种图片转换成另一种图片 (类似 image-to-image)，之所以需要成对训练，就在于计算机不明白低质量和高质量这两种模态的差异，因此只能用成对的图片让它学会这种图片与图片之间的映射。而如果计算机本身能识别出好图和坏图，那可以认为它已经知道了如何去度量高质量和低质量图片的差异，这样的话，就可以用弱监督学习的方式，不需要借助成对图片进行训练了。 (通常用 GAN 作为训练方法)。
+
+本文的核心思想就在于此。它采用 GAN 作为训练方式 (这也是这类弱监督学习的常用方法)。作者从颜色变换的角度，设计了一个生成网络对低质量图片进行增强，然后，他们又设计了一个判别器网络来分辨生成的图片以及其他真实的高清图片。
+
+<center>
+  <img src="/images/2019-8-6/EnhanceGAN.png" width="500px">
+</center>
+
+这里的判别器本身不是一个随机初始化的网络，而是已经训练过，能很好地识别低质量和高质量图片的模型。因此，这个判别器本身可以度量这两个分布之间的差异，它可以进一步引导生成器学习，从而摆脱对 ground truth 的依赖。
 
 ### 2. Creatism: A deep-learning photographer capable of creating professional work (arXiv 2017)
 
@@ -221,9 +229,15 @@ mathjax: true
 
 ## 自动构图
 
+自动构图 (Compose) 与自动裁剪 (Crop) 本质上属于一个东西，都是让计算机从图片中找出更好看的区域。但相比较而言，自动构图更侧重于美学中的构图因素。
+
 ### 1. Learning to Compose with Professional Photographs on the Web  (ACM MM 2017)
 
+
+
 ### 2. Good View Hunting: Learning Photo Composition from Dense View Pairs  (CVPR 2018)
+
+单纯从构图这个角度讲，如果有一种机器人，携带一个照相机，如果它能够根据照相机实时的反馈图片，找出一个最佳的角度拍出一张构图最好的照片，那就是一个成熟的自动构图了。
 
 ## 美学评价
 
