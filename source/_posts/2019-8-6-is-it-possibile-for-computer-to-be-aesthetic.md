@@ -217,11 +217,37 @@ mathjax: true
 
 ## 自动裁剪
 
-### 1. Learning the Change for Automatic Image Cropping  (CVPR2013)
+自动裁剪，就是在图片中裁出一块区域，这块区域要么构图很好，要么包含最主要的内容，总之，裁出来的这块图片总体上比原图要更加赏心悦目。在计算机美学出现的同时，图片自动裁剪作为一种衍生品也在不断发展。工业界中已经有相关的产品落地，比如 iphone xs 的相册中，有一个功能是对相册图片进行裁剪，并把裁剪出来的图片以幻灯片的形式做成视频，还有常见的缩略图功能也会用到自动裁剪的技术。
 
-### 2. Deep Cropping via Attention Box Prediction and Aesthetics Assessment  (ICCV 2017)
+目前，自动裁剪技术的实现方案局限在两种思路上。第一种，借用注意力机制 (或者显著性物体检测)，裁剪出图片中最重要的部分；第二种，借助计算机美学评分，在众多滑动窗口中选出美学评分最高的窗口进行裁剪。
 
-### 3. Automatic Image Cropping for Visual Aesthetic Enhancement Using Deep Neural Networks and Cascaded Regression  (TMM 2017)
+### 1. Learning the Change for Automatic Image Cropping  (CVPR 2013)
+
+这篇论文可以算是深度学习兴起前，传统方法的典型作品了。其思路就是人工定义很多的规则抽取 feature，再用 SVM 等工具进行训练，测试的时候再暴力遍历很多窗口，把分数最高的作为最好的裁剪窗口。在特征提取上，这篇论文融合了显著性检测和美学评分两种思路，先把图片分成前后景，再根据前后景之间的颜色差异、纹理差异、显著区域的位置关系等多种规则提取特征，然后训练模型。在测试时，结合一些启发式搜索的策略，可以剔除掉大量候选窗口，以此提高算法的速度。
+
+### 2. Automatic Image Cropping for Visual Aesthetic Enhancement Using Deep Neural Networks and Cascaded Regression  (TMM 2017)
+
+### 3. Deep Cropping via Attention Box Prediction and Aesthetics Assessment  (ICCV 2017)
+
+回想我们人类自己在裁剪图片的时候，都是先找出最重要的一块区域，框起来，再逐步调整这个裁剪框。这篇论文把这个过程建模为两步：首先，让网络找出图片中最重要的区域，并微调，由此得到一系列候选框，紧接着，用一个美学评分模型对这些候选框进行挑选，找出评分最高的候选框。这个思路跟其他论文的做法没有本质区别，但由于它在找候选框的过程中借用了物体检测的思想，跟其他基于显著性检测或者启发式搜索的方法不同，再加上它把整个论文的 motivation 跟人类自己的操作流程结合起来，因此显得很新颖。
+
+论文的算法框架分为 ABP(Attention Box Prediction) 和 AA(Aesthetics Assessment) 两个网络。前一个网络用于生成候选框，后一个网络用于打分。ABP 网络的训练需要大量的候选框 ground truth 作参考，由于作者是从注意力的角度出发定义的候选框，因此他们采用了一个视觉注意力相关的数据集 [SALICON](http://salicon.net/) 来生成 ground truth。除了包围注意力区域的候选框外，再根据 IOU 生成更多的正候选框 (注意力区域) 和负候选框 (背景区域)，以此获得大量的训练样本。
+
+<center>
+  <img src="/images/2019-8-6/deep-crop-rectangular.png" width="400px">
+  <figcaption>注意力区域和候选框生成</figcaption>
+</center>
+
+之后，他们用这些候选框来训练 ABP 网络：
+
+<center>
+  <img src="/images/2019-8-6/deep-crop-ABP.png" width="400px">
+  <figcaption>ABP网络</figcaption>
+</center>
+
+整个网络的结构和损失函数的设计，像极了 Faster RCNN。有了 ABP 网络后，我们就可以根据预测的概率分数选出最好的候选框，不过，为了防止这一步出差错，作者把这个候选框适当增大，获得更多候选框，之后，就是用 AA 网络来预测每个候选框的分数。
+
+这篇论文的工作量有点大，毕竟 Faster RCNN 本身就不是简单的东西。但看完后我总感觉有点南辕北辙。论文是先预测 Attention Map 所在的候选矩形框，然后再用 AA 网络挑选最好的，那为何不直接让网络预测 Attention Map，再根据 Attention Map 来生成候选矩形框呢？没想通。。
 
 ### 4. A2-RL: Aesthetics Aware Reinforcement Learning for Image Cropping  (CVPR 2018)
 
@@ -235,13 +261,27 @@ mathjax: true
 
 这篇论文的思路基于一个简单的假设：专业摄影师拍出来的图片一般具备比较好的构图，而如果从他们的图片中随机抠出一块，那抠出的图片大概率就毁了。也就是说，原图在构图方面的分数应该高于抠出来的图片。而这种比较的方式，可以很方便地用 Siamese Network 和 hinge loss 实现。另外，这篇论文另一个讨人喜欢的地方在于，它几乎不需要标注数据，只需要在网上爬取很多专业图片，再随机抠图就可以快速构造大量训练样本，因此成本近乎为零，即使精度不高也可以接受。
 
+当然，这篇论文的训练方式只能让网络知道哪种图片的构图好，而无法自动从原图中抠出构图好的图块，因此，在抠图方面，采用的是滑动窗口的策略，并根据网络输出的分数决定哪个窗口最好。
+
 ### 2. Good View Hunting: Learning Photo Composition from Dense View Pairs  (CVPR 2018)
 
-上一篇论文虽然方法简单，但由于训练数据太粗糙，所以效果不可能很好。为此，这篇论文的作者自己制作了一个数据集 CPC。这个数据集中的数据也是采用一对图片 (准确的说，是从图片里抠出的 patch) 进行比较 (rank) 的形式标注的 (标注步骤本身会更复杂也更科学一点)，整个数据集总共包含一百多万对图片的标注。
+<center>
+  <img src="/images/2019-8-6/good-view-hunting-eg.png" width="500px">
+  <figcaption>论文效果图</figcaption>
+</center>
 
+上一篇论文虽然方法简单，但由于训练数据太粗糙，所以效果不可能很好。为此，这篇论文的作者自己制作了一个数据集 [CPC](http://www.cs.stonybrook.edu/~cvl/projects/wei2018goods/VPN_CVPR2018s.html)。这个数据集中的数据也是采用一对图片 (准确的说，是从图片里抠出的 patch) 进行比较 (rank) 的形式标注的 (实际标注步骤分两步，高效合理，值得借鉴)，整个数据集总共包含一百多万对图片的标注。
 
+在抠图方面，上一篇论文采用的是滑动窗口这种传统的方法，但这种暴力搜索的方法耗时耗力。受近几年很多物体检测方法的启发，作者采用了 [MultiBox](https://arxiv.org/abs/1312.2249) 的思路来让网络快速搜索出构图分数更高的窗口。在物体检测中，网络是根据 bounding box 训练的，但在抠图任务里，bounding box 的引导作用并不大。换句话说，两个位置大小相差不大的窗口，其构图分数可能相差很大，但两个相差很大的窗口，却可能有着类似的分数。而且，我们已有的标注数据就只有上面提到的 ranking 数据。
 
-如果有一天，计算机可以在你拍照的时候告诉你哪个角度构图最好，那构图技术就算成熟了。
+最容易想到的训练方式，就是像上一篇论文一样，直接用 ranking 数据训练网络，再对一个个窗口做判断，不过这样一来这篇论文就没意义了。为了能结合物体检测的优势，作者采用了[知识蒸馏](https://arxiv.org/abs/1503.02531)的方法，先用 ranking 数据训练一个评分网络 (VEN)，再用这个网络训练一个窗口区域选择网络 (VPN)。通过这种巧妙的方法，可以得到一个既能快速抽取窗口的、又能比较准确地给出构图分数的网络。在训练过程中，作者采用了一个跟 ranking 相关的损失函数 MPSE(Mean Pairwise Square Error)，也很值得借鉴。
+
+<center>
+  <img src="/images/2019-8-6/good-view-hunting-framework.png" width="500px">
+  <figcaption>训练框架</figcaption>
+</center>
+
+> 如果有一天，计算机可以在你拍照的时候告诉你哪个角度构图最好，那就是一个成熟的构图了。
 
 ## 美学评价
 
