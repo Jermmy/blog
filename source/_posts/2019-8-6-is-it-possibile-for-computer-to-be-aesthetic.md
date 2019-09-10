@@ -160,7 +160,7 @@ mathjax: true
 这篇文章总共采用了 regression loss 和 rank loss 两种损失函数，因此从网络结构上看，是一个明显的 multi-task 的结构：
 
 <center>
-  <img src="/images/2019-8-6/AADB-net.png" width="450px">
+  <img src="/images/2019-8-6/AADB-net.png" width="500px">
 </center>
 
 实验结果请参考原论文。
@@ -289,14 +289,19 @@ mathjax: true
 
 ### 1. Aesthetic Critiques Generation for Photos  (ICCV 2017)
 
-开启这项工作 (坑) 的是台湾大学的。。。，
+开启这项工作 (坑) 的是台湾的学者。
 
 ### 2. Aesthetic Attributes Assessment of Images  (ACM MM 2019)
 
-由于这个课题有一定应用前景，跟自然语言处理的联系也比较紧密，算是一个跨模态任务，可以挖的点很多，可以预见，未来会有更多的工作填这个坑。
+> 由于这个课题有一定应用前景，跟自然语言处理的联系也比较紧密，算是一个跨模态任务，可以挖的点很多，可以预见，未来会有更多的工作填这个坑。
 
 总的来说，一流的工作挖坑，二流的工作用推土机填坑，三流的工作修推土机。
 
 
 
 ## 参考
+
++ [干掉柯洁的下一步，阿尔法狗创始人又要毁掉这个行业（深度学习）](https://mp.weixin.qq.com/s?__biz=MzA3MzczNzY0Mw==&mid=2648542581&idx=1&sn=41aa4792cafdc7f04265b518ad116bc5&chksm=872359b1b054d0a7e667a12bd5e6ad9967e62fbf7e5e9b81644e68ac926d282744c12514b3e3&scene=21#wechat_redirect)
++ [深度学习在摄影技术中的应用与发展](https://blog.csdn.net/GitChat/article/details/78787839)
++ [【技术综述】图像美学质量评价调研报告](https://zhuanlan.zhihu.com/p/37307679)
++ 
