@@ -85,7 +85,7 @@ mathjax: true
 实验方面，也延续了一代更比一代强的传统，在 AVA 数据集上的准确率一举超过了以往的方法：
 
 <center>
-  <img src="/images/2019-8-6/Attention-MP-exp.png" width="250px">
+  <img src="/images/2019-8-6/Attention-MP-exp.png" width="400px">
 </center>
 
 ### 5. Composition-preserving Deep Photo Aesthetics Assessment (CVPR 2016)
@@ -97,7 +97,7 @@ mathjax: true
 为此，这篇论文提出了一种 Adaptive Spatial Pooling 的操作：
 
 <center>
-  <img src="/images/2019-8-6/MNA-1.png" width="300px">
+  <img src="/images/2019-8-6/MNA-1.png" width="350px">
 </center>
 
 这种操作根据动态地将不同 size 的 feature map 处理成指定的 size 大小。这个操作本质上就是 [SPPNet](https://arxiv.org/abs/1406.4729)，唯一的区别是 SPPNet 是用一个网络处理图片，并结合多个 Adaptive Spatial Pooling 得到多个 size 的 feature map，而这篇论文则是多个网络结合各自的 Adaptive Spatial Pooling，相当于每个网络提取的 low level 特征会略有差别。
@@ -105,13 +105,13 @@ mathjax: true
 另外，可能作者觉得自己直接拿别人的东西来改网络，工作量不太够，所以他们把场景信息 (scene) 也加入网络中学习。具体地，他们用一个场景分类网络提取图片的场景信息，再融合前面得到的特征作为图片总的特征：
 
 <center>
-  <img src="/images/2019-8-6/MNA-2.png" width="300px">
+  <img src="/images/2019-8-6/MNA-2.png" width="400px">
 </center>
 
 从实验结果来看，保持图片的尺寸，可以让网络学出更好的美学特征 (下图中 VGG-Crop 等实验是将原图进行 crop 等操作后再输入网络)：
 
 <center>
-  <img src="/images/2019-8-6/MNA-exp.png" width="300px">
+  <img src="/images/2019-8-6/MNA-exp.png" width="350px">
 </center>
 
 至于场景信息，从实验结果来看，加成作用并不明显。
@@ -160,7 +160,7 @@ mathjax: true
 这篇文章总共采用了 regression loss 和 rank loss 两种损失函数，因此从网络结构上看，是一个明显的 multi-task 的结构：
 
 <center>
-  <img src="/images/2019-8-6/AADB-net.png" width="500px">
+  <img src="/images/2019-8-6/AADB-net.png" width="600px">
 </center>
 
 实验结果请参考原论文。
@@ -172,7 +172,7 @@ mathjax: true
 在 AVA 数据集中，每张图片都被分为 10 个分数等级，并由 250 位以上的标注员进行打分，每个人可以选择 1～10 中的一档。因此，每张图片的分数其实可以用一个柱状图来表示。
 
 <center>
-  <img src="/images/2019-8-6/NIMA-histogram.png" width="400px">
+  <img src="/images/2019-8-6/NIMA-histogram.png" width="350px">
 </center>
 
 在之前的论文中，研究人员都是将这 10 档分数分为好坏两段 (0～5 和 5～10)，这么做其实是把很好 (差) 的和比较好 (差) 的等同看待，从信息的角度来说是比较浪费的。
@@ -188,7 +188,7 @@ mathjax: true
 在实验效果上，也基本超过了当时最好的方法：
 
 <center>
-  <img src="/images/2019-8-6/NIMA-exp.png" width="400px">
+  <img src="/images/2019-8-6/NIMA-exp.png" width="450px">
 </center>
 
 这篇文章来自 Google。相比起前面提到的论文，它最大的优势在于整个框架非常简单直接，效果不错，在工程上应用性更强。这也是 Google 一贯的作风。
@@ -208,7 +208,7 @@ mathjax: true
 本文的核心思想就在于此。它采用 GAN 作为训练方式 (这也是这类弱监督学习的常用方法)。作者从颜色变换的角度，设计了一个生成网络对低质量图片进行增强，然后，他们又设计了一个判别器网络来分辨生成的图片以及其他真实的高清图片。
 
 <center>
-  <img src="/images/2019-8-6/EnhanceGAN.png" width="500px">
+  <img src="/images/2019-8-6/EnhanceGAN.png" width="550px">
 </center>
 
 这里的判别器本身不是一个随机初始化的网络，而是已经训练过，能很好地识别低质量和高质量图片的模型。因此，这个判别器本身可以度量这两个分布之间的差异，它可以进一步引导生成器学习，从而摆脱对 ground truth 的依赖。
@@ -257,6 +257,8 @@ mathjax: true
 
 ### 4. A2-RL: Aesthetics Aware Reinforcement Learning for Image Cropping  (CVPR 2018)
 
+
+
 ### 5. Reliable and Efficient Image Cropping: A Grid Anchor based Approach  (CVPR 2019)
 
 ## 自动构图
@@ -295,13 +297,13 @@ mathjax: true
 
 ### 1. Aesthetic Critiques Generation for Photos  (ICCV 2017)
 
-开启美学评价这项工作 (坑) 的是台湾的学者。这篇文章顾名思义，就是让机器生成一些跟图片美学相关的评价。作为第一个吃螃蟹的人，如何定义问题是关键的一步。*当我在评价一张图片的时候，我一般在想什么*。大多数情况下，无非是图片的构图好不好，色彩饱和度够不够，主体突不突出等等。遵循这个思路，作者把原问题分解了一下，他们选定几个维度 (比如饱和度、色彩光照等)，让机器只针对这几个角度，分别进行评价。这样一来，这个任务跟一般的 image caption 任务就比较类似了。一般的 image caption 任务通常是描述图片中的物体在做什么事情，而本文的任务是描述图像中的某些属性 (饱和度等) 效果怎么样 (好/差)。
+开启美学评价这项工作 (坑) 的是台湾的学者。这篇文章顾名思义，就是让机器生成一些跟图片美学相关的评价。作为第一个吃螃蟹的人，如何定义问题是关键的一步。**当我们在评价一张图片的时候，我们一般在想什么**。大多数情况下，无非是图片的构图好不好，色彩饱和度够不够，主体突不突出等等。遵循这个思路，作者把原问题分解了一下，他们选定几个维度 (比如饱和度、色彩光照等)，让机器只针对这几个角度，分别进行评价。这样一来，这个任务跟一般的 image caption 任务就比较类似了。一般的 image caption 任务通常是描述图片中的物体在做什么事情，而本文的任务是描述图像中的某些属性 (饱和度等) 效果怎么样 (好/差)。
 
 有了基本思路后，作者在一个图像评论网站上爬取了图片和评论数据，并制作了该任务首个数据集 PCCD，这个数据集中包含 4000+ 图片，每张图片对应 7 句描述 (分别对应 7 个维度，包括总体印象、光照、饱和度等)，同时每张图片会有 7 个打分 (也分别对应这 7 个维度)。除此以外，论文还定义了一个比较适合该任务的评价标准 SPICE，感兴趣的读者可以参考原论文。下图是数据集中的两个样本：
 
 <center>
   <img src="/images/2019-8-6/aesthetic-critiques-PCCD.png" width="500px">
-  <figcaption>每张图片都包含7句描述，分别对应7个维度，每个维度包含一个打分。</figcaption>
+  <figcaption>每张图片都包含7句描述，分别对应7个维度，每个维度包含一个打分</figcaption>
 </center>
 
 在算法框架上，论文基本是参照了 image caption 中一些比较成功的模型。最简单也最容易想到的方法就是直接套用 CNN-LSTM 框架，并针对美学任务本身做一些定制操作 (比如把 CNN 换成针对美学评分的 CNN)。当然实际操作时会遇到很多问题，论文遇到的最大的问题就是生成的评价很单一 (比如总是生成针对饱和度的评价)，这一点可能跟数据集中的数据分布有关。另一个思路则是专门针对不同的维度训练不同 CNN-LSTM 模型 (AO, aspect-oriented)，如下图所示：
@@ -313,7 +315,7 @@ mathjax: true
 先用一个 CNN 预测图像的美学类型 (饱和度或者构图等)，再把 CNN 抽取的特征输入 LSTM 生成 caption，训练的时候可以根据 CNN 预测的美学类型，用对应类型的评价作为 ground truth 来训练模型。这种方法本身应该是有效的，但却过于繁琐，所以论文又给出了另一种方法，将这些不同维度的模型融合成一个统一的框架 (AF, aspect-fusion)，见下图：
 
 <center>
-  <img src="/images/2019-8-6/aesthetic-critiques-AF.png" width="450px">
+  <img src="/images/2019-8-6/aesthetic-critiques-AF.png" width="400px">
 </center>
 
 它的思路是把训练好的单维度模型 (AO) 提取到的隐变量 (hidden state) 抽取出来，然后用 Attention 机制一顿操作后生成新的 LSTM 的隐变量 (hidden state)，
