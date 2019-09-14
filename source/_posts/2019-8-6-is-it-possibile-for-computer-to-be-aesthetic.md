@@ -215,6 +215,8 @@ mathjax: true
 
 ### 2. Creatism: A deep-learning photographer capable of creating professional work (arXiv 2017)
 
+这篇论文出自 Google 之手，事实上并没有正式发表，但从[结果](https://google.github.io/creatism/)来看，确实非常的惊艳。
+
 ## 自动裁剪
 
 自动裁剪，就是在图片中裁出一块区域，这块区域要么构图很好，要么包含最主要的内容，总之，裁出来的这块图片总体上比原图要更加赏心悦目。在计算机美学出现的同时，图片自动裁剪作为一种衍生品也在不断发展。工业界中已经有相关的产品落地，比如 iphone xs 的相册中，有一个功能是对相册图片进行裁剪，并把裁剪出来的图片以幻灯片的形式做成视频，还有常见的缩略图功能也会用到自动裁剪的技术。
