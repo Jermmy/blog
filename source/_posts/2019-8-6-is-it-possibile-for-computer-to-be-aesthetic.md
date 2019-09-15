@@ -215,7 +215,17 @@ mathjax: true
 
 ### 2. Creatism: A deep-learning photographer capable of creating professional work (arXiv 2017)
 
-这篇论文出自 Google 之手，事实上并没有正式发表，但从[结果](https://google.github.io/creatism/)来看，确实非常的惊艳。
+这篇论文出自 Google 之手，事实上并没有正式发表，但从[结果](https://google.github.io/creatism/)来看，确实非常的惊艳👇
+
+<center>
+    <img src="/images/2019-8-6/creatism-eg.jpg" width="550px">
+</center>
+
+这篇论文主要做的是一个自动后期处理工具。说的直白点，就是学习一个滤波器对图片进行增强。论文最值得借鉴的做法就是把整个图像增强的任务分解为一系列互不影响的滤波器，通过把这些滤波器串联起来，完成最后的增强效果。这其中，有的滤波器负责调整饱和度，有的负责调整光照，有的裁剪图片调整构图，等等。而为了让这些滤波器互不影响，
+
+
+
+
 
 ## 自动裁剪
 
