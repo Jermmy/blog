@@ -286,6 +286,23 @@ mathjax: true
 
 ### 5. Reliable and Efficient Image Cropping: A Grid Anchor based Approach  (CVPR 2019)
 
+这篇论文的核心思想都在题目的 Reliable 和 Efficient 两个词中，即裁剪出来的区域必须是真的好看的（Reliable），而且裁剪的过程要足够的高效，不能花太长的时间（Efficient）。
+
+那如何评价是否 Reliable 呢？之前的方法都是将模型输出的裁剪框跟数据集中的 ground truth 计算 IoU 以及裁剪框四个坐标点的差值，这很明显是采纳了物体检测中的评价标准。但对于图片裁剪来说，这并不是一个特别好的评价标准。理由见下面这张图的最后一列。
+
+<center>
+  <img src="/images/2019-8-6/GAIC-fig1.png">
+  <figcaption>最后一列中，最底下的图片跟中间的图片有更高的IoU值，但它裁剪出来的内容很差。</figcaption>
+</center>
+
+因此，论文提出了两个新的评估指标：SRCC (Spearman's rank-order correlation) 和 $Acc_{K/N}$ (return K of top-N accuracy)。
+
++ SRCC 是衡量两个排序相关性常用的指标。虽然 IoU 没法衡量裁剪框的可靠性，但对于同一张图片来说，模型输出的所有裁剪框之间的好坏关系大体还是要跟 ground truth 匹配上的。在实际使用时，需要把 ground truth 中标好的矩形框让模型来一一打分，然后用 SRCC 计算这些矩形框的分数高低跟真实标定的分数的一致性。
+
++ $Acc_{K/N}$ 则是这篇论文提出的一种计算方式。在实际应用中，用户更在意的可能是算法输出的若干个裁剪框中有多少个是真正合理的。因此，可以比对一下 ground truth 标记分数最高的前 N 个裁剪框以及模型计算得到的分数最高的前 K 个裁剪框，看看这个交集有多大。交集越大，证明模型输出的裁剪框质量越好，模型的可靠性就越高。
+
+   
+
 ## 自动构图
 
 自动构图 (Compose) 与自动裁剪 (Crop) 本质上属于一个东西，都是让计算机从图片中找出更好看的区域。但相比较而言，自动构图更侧重于美学中的构图因素。
