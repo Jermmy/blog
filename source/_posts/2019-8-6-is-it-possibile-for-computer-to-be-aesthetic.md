@@ -197,7 +197,6 @@ mathjax: true
 
 这篇论文同样是在损失函数上做文章。与 NIMA 这篇论文相似之处在于，作者同样注意到要对 AVA 的直方图信息进行利用。因此，他们根据 JS Divergence 提出了一种衡量两个分布 (直方图) 差异的方法，并以此作为损失函数优化网络。具体细节请参考原文。
 
-### 10. Image Aesthetic Assessment Based on Pairwise Comparison – A Unified Approach to Score Regression, Binary Classification, and Personalization (ICCV2019)
 ## 图片美化
 
 前一节讲的美学评分其实是计算机美学里的关键问题，是众多美学任务中的基本任务。让计算机学会给图片打分，其实就是让计算机对好的和坏的图片做出大致的度量。一旦计算机可以学会这种度量，就可以进一步引导其他相关的任务。比如，对一张很差的图片进行美化。
@@ -308,6 +307,20 @@ mathjax: true
 <center>
   <img src="/images/2019-8-6/GAIC-fig2.png" width="500px">
   <figcaption>将裁剪框左上角和右下角的点限制在蓝色区域内</figcaption>
+</center>
+
+下图是论文算法的总体框架，由于裁剪框已经事先定义好了，因此只要逐个预测裁剪框内的分数即可。总体模型就是一个回归模型。作者先用一个网络提取整张图片的特征，并在最后的特征图上，根据裁剪框内的区域计算分数。由于分数预测的模块比较小，即使要计算的矩形框很多，总体花费的时间并不大。这里用到一个 trick：由于构图这个东西除了考虑裁剪框内的因素外，还需要考虑框内的元素在整幅图中的效果，即需要兼顾 local 和 global 的信息，因此在计算分数的时候，作者把裁剪框内的 feature 以及整幅图 (挖掉裁剪框内的部分) 的 feature 结合在一起，共同输入网络中计算。
+
+ <center>
+  <img src="/images/2019-8-6/GAIC-framework.jpg" width="600px">
+  <figcaption>算法框架</figcaption>
+</center>
+
+从实验结果来看，这篇论文的算法效率有很大的优势，裁剪效果也不差：
+
+<center>
+  <img src="/images/2019-8-6/GAIC-exp.jpg" width="600px">
+  <figcaption>从结果来看，这篇论文的算法效率很感人</figcaption>
 </center>
 
 ## 自动构图
