@@ -281,7 +281,7 @@ mathjax: true
 
 ### 4. A2-RL: Aesthetics Aware Reinforcement Learning for Image Cropping  (CVPR 2018)
 
-
+这篇论文从强化学习的思路入手解决自动裁剪的问题。
 
 ### 5. Reliable and Efficient Image Cropping: A Grid Anchor based Approach  (CVPR 2019)
 
