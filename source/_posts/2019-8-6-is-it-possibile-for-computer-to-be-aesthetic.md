@@ -283,6 +283,13 @@ mathjax: true
 
 这篇论文从强化学习的思路入手解决自动裁剪的问题。
 
+自动裁剪的过程可以理解为不断地调整矩形框，直到获得较高的美学评分。这就是一个不断试错的过程，和强化学习本身的工作原理非常类似。由于我对强化学习一窍不通，具体算法请查看原文。
+
+<center>
+  <img src="/images/2019-8-6/A2-RL.jpg" width="500px">
+  <figcaption>算法框架</figcaption>
+</center>
+
 ### 5. Reliable and Efficient Image Cropping: A Grid Anchor based Approach  (CVPR 2019)
 
 这篇论文的核心思想都在题目的 Reliable 和 Efficient 两个词中，即裁剪出来的区域必须是真的好看的（Reliable），而且裁剪的过程要足够的高效，不能花太长的时间（Efficient）。
