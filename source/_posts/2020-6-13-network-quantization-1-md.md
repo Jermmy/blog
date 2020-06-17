@@ -52,8 +52,29 @@ r_3^{i,k}=\sum_{j=1}^N r_1^{i,j}r_2^{j,k} \tag{5}
 $$
 假设 $S_1$、$Z_1$ 是 $r_1$ 矩阵对应的 scale 和 zero point，$S_2$、$Z_2$、$S_3$、$Z_3$同理，那么由 (5) 式可以推出：
 $$
-S_3(q_3^{i,k}-Z_3)=\sum_{j=1}^{N}S_1(q_{1}^{i,j}-Z_1)S_2(q_2^{j,k}-Z_2)
+S_3(q_3^{i,k}-Z_3)=\sum_{j=1}^{N}S_1(q_{1}^{i,j}-Z_1)S_2(q_2^{j,k}-Z_2)  \tag{6}
 $$
+整理一下可以得到：
+$$
+q_3^{i,k}=\frac{S_1 S_2}{S_3}\sum_{j=1}^N(q_1^{i,j}-Z_1)(q_2^{j,k}-Z_2)+Z_3 \tag{7}
+$$
+仔细观察 (7) 式可以发现，除了$\frac{S_1 S_2}{S_3}$，其他都是定点整数运算。那如何把 $\frac{S_1 S_2}{S_3}$ 也变成定点运算呢？这里要用到一个 trick。假设 $M=\frac{S_1 S_2}{S_3}$，由于 $M$ 通常都是 (0, 1) 之间的实数 (这是通过大量实验统计出来的)，因此可以表示成 $M=2^{-n}M_0$，其中 $M_0 \in [0.5, 1)$，且是一个定点实数。注意，定点数并不一定是整数，所谓定点，指的是小数点的位置是固定的，即小数位数是固定的。因此，如果存在 $M=2^{-n}M_0$，那我们就可以通过$M_0$的 bit 位移操作实现 $2^{-n}M_0$，这样整个过程就都在定点上计算了。
+
+很多刚接触量化的同学对这一点比较疑惑，下面我就用一个简单的示例说明这一点。我们把 $M=\frac{S_1 S_2}{S_3}$ 代入 (7) 式可以得到：
+$$
+q_3^{i,k}=M\sum_{j=1}^N(q_1^{i,j}-Z_1)(q_2^{j,k}-Z_2)+Z_3=MP+Z_3 \tag{8}
+         
+$$
+这里面 $P$ 是一个在定点域上计算好的整数。
+
+假设 $P=7091$，$M=0.0072474273418460$ ($M$ 可以通过 $S$ 事先计算得到)，那下面我们就是要找到一个 $M_0$ 和 $n$，使得 $MP=2^{-n}M_0 P$ 成立。我们可以用一段代码来找到这两个数：
+
+```python
+M = 0.0072474273418460
+P = 7091
+def multiply(n, M, P):
+```
+
 
 
 ##  参考
@@ -61,5 +82,5 @@ $$
 + [神经网络量化简介](https://zhuanlan.zhihu.com/p/64744154)
 + [Building a quantization paradigm from first principles](https://github.com/google/gemmlowp/blob/master/doc/quantization.md#implementation-of-quantized-matrix-multiplication)
 + [Post Training Quantization General Questions](https://github.com/NervanaSystems/distiller/issues/327)
-+ 
++ [量化训练：Quantization Aware Training in Tensorflow（一）](https://zhuanlan.zhihu.com/p/101346240)
 
