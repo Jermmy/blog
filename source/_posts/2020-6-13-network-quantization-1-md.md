@@ -83,4 +83,8 @@ def multiply(n, M, P):
 + [Building a quantization paradigm from first principles](https://github.com/google/gemmlowp/blob/master/doc/quantization.md#implementation-of-quantized-matrix-multiplication)
 + [Post Training Quantization General Questions](https://github.com/NervanaSystems/distiller/issues/327)
 + [量化训练：Quantization Aware Training in Tensorflow（一）](https://zhuanlan.zhihu.com/p/101346240)
++ [How to Quantize an MNIST network to 8 bits in Pytorch from scratch (No retraining required)](https://medium.com/@karanbirchahal/how-to-quantise-an-mnist-network-to-8-bits-in-pytorch-no-retraining-required-from-scratch-39f634ac8459)
++ [Aggressive Quantization: How to run MNIST on a 4 bit Neural Net using Pytorch](https://medium.com/@karanbirchahal/aggressive-quantization-how-to-run-mnist-on-a-4-bit-neural-net-using-pytorch-5703f3faa599)
++ [TensorFlow Lite 8-bit quantization specification](https://www.tensorflow.org/lite/performance/quantization_spec)
++ [Post-training quantization](https://www.tensorflow.org/lite/performance/post_training_quantization)
 
