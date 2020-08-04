@@ -84,4 +84,4 @@ $$
 
 但是保证 scale 和 zp 一样，没规定一定得用 ReLU 前的 scale 和 zp，我们一样可以用 ReLU 之后的 scale 和 zp。不过，使用哪一个 scale 和 zp，意义完全不一样。如果使用 ReLU 之后的 scale 和 zp，那我们就可以用量化本身的截断功能来实现 ReLU 的作用。
 
-再举个例子，
+再举个例子，假设有一个 Conv+ReLU 的结构，我们用 ReLU 后的输出来统计 minmax 并计算 scale 和 zp。这样一来，ReLU 前，也就是 Conv 后的 scale 和 zp 也需要和 ReLU 后的保持一致。假设 Conv 后实数域的数值范围是 [-1, 1]，那 ReLU 后的数值范围是 [0, 1]，则 ReLU 后的 scale 和 zp 表示的就是 [0, 1] 和 [0, 255] 之间的映射关系，如果 Conv 出来的整型数值「数值范围是 0～255」直接用这样的 scale 和 zp 来换算，那计算得到的浮点型数值范围肯定在 [0, 1] 之间。换句话说，通过 ReLU 后的 scale 和 zp，我们在没有经过 ReLU 函数的情况下，实现了 ReLU 的功能。这就是 Conv 和 ReLU 可以合并的原因。有人可能会问，如果 Conv 出来后的整形数值没有经过 ReLU 函数，那它
