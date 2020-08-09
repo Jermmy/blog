@@ -6,7 +6,7 @@ categories: 深度学习
 mathjax: true
 ---
 
-上一篇[文章](http://jermmy.github.io/2020/07/11/2020-7-11-network-quantization-3/)介绍了量化训练的基本流程，本文介绍量化中如何在把 BatchNorm 和 ReLU 合并到 Conv 中。
+上一篇[文章](http://jermmy.github.io/2020/07/11/2020-7-11-network-quantization-3/)介绍了量化训练的基本流程，本文介绍量化中如何把 BatchNorm 和 ReLU 合并到 Conv 中。
 
 <center>
   <img src="/images/2020-7-19/FoldBN.jpg" width="500px">
@@ -30,7 +30,7 @@ mathjax: true
 
 Folding BatchNorm 不是量化才有的操作，在一般的网络中，为了加速网络推理，我们也可以把 BN 合并到 Conv 中。
 
-Folding 的过程是这样的，假设有一个已经训练好的 Conv 和 BN：
+合并的过程是这样的，假设有一个已经训练好的 Conv 和 BN：
 
 <center>
   <img src="/images/2020-7-19/conv_bn.png" width="500px">
@@ -78,10 +78,50 @@ $$
 
 在量化中，Conv + ReLU 这样的结构一般也是合并成一个 Conv 进行运算的，而这一点在全精度模型中则办不到。
 
-在之前的[文章](https://jermmy.github.io/2020/06/13/2020-6-13-network-quantization-1/)中说过，ReLU 前后应该使用同一个 scale 和 zeropoint(zp)。这是因为 ReLU 本身没有做任何的数学运算，只是一个截断函数，如果使用不同的 scale 和 zp，会导致无法量化回 float 域。
+在之前的[文章](https://jermmy.github.io/2020/06/13/2020-6-13-network-quantization-1/)中说过，ReLU 前后应该使用同一个 scale 和 zeropoint。这是因为 ReLU 本身没有做任何的数学运算，只是一个截断函数，如果使用不同的 scale 和 zeropoint，会导致无法量化回 float 域。
 
-举个例子。假设 ReLU 前的数值范围是 (-1, 1)，那么经过 ReLU 后的数值范围是 (0, 1)。假设量化到 uint8 类型，即 [0, 255]，那么 ReLU 前后的 scale 分别为 $\frac{2}{255}$、$\frac{1}{255}$，zp 分别为 128 和 0。 再假设 ReLU 前的浮点数是 0.5，那么经过 ReLU 后的值依然是 0.5。换算成整型的话，ReLU 前的整数是 192，由于 zp 为 128，因此过完 ReLU 后的数值依然是 192。但是，由于 ReLU 后的 scale 和 zeropoint 已经发生了变化，因此换算回 float 域后的数值不再是 0.5，而这不是我们想要的。所以，如果想要保证量化的 ReLU 和浮点型的 ReLU 之间的一致性，就必须保证前后的 scale 和 zp 是一样的。
+看下图这个例子。假设 ReLU 前的数值范围是 $r_{in} \in [-1, 1]$，那么经过 ReLU 后的数值范围是 $r_{out} \in [0,1]$。假设量化到 uint8 类型，即 [0, 255]，那么 ReLU 前后的 scale 分别为 $S_{in}=\frac{2}{255}$、$S_{out}=\frac{1}{255}$，zp 分别为 $Z_{in}=128$、$Z_{out}=0$。 再假设 ReLU 前的浮点数是 $r_{in}=0.5$，那么经过 ReLU 后的值依然是 0.5。换算成整型的话，ReLU 前的整数是 $q_{in}=192$，由于 $Z_{in}=128$，因此过完 ReLU 后的数值依然是 192。但是，$S_{out}$ 和 $Z_{out}$ 已经发生了变化，因此反量化后的 $r_{out}$ 不再是 0.5，而这不是我们想要的。所以，如果想要保证量化的 ReLU 和浮点型的 ReLU 之间的一致性，就必须保证 $S_{in}$、$S_{out}$ 以及 $Z_{in}$、$Z_{out}$ 是一致的。
 
-但是保证 scale 和 zp 一样，没规定一定得用 ReLU 前的 scale 和 zp，我们一样可以用 ReLU 之后的 scale 和 zp。不过，使用哪一个 scale 和 zp，意义完全不一样。如果使用 ReLU 之后的 scale 和 zp，那我们就可以用量化本身的截断功能来实现 ReLU 的作用。
+<center>
+  <img src="/images/2020-7-19/QReLU.png" width="500px">
+</center>
 
-再举个例子，假设有一个 Conv+ReLU 的结构，我们用 ReLU 后的输出来统计 minmax 并计算 scale 和 zp。这样一来，ReLU 前，也就是 Conv 后的 scale 和 zp 也需要和 ReLU 后的保持一致。假设 Conv 后实数域的数值范围是 [-1, 1]，那 ReLU 后的数值范围是 [0, 1]，则 ReLU 后的 scale 和 zp 表示的就是 [0, 1] 和 [0, 255] 之间的映射关系，如果 Conv 出来的整型数值「数值范围是 0～255」直接用这样的 scale 和 zp 来换算，那计算得到的浮点型数值范围肯定在 [0, 1] 之间。换句话说，通过 ReLU 后的 scale 和 zp，我们在没有经过 ReLU 函数的情况下，实现了 ReLU 的功能。这就是 Conv 和 ReLU 可以合并的原因。有人可能会问，如果 Conv 出来后的整形数值没有经过 ReLU 函数，那它
+但是保证前后的 scale 和 zp 一致，没规定一定得用 $S_{in}$ 和 $Z_{in}$，我们一样可以用 ReLU 之后的 scale 和 zp。不过，使用哪一个 scale 和 zp，意义完全不一样。如果使用 ReLU 之后的 scale 和 zp，那我们就可以用量化本身的截断功能来实现 ReLU 的作用。
+
+想要理解这一点，需要回顾一下量化的基本公式：
+$$
+q=round(\frac{r}{S}+Z) \tag{5}
+$$
+注意，这里的 round 除了把 float 型四舍五入转成 int 型外，还需要保证 $q$ 的数值在特定范围内「例如 0～255」，相当于要做一遍 clip 操作。因此，这个公式更准确的写法应该是「假设量化到 uint8 数值」：
+$$
+q=round(clip(\frac{r}{S}+Z), 0, 255)
+$$
+记住，ReLU 本身就是在做 clip。所以，我们才能用量化的截断功能来模拟 ReLU 的功能。
+
+再举个例子。
+
+<center>
+  <img src="/images/2020-7-19/conv_relu.png" width="500px">
+</center>
+
+假设有一个上图所示的 Conv+ReLU 的结构，其中，Conv 后的数值范围是 $r_{in} \in [-1,1]$。在前面的文章中，我们都是用 ReLU 前的数值来统计 minmax 并计算 scale 和 zp，并把该 scale 和 zp 沿用到 ReLU 之后。这部分的计算可以参照图中上半部分。
+
+但现在，我们想在 ReLU 之后统计 minmax，并用 ReLU 后的 scale 和 zp 作为 ReLU 前的 scale 和 zp「即 Conv 后面的 scale 和 zp」，结果会怎样呢？
+
+看图中下半部分，假设 Conv 后的数值是 $r_{in}=-0.5$，此时，由于 Conv 之后的 scale 和 zp 变成了 $\frac{1}{255}$ 和 $0$，因此，量化的整型数值为：
+$$
+\begin{align}
+q&=round(\frac{-0.5}{\frac{1}{255}}+0) \\ \notag
+&=round(-128) \\ \notag
+&=0  \tag{6}
+\end{align}
+$$
+注意，上面的量化过程中，我们执行了截断操作，把 $q$ 从 -128 截断成 0，而这一步本来应该是在 ReLU 里面计算的！然后，我们如果根据 $S_{out}$ 和 $Z_{out}$ 反量化回去，就会得到 $r_{out}=0$，而它正是原先 ReLU 计算后得到的数值。
+
+因此，通过在 Conv 后直接使用 ReLU 后的 scale 和 zp，我们实现了将 ReLU 合并到 Conv 里面的过程。
+
+那对于 ReLU 外的其他激活函数，是否可以同样合并到 Conv 里面呢？这取决于其他函数是否也只是在做 clip 操作，例如 ReLU6 也有同样的性质。但对于其他绝大部分函数来说，由于它们本身包含其他数学运算，因此就不具备类似性质。
+
+## 总结
+
+这篇文章主要介绍了如何把 BatchNorm 和 ReLU 合并成一个 Conv，从而加速量化推理。按照计划，应该和之前的文章一样，给出代码实现。但我在测试代码的时候发现有一些 bug 需要解决，正好也控制一下篇幅，下篇文章会给出相关的代码实现。
