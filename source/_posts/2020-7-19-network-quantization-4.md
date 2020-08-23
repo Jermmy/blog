@@ -1,5 +1,5 @@
 ---
-title: 神经网络量化入门--BatchNorm Folding
+title: 神经网络量化入门--Folding BN ReLU
 date: 2020-07-19 14:38:47
 tags: [深度学习]
 categories: 深度学习
@@ -43,7 +43,7 @@ $$
 图中 BN 层的均值和标准差可以表示为 $\mu_{y}$、$\sigma_{y}$，那么根据论文的表述，BN 层的输出为：
 $$
 \begin{align}
-y_{bn}&=\gamma \hat{y}+\beta \\
+y_{bn}&=\gamma \hat{y}+\beta \notag \\
 &=\gamma \frac{y-\mu_y}{\sqrt{\sigma_y^2+\epsilon}}+\beta \tag{2}
 \end{align}
 $$
@@ -54,7 +54,7 @@ $$
 我们用 $\gamma'$ 来表示 $\frac{\gamma}{\sqrt{\sigma_y^2+\epsilon}}$，那么 (3) 可以简化为：
 $$
 \begin{align}
-y_{bn}&=\gamma'(\sum_{i}^Nw_ix_i+b-\mu_y)+\beta \\
+y_{bn}&=\gamma'(\sum_{i}^Nw_ix_i+b-\mu_y)+\beta \notag \\
 &=\sum_{i}^N \gamma'w_ix_i+\gamma'(b-\mu_y)+\beta \tag{4}
 \end{align}
 $$
@@ -94,7 +94,7 @@ q=round(\frac{r}{S}+Z) \tag{5}
 $$
 注意，这里的 round 除了把 float 型四舍五入转成 int 型外，还需要保证 $q$ 的数值在特定范围内「例如 0～255」，相当于要做一遍 clip 操作。因此，这个公式更准确的写法应该是「假设量化到 uint8 数值」：
 $$
-q=round(clip(\frac{r}{S}+Z), 0, 255)
+q=round(clip(\frac{r}{S}+Z, 0, 255)) \tag{6}
 $$
 记住，ReLU 本身就是在做 clip。所以，我们才能用量化的截断功能来模拟 ReLU 的功能。
 
@@ -111,9 +111,9 @@ $$
 看图中下半部分，假设 Conv 后的数值是 $r_{in}=-0.5$，此时，由于 Conv 之后的 scale 和 zp 变成了 $\frac{1}{255}$ 和 $0$，因此，量化的整型数值为：
 $$
 \begin{align}
-q&=round(\frac{-0.5}{\frac{1}{255}}+0) \\ \notag
-&=round(-128) \\ \notag
-&=0  \tag{6}
+q&=round(\frac{-0.5}{\frac{1}{255}}+0) \notag \\ 
+&=round(-128) \notag \\
+&=0  \tag{7}
 \end{align}
 $$
 注意，上面的量化过程中，我们执行了截断操作，把 $q$ 从 -128 截断成 0，而这一步本来应该是在 ReLU 里面计算的！然后，我们如果根据 $S_{out}$ 和 $Z_{out}$ 反量化回去，就会得到 $r_{out}=0$，而它正是原先 ReLU 计算后得到的数值。
