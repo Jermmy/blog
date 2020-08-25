@@ -14,9 +14,19 @@ mathjax: true
 
 ## Folding BN
 
+回顾一下[前文](https://jermmy.github.io/2020/07/19/2020-7-19-network-quantization-4/)把 BN 合并到 Conv 中的公式：
+$$
+\begin{align}
+y_{bn}&=\frac{\gamma}{\sqrt{\sigma_y^2+\epsilon}}(\sum_{i}^N w_i x_i + b-\mu_y)+\beta \notag \\
+&=\gamma'(\sum_{i}^Nw_ix_i+b-\mu_y)+\beta \notag \\
+&=\sum_{i}^N \gamma'w_ix_i+\gamma'(b-\mu_y)+\beta \tag{1}
+\end{align}
+$$
+其中，$x$ 是卷积层的输入，$w$、$b$ 分别是 Conv 的参数 weight 和 bias，$\gamma$、$\beta$ 是 BN 层的参数。
+
 对于 BN 的合并，首先，我们需要熟悉 pytorch 中的 `BatchNorm2d` 模块。
 
-pytorch 中的 `BatchNorm2d` 针对卷积中的每一个 channel 都会计算一个均值和方差，所以公式 (4) 需要对 weight 和 bias 进行 channel wise 的计算。另外，`BatchNorm2d` 中有一个布尔变量 `affine`，当该变量为 true 的时候，(2) 式中的 $\gamma$ 和 $\beta$ 就是可学习的， `BatchNorm2d` 中的有两个变量，`weight` 和 `bias` 来分别存放这两个参数。而当 `affine` 为 false 的时候，就直接默认 $gamma=1$，$\beta=0$，相当于 BN 中没有可学习的参数。默认情况下，我们都设置 `affine=True`。
+pytorch 中的 `BatchNorm2d` 针对 feature map 的每一个 channel 都会计算一个均值和方差，所以公式 (1) 需要对 weight 和 bias 进行 channel wise 的计算。另外，`BatchNorm2d` 中有一个布尔变量 `affine`，当该变量为 true 的时候，(1) 式中的 $\gamma$ 和 $\beta$ 就是可学习的， `BatchNorm2d` 会中有两个变量：`weight` 和 `bias`，来分别存放这两个参数。而当 `affine` 为 false 的时候，就直接默认 $\gamma=1$，$\beta=0$，相当于 BN 中没有可学习的参数。默认情况下，我们都设置 `affine=True`。
 
 我们沿用之前的代码，先定义一个 `QConvBNReLU` 模块：
 
@@ -41,16 +51,15 @@ class QConvBNReLU(QModule):
         if hasattr(self, 'qi'):
             self.qi.update(x)
             x = FakeQuantize.apply(x, self.qi)
-
-        if self.training:
-            # y = self.conv_module(x)
+ 
+        if self.training: # 开启BN层训练
             y = F.conv2d(x, self.conv_module.weight, self.conv_module.bias, 
-                         stride=self.conv_module.stride,
-                         padding=self.conv_module.padding,
-                         dilation=self.conv_module.dilation,
-                         groups=self.conv_module.groups)
+                            stride=self.conv_module.stride,
+                            padding=self.conv_module.padding,
+                            dilation=self.conv_module.dilation,
+                            groups=self.conv_module.groups)
             y = y.permute(1, 0, 2, 3) # NCHW -> CNHW
-            y = y.contiguous().view(self.conv_module.out_channels, -1)
+            y = y.contiguous().view(self.conv_module.out_channels, -1) # CNHW -> (C,NHW)，这一步是为了方便channel wise计算均值和方差
             mean = y.mean(1)
             var = y.var(1)
             self.bn_module.running_mean = \
@@ -59,10 +68,10 @@ class QConvBNReLU(QModule):
             self.bn_module.running_var = \
                 self.bn_module.momentum * self.bn_module.running_var + \
                 (1 - self.bn_module.momentum) * var
-        else:
+        else: # BN层不更新
             mean = self.bn_module.running_mean
             var = self.bn_module.running_var
-        
+
         std = torch.sqrt(var + self.bn_module.eps)
 
         weight, bias = self.fold_bn(mean, std)
@@ -83,20 +92,20 @@ class QConvBNReLU(QModule):
         return x
 ```
 
-这个过程就是对 Google 论文的那张图的诠释，跟一般的卷积量化的区别就是需要先把 BN 的参数 folding 到 Conv 中，再跑正常的卷积量化流程。不过，根据论文的表述，我们还需要在 forward 的过程更新 BN 的均值、方差，这部分对应上面代码 ` if self.training` 分支下的部分。
+这个过程就是对 Google 论文的那张图的诠释，跟一般的卷积量化的区别就是需要先获得 BN 层的参数，再把它们 folding 到 Conv 中，最后跑正常的卷积量化流程。不过，根据论文的表述，我们还需要在 forward 的过程更新 BN 的均值、方差，这部分对应上面代码 ` if self.training` 分支下的部分。
 
-然后，根据公式 (4)，我们可以计算出 fold BN 后，卷积层的 weight 和 bias：
+然后，根据公式 (1)，我们可以计算出 fold BN 后，卷积层的 weight 和 bias：
 
 ```python
     def fold_bn(self, mean, std):
         if self.bn_module.affine:
-            gamma_ = self.bn_module.weight / std
+            gamma_ = self.bn_module.weight / std  # 这一步计算gamma' 
             weight = self.conv_module.weight * gamma_.view(self.conv_module.out_channels, 1, 1, 1)
             if self.conv_module.bias is not None:
                 bias = gamma_ * self.conv_module.bias - gamma_ * mean + self.bn_module.bias
             else:
                 bias = self.bn_module.bias - gamma_ * mean
-        else:
+        else:  # affine为False的情况，gamma=1, beta=0
             gamma_ = 1 / std
             weight = self.conv_module.weight * gamma_
             if self.conv_module.bias is not None:
@@ -107,7 +116,7 @@ class QConvBNReLU(QModule):
         return weight, bias
 ```
 
-上面的代码直接参照公式 (4) 就可以看懂，其中 `gamma_` 就是公式中的 $\gamma'$。由于前面提到，pytorch 的 `BatchNorm2d` 中，$\gamma$ 和 $\beta$ 可能是可学习的变量，也可能默认为 1 和 0，因此根据 `affine` 是否为 `True` 分了两种情况，原理上基本类似，这里就不再赘述。
+上面的代码直接参照公式 (1) 就可以看懂，其中 `gamma_` 就是公式中的 $\gamma'$。由于前面提到，pytorch 的 `BatchNorm2d` 中，$\gamma$ 和 $\beta$ 可能是可学习的变量，也可能默认为 1 和 0，因此根据 `affine` 是否为 `True` 分了两种情况，原理上基本类似，这里就不再赘述。
 
 ## 合并ReLU
 
@@ -193,6 +202,6 @@ class NetBN(nn.Module):
 | bit          | 1    | 2    | 3    | 4    | 5    | 6    | 7    | 8    |
 | ------------ | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 | 后训练量化   |   10%   |   11%   |  10%    |  35%  |  82%  | 85%  | 85%  | 87%  |
-| 量化感知训练 |      |      |  59%    |  91%    |   92%   |   94%  |   94%  | 95% |
-| lr         |      |      |   0.02   |   0.02   |  0.02    |  0.02   |    0.02  |  0.02 |
+| 量化感知训练 | 10% | 19% |  59%    |  91%    |   92%   |   94%  |   94%  | 95% |
+| lr         | 0.00001 | 0.0001 |   0.02   |   0.02   |  0.02    |  0.02   |    0.02  |  0.02 |
 
