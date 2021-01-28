@@ -157,3 +157,7 @@ $$
 + [TensorFlow Lite 8-bit quantization specification](https://www.tensorflow.org/lite/performance/quantization_spec)
 + [Post-training quantization](https://www.tensorflow.org/lite/performance/post_training_quantization)
 
+PS: 之后的文章更多的会发布在公众号上，欢迎有兴趣的读者关注我的个人公众号：AI小男孩，扫描下方的二维码即可关注
+<center>
+  <img src="/images/wechat.jpg" width="500px">
+</center>

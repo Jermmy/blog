@@ -452,3 +452,8 @@ quantize_inference(model, test_loader)
 
 + [How to Quantize an MNIST network to 8 bits in Pytorch from scratch (No retraining required)](https://medium.com/@karanbirchahal/how-to-quantise-an-mnist-network-to-8-bits-in-pytorch-no-retraining-required-from-scratch-39f634ac8459)
 + [Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference](https://arxiv.org/abs/1712.05877)
+
+PS: 之后的文章更多的会发布在公众号上，欢迎有兴趣的读者关注我的个人公众号：AI小男孩，扫描下方的二维码即可关注
+<center>
+  <img src="/images/wechat.jpg" width="500px">
+</center>
