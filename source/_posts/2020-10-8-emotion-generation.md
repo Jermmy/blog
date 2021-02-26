@@ -78,3 +78,7 @@ mathjax: true
 
 + [GANimation: Anatomically-aware Facial Animation from a Single Image](https://arxiv.org/abs/1807.09251)
 
+PS: 之后的文章更多的会发布在公众号上，欢迎有兴趣的读者关注我的个人公众号：AI小男孩，扫描下方的二维码即可关注
+<center>
+  <img src="/images/wechat.jpg" width="500px">
+</center>

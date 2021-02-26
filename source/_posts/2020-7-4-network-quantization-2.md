@@ -47,6 +47,17 @@ $$
 
 根据上一篇文章的介绍，$M$ 可以通过一个定点小数加上 bit shift 来实现，因此公式 (4) 完全可以通过定点运算进行计算。由于 $Z_w$、$q_w$、$Z_x$、$q_b$ 都是可以事先计算的，因此 $\sum_i^N q_wZ_x$、$\sum_i^NZ_wZ_x+q_b$ 也可以事先计算好，实际 inference 的时候，只需要计算 $\sum_{i}^N q_wq_x$ 和 $\sum_i^N q_xZ_w$ 即可。
 
+**有同学对 bias 的量化表示疑惑，为啥可以用** $S_xS_w$ **来代替** $S_b$，$Z_b$ **为啥又可以直接记为 0？我这里再补充解释下。**
+
+首先我们要明确一个概念，$S$ 和 $Z$ 只是充当 $r$ 和 $q$ 之间转换的桥梁而已，只要保证 $r$ 经过 $S$、$Z$ 变换后得到 $q$，而这个 $q$ 经过 $S$ 和 $Z$ 可以反变换到同样的 $r$ 即可。
+
+举个例子，假设 $r \in [-1, 1]$，$q \in [0, 255]$，那么 $S=\frac{2}{255}$、$Z=128$，在这种情况下，一个 [-1, 1] 区间的实数，完全可以通过 $S$ 和 $Z$ 换算到 [0, 255] 区间的整数，反过来也一样。
+
+但是，如果对 $q$ 的范围做下限制，限制到 $[0, 100]$，这个时候 $S=\frac{2}{100}$、$Z=50$。次时，$r$ 和 $q$ 依然可以相互转换，我们同样可以根据这个 $q$ 去做量化运算，只要保证 $S=\frac{2}{100}$、$Z=50$，最后还是能换算回原来的 $r$。但为什么我们不这么做呢？很显然，这种做法对精度损失极大，因为我们把 $r$ 的所有信息都压缩到更小的 [0, 100] 区间了，比原来的 [0, 255] 少了一半的信息带宽。
+
+好了，现在回到 bias，其实也是类似的道理。$S_{b}$ 和 $Z_{b}$ 的数值怎么取，其实无所谓，只要保证 $r$ 和 $q$ 之间相互转换就可以。所以我们就用 $S_xS_w$ 来代替 $S_b$，然后把 $Z_b$ 置 0，此时，对于量化后的 $q_{bias}$，我们是可以重新换算回 $r_{bias}$ 的，因此这个 $S_b$ 和 $Z_b$ 的取值是完全可行的。这么做的代价是什么呢？我们假设所有的 $r \in [-1, 1]$，那么 $S_xS_w=\frac{4}{2^{16}}$，而由于 bias 是用 32bit 来存储的，本来 $S_b=\frac{2}{2^{32}}$，因此这个放缩系数直接砍掉了一半的信息量，相当于把 bias 量化到了 16bit 了，因此会带来一定的精度损失。不过，大部分情况下这点损失是可以忽略的，对效果影响不大，而代码实现上却可以更加高效，因此，这就成了一个约定俗成的操作了。
+
+
 ## 卷积网络量化流程
 
 了解完整个卷积层的量化，现在我们再来完整过一遍卷积网络的量化流程。
@@ -452,6 +463,7 @@ quantize_inference(model, test_loader)
 
 + [How to Quantize an MNIST network to 8 bits in Pytorch from scratch (No retraining required)](https://medium.com/@karanbirchahal/how-to-quantise-an-mnist-network-to-8-bits-in-pytorch-no-retraining-required-from-scratch-39f634ac8459)
 + [Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference](https://arxiv.org/abs/1712.05877)
+
 
 PS: 之后的文章更多的会发布在公众号上，欢迎有兴趣的读者关注我的个人公众号：AI小男孩，扫描下方的二维码即可关注
 <center>

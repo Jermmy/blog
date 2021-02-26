@@ -12,7 +12,7 @@ mathjax: true
 
 <!--more-->
 
-# EltwiseAdd量化
+## EltwiseAdd量化
 
 EltwiseAdd 的量化主要是在论文的附录里面提及的。过程不是太复杂，如果了解量化的基本原理的话，完全可以自己推导出来。
 
@@ -184,3 +184,8 @@ $$
 
 + [tensorflow量化部分整理ing](https://blog.csdn.net/azheng_wen/article/details/99440697)
 + [Quantizing Networks](https://zhuanlan.zhihu.com/p/127977794)
+
+PS: 之后的文章更多的会发布在公众号上，欢迎有兴趣的读者关注我的个人公众号：AI小男孩，扫描下方的二维码即可关注
+<center>
+  <img src="/images/wechat.jpg" width="500px">
+</center>

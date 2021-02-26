@@ -446,3 +446,8 @@ mathjax: true
 + [干掉柯洁的下一步，阿尔法狗创始人又要毁掉这个行业（深度学习）](https://mp.weixin.qq.com/s?__biz=MzA3MzczNzY0Mw==&mid=2648542581&idx=1&sn=41aa4792cafdc7f04265b518ad116bc5&chksm=872359b1b054d0a7e667a12bd5e6ad9967e62fbf7e5e9b81644e68ac926d282744c12514b3e3&scene=21#wechat_redirect)
 + [深度学习在摄影技术中的应用与发展](https://blog.csdn.net/GitChat/article/details/78787839)
 + [【技术综述】图像美学质量评价调研报告](https://zhuanlan.zhihu.com/p/37307679)
+
+PS: 之后的文章更多的会发布在公众号上，欢迎有兴趣的读者关注我的个人公众号：AI小男孩，扫描下方的二维码即可关注
+<center>
+  <img src="/images/wechat.jpg" width="500px">
+</center>
