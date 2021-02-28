@@ -6,7 +6,9 @@ categories: 深度学习
 mathjax: true
 ---
 
-之前的[文章](http://jermmy.github.io/2020/07/19/2020-7-19-network-quantization-4/)中提到过可以把 ReLU 合并到 Conv 中加速量化推理，当时只是用一个例子简单介绍一下过程，逻辑上存在一些漏洞。本文打算从数学上深入剖析一下其中的原理，并进一步扩展到其他激活函数，看看在网络量化中激活函数一般是怎么处理的。
+**本文首发于公众号「AI小男孩」，欢迎大伙过来砸场！**
+
+在之前的[文章](http://jermmy.github.io/2020/07/19/2020-7-19-network-quantization-4/)中提到过可以把 ReLU 合并到 Conv 中加速量化推理，当时只是用一个例子简单介绍一下过程，逻辑上存在一些漏洞。本文打算从数学上深入剖析一下其中的原理，并进一步扩展到其他激活函数，看看在网络量化中激活函数一般是怎么处理的。
 
 <!--more-->
 
@@ -15,12 +17,12 @@ mathjax: true
 为了简单起见，假设我们是量化到 uint8 的数值范围「即0~255」。回忆一下量化的基本公式「我在之前的文章中多次强调这几个公式，它们非常重要」
 
 $$
-r = S(q-Z) \tag{1}
+\begin{align}
+r&=S(q-Z) \tag{1} \\
+q& = clip(round(\frac{r}{S}+Z),0,255) \tag{2}
+\end{align}
 $$
 
-$$
-q = clip(round(\frac{r}{S}+Z),0,255) \tag{2}
-$$
 
 再简单重复一下符号的含义，$r$ 表示实数，$q$ 表示量化后的定点数，$S$ 和 $Z$ 分别是是 scale 和 zero point。
 
@@ -41,20 +43,23 @@ $$
 ReLU 是一个非常简单的函数，它除了把小于 0 的数值截断外，甚至不做任何操作：
 $$
 \begin{align}
-ReLU(x)=\begin{cases} x & x>=0 \\ 0 & x <0 \end{cases} \tag{5}
+ReLU(x)=\begin{cases} x & x >= 0 \\ 0 & x < 0 \end{cases} \tag{5}
 \end{align}
 $$
 如果把上面的函数 $f$ 替换成 ReLU 的公式，就可以得到：
 $$
-r_2=\begin{cases} r_1 & r_1>=0 \\ 0 & r_1 <0 \end{cases} \tag{6}
+\begin{align}
+r_2=\begin{cases} r_1 & r_1 >= 0 \\ 
+0 & r_1<0 \end{cases} \tag{6}
+\end{align}
 $$
 把 (1) 式代入就变成：
 $$
-S_2(q_2-Z_2)=\begin{cases} S_1(q_1-Z_1) & q_1>=Z_1 \\ 0 & q_1 <Z_1 \end{cases} \tag{7}
+S_2(q_2-Z_2)=\begin{cases} S_1(q_1-Z_1) & q_1 >= Z_1 \\ 0 & q_1 < Z_1 \end{cases} \tag{7}
 $$
 换算一下可以得到：
 $$
-q_2=\begin{cases} \frac{S_1}{S_2}(q_1-Z_1)+Z_2 & q_1>=Z_1 \\ Z_2 & q_1 <Z_1 \end{cases} \tag{8}
+q_2=\begin{cases} \frac{S_1}{S_2}(q_1-Z_1)+Z_2 & q_1 >= Z_1 \\ Z_2 & q_1 < Z_1 \end{cases} \tag{8}
 $$
 这是量化 ReLU 最通用的运算，其中 $\frac{S_1}{S_2}$ 可以通过之前文章讲的**定点数 + bitshift** 来实现。
 
@@ -64,7 +69,7 @@ $$
 
 因此，我们其实可以用一种更简洁明了的方式来实现量化的 ReLU：
 $$
-q_2=\begin{cases} q_1 & q_1>=Z_1 \\ Z_1 & q_1<Z_1 \end{cases}   \tag{9}
+q_2=\begin{cases} q_1 & q_1 >= Z_1 \\ Z_1 & q_1 < Z_1 \end{cases}   \tag{9}
 $$
 如果是使用这个公式，那 ReLU 前后的 scale 和 zeropoint 是要保持一致的，这一点可以从 ReLU 本身的物理含义出发得出。
 
@@ -88,7 +93,7 @@ inline void ReluX(const tflite::ActivationParams& params,
 }
 ```
 
-可以看出，这个量化的 ReLU 和浮点数版本的 ReLU 几乎没有区别。
+可以看出，这个量化的 ReLU 和浮点数版本的 ReLU 逻辑上几乎没有区别。
 
 ### ReLU如何勾搭上Conv
 
@@ -101,13 +106,13 @@ $$
 现在，$q_3$ 进入 ReLU 进行运算得到 $q_4$，按照上面的推算可以得出：
 $$
 \begin{align}
-S_4(q_4-Z_4)&=\begin{cases} S_3(q_3-Z_3) & q_3>=Z_3 \\ 0 & q_3<Z_3 \end{cases}  \\ \notag
-&=\begin{cases} S_1S_2 \sum_{i}^N (q_1-Z_1)(q_2-Z_2)  & q_3>=Z_3 \\ 0 & q_3<Z_3 \end{cases}
+S_4(q_4-Z_4)&=\begin{cases} S_3(q_3-Z_3) & q_3 >= Z_3 \\ 0 & q_3 < Z_3 \end{cases}  \\ \notag
+&=\begin{cases} S_1S_2 \sum_{i}^N (q_1-Z_1)(q_2-Z_2)  & q_3 >= Z_3 \\ 0 & q_3 < Z_3 \end{cases}
 \end{align}  \tag{11}
 $$
 换算一下得到：
 $$
-q_4=\begin{cases} \frac{S_1S_2}{S_4}\sum_{i}^N (q_1-Z_1)(q_2-Z_2)+Z_4  & q_3>=Z_3 \\ Z_4  & q_3<Z_3 \end{cases}  \tag{12}
+q_4=\begin{cases} \frac{S_1S_2}{S_4}\sum_{i}^N (q_1-Z_1)(q_2-Z_2)+Z_4  & q_3 >= Z_3 \\ Z_4  & q_3 < Z_3 \end{cases}  \tag{12}
 $$
 到这里，这个式子仍然是 ReLU 的形式。换句话说，我们仍然要走两个分支来计算函数的结果。
 
@@ -115,9 +120,9 @@ $$
 
 这时，就要用到量化中的 clip 操作了。上面式子 (12)，其实更严格的写法应该是：
 $$
-q_4=\begin{cases} clip(\frac{S_1S_2}{S_4}\sum_{i}^N (q_1-Z_1)(q_2-Z_2)+Z_4, 0, 255)  & q_3>=Z_3 \\ Z_4  & q_3<Z_3 \end{cases}   \tag{13}
+q_4=\begin{cases} clip(\frac{S_1S_2}{S_4}\sum_{i}^N (q_1-Z_1)(q_2-Z_2)+Z_4, 0, 255)  & q_3 >= Z_3 \\ Z_4  & q_3 < Z_3 \end{cases}   \tag{13}
 $$
-前面说了，$Z_4=0$。如果 $q_3<Z_3$，那么等价地 $\sum_{i}^N (q_1-Z_1)(q_2-Z_2)<0$，此时会跑第二个分支得到 $q_4=Z_4$。但是，由于有 clip 操作，在这种情况下，$q_4=clip(\frac{S_1S_2}{S_4}\sum_{i}^N (q_1-Z_1)(q_2-Z_2)+Z_4, 0, 255)=0=Z_4$，因此，我们发现，无论跑哪个分支，最后都可以统一用下面这个式子来表示：
+前面说了，$Z_4=0$。如果 $q_3 < Z_3$，那么等价地 $\sum_{i}^N (q_1-Z_1)(q_2-Z_2)<0$，此时会跑第二个分支得到 $q_4=Z_4$。但是，由于有 clip 操作，在这种情况下，$q_4=clip(\frac{S_1S_2}{S_4}\sum_{i}^N (q_1-Z_1)(q_2-Z_2)+Z_4, 0, 255)=0=Z_4$，因此，我们发现，无论跑哪个分支，最后都可以统一用下面这个式子来表示：
 $$
 q_4=clip(\frac{S_1S_2}{S_4}\sum_{i}^N (q_1-Z_1)(q_2-Z_2)+Z_4, 0, 255)   \tag{14}
 $$
@@ -133,29 +138,29 @@ $$
 
 LeakyReLU 的公式可以表示成：
 $$
-LeakyReLU(x)=\begin{cases}x & x >=0 \\ \alpha x & x < 0 \end{cases}  \tag{15}
+LeakyReLU(x)=\begin{cases}x & x >= 0 \\ \alpha x & x < 0 \end{cases}  \tag{15}
 $$
 这里面的 $\alpha$ 是我们事先指定的数值，一般是 0~1 之间的小数。
 
 同样地，我们按照文章最开始的总口诀，即公式 (3)(4)，来逐步分析这个函数。把原来的函数 $f$ 替换成 LeakyReLU，可以得到：
 
 $$
-r_2=\begin{cases} r_1 & r_1>=0 \\ \alpha r_1 & r_1<0 \end{cases} \tag{16}
+r_2=\begin{cases} r_1 & r_1 >= 0 \\ \alpha r_1 & r_1 < 0 \end{cases} \tag{16}
 $$
 
 把 (1) 式代入：
 $$
-S_2(q_2-Z_2)=\begin{cases}S_1(q_1-Z_1) & q_1>=Z_1 \\ \alpha S_1(q_1-Z1) & q_1<Z_1 \end{cases}  \tag{17}
+S_2(q_2-Z_2)=\begin{cases}S_1(q_1-Z_1) & q_1 >= Z_1 \\ \alpha S_1(q_1-Z1) & q_1 < Z_1 \end{cases}  \tag{17}
 $$
 换算一下得到：
 $$
-q_2=\begin{cases}\frac{S_1}{S_2}(q_1-Z_1)+Z_2 & q_1>=Z_1 \\ \frac{\alpha S_1}{S_2}(q_1-Z_1)+Z_2 & q_1<Z_1 \end{cases} \tag{18}
+q_2=\begin{cases}\frac{S_1}{S_2}(q_1-Z_1)+Z_2 & q_1 >= Z_1 \\ \frac{\alpha S_1}{S_2}(q_1-Z_1)+Z_2 & q_1 < Z_1 \end{cases} \tag{18}
 $$
 此时，由于有 $\alpha$ 的存在，这两个分支就无法像 ReLU 一样进行合并，自然也就无法整合到 Conv 等操作内部了。
 
 在 tflite 中是将 $\alpha$ 转换为一个定点数再计算的。具体地，假设 $\alpha_q=clip(round(\frac{\alpha}{S_1}+Z_1), 0, 255)$，可以得到：
 $$
-q_2=\begin{cases}\frac{S_1}{S_2}(q_1-Z_1)+Z_2 & q_1>=Z_1 \\ \frac{S_1S_1}{S_2}(\alpha_q-Z_1)(q_1-Z_1) & q_1<Z_1 \end{cases} \tag{19}
+q_2=\begin{cases}\frac{S_1}{S_2}(q_1-Z_1)+Z_2 & q_1 >= Z_1 \\ \frac{S_1S_1}{S_2}(\alpha_q-Z_1)(q_1-Z_1) & q_1 < Z_1 \end{cases} \tag{19}
 $$
 具体代码如下「参考自https://github.com/tensorflow/tensorflow/blob/r1.15/tensorflow/lite/kernels/activations.cc#L248」：
 
@@ -225,7 +230,7 @@ inline void QuantizeLeakyRelu(const LeakyReluParams& params, T q_alpha,
 
 代码里面的 `input_value` 就是公式 (19) 里面的 $q_1-Z_1$，tflite 会根据 `input_val` 的数值情况分两个分支运行，这个过程和 (19) 基本一致。
 
-眼见的读者可能发现，为啥 $q_1>Z_1$ 这个分支，代码里面好像直接令 $q_2=q_1$ 了，这跟公式 (19) 描述的好像不一样啊。哈哈，这个地方我也暂时不明白，了解详情的读者请教教我，或者我之后弄懂再补充一下。
+眼尖的读者可能发现，为啥 $q_1>Z_1$ 这个分支，代码里面好像直接令 $q_2=q_1$ 了，这跟公式 (19) 描述的好像不一样啊。哈哈，这个地方我也暂时不明白，了解详情的读者请教教我，或者我之后弄懂再补充一下。
 
 ## 非线性函数
 
@@ -239,6 +244,7 @@ inline void QuantizeLeakyRelu(const LeakyReluParams& params, T q_alpha,
 
 这篇文章主要讲了网络量化中如何处理激活函数，并从数学上进一步剖析为何 ReLU 可以和 Conv 等操作合并。
 
-你可能已经发现，网络量化这个课题跟底层的实现联系非常紧密，比如涉及到 gemmlowp、neon 等底层函数库等。有读者会说：我只想老老实实研究算法，对这些底层的运算不了解也没兴趣了解啊！对于这部分读者，其实也不用焦虑，诚然，网络量化对底层的联系相比其他深度学习算法而言更加紧密，但对于顶层的算法开发人员，只需要大概知道底层是怎么运行的就可以，而把更多的精力放在对量化算法的改进上。当然啦，如果想成为一流的网络量化专家，熟悉底层还是很有必要的，否则你怎么知道未来算法的发展趋势呢？
+你可能已经发现，网络量化这个课题跟底层的实现联系非常紧密，比如涉及到 gemmlowp、neon 等底层函数库等。有读者会说：我只想老老实实研究算法，对这些底层的运算不了解也没兴趣了解啊！
+对于这部分读者，其实也不用焦虑，诚然，网络量化对底层的联系相比其他深度学习算法而言更加紧密，但对于顶层的算法开发人员，只需要大概知道底层是怎么运行的就可以，而把更多的精力放在对量化算法的改进上。当然啦，如果想成为一流的网络量化专家，熟悉底层还是很有必要的，否则你怎么知道未来算法的发展趋势呢？
 
-最近陆续填了一些坑，之后应该会介绍一些更前言且对落地比较友好的论文和技术了。感谢大家在我断更这么久后依然不离不弃。顺道给大家拜个晚年^o^
+PS. 最近陆续填了一些坑，之后应该会介绍一些更前沿且对落地比较友好的论文和技术了。感谢大家在我断更这么久后依然不离不弃。
